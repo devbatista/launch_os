@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.1 (restante: RSpec/FactoryBot/WebMock, importmap entries + `data-module`, Sentry, `config.hosts`, CI com rspec, deploy no Railway) e, em paralelo, Fase 0 (contas e aprovações — DNS e SES primeiro).
+**Próximo passo:** → 1.1 (restante: Gemfile, RSpec/FactoryBot/WebMock, `implicit_order_column`, importmap entries + `data-module`, layouts, `Providers::Error`, Sentry, `config.hosts`, CI) e, em paralelo, Fase 0 restante: PayPal (0.1), Meta (0.2), Twilio (0.3), Sentry/uptime (0.5). Infra da 0.4 concluída em 16/09.
 
 ---
 
@@ -15,24 +15,25 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ### 0.4 Domínio, hospedagem, banco, bucket, SES — spec [02](../specs/02-docker-e-ambiente.md), [09](../specs/09-notificacoes-email-whatsapp.md)
 - [x] Domínio `devbatista.online`: registrado na Namecheap, DNS na HostGator — **decisão: não migrar**; app em `www.devbatista.online`, apex redireciona
 - [x] Hospedagem: **Railway** — projeto `launch_os` criado (conta `rafael@devbatista.com`), serviço `launch_os` conectado ao repo `devbatista/launch_os`, deploy automático no push em `main`
-- [ ] PostgreSQL gerenciado — *parcial: plugin Postgres criado no Railway e `DATABASE_URL` referenciado; conferir versão (17?) e ativar backup diário no dashboard*
+- [x] PostgreSQL gerenciado — plugin Postgres criado no Railway (● Online, volume `postgres-volume` 5 GB), `DATABASE_URL` do serviço `launch_os` aponta para `postgres.railway.internal:5432/railway`; versão em produção **18.6** (dev/spec usam `postgres:17` — sem impacto, mas anotar) (16/09)
+- [x] Backup diário do volume `postgres-volume` — **decisão (16/09): não ativar por enquanto**; backups automáticos de volume exigem plano Pro no Railway. Seguir no Hobby durante o MVP; reavaliar (upgrade para Pro ou `pg_dump` agendado externo) antes do go-live — ver 3.2
 - [x] Redis gerenciado — plugin Redis criado no Railway; `REDIS_URL` referenciado
-- [ ] Bucket privado S3-compatível (R2 ou S3) com versionamento; usuário IAM restrito ao bucket
-- [ ] SES: criar identidade de domínio, Easy DKIM (3 CNAMEs, *DNS only*)
-- [ ] SES: custom MAIL FROM `ses.devbatista.online` (MX + TXT SPF no subdomínio `ses`; **não** mexer em `mail.devbatista.online`, que é o email da HostGator)
-- [ ] DNS: `_dmarc` TXT (`p=quarantine`)
-- [ ] SES: verificar identidade `support@devbatista.online`
-- [ ] SES: usuário IAM só com `ses:SendEmail`/`ses:SendRawEmail`; access key → `SES_ACCESS_KEY_ID`/`SES_SECRET_ACCESS_KEY` (não gerar credenciais SMTP)
-- [ ] SES: **solicitar saída do sandbox** (anotar data na seção 6 do cronograma)
-- [ ] SES: configuration set `launch-os` com eventos Bounce/Complaint/Delivery
-- [ ] Caixa `support@devbatista.online` funcionando (redirecionamento ok)
+- [x] Bucket **S3** `launch-os-prod` (`us-east-1`, acesso público bloqueado, versionamento ativo, SSE-S3); usuário IAM `launch-os-s3` com política `launch-os-s3-rw` (ListBucket + Get/Put/DeleteObject só nesse bucket); `S3_*` definidos no Railway (16/09)
+- [x] SES: identidade de domínio `devbatista.online` criada em `us-east-1`, Easy DKIM (3 CNAMEs na HostGator) (16/09)
+- [x] SES: custom MAIL FROM `ses.devbatista.online` — MX `10 feedback-smtp.us-east-1.amazonses.com` + TXT `v=spf1 include:amazonses.com ~all` conferidos via `dig`; MX do apex segue na HostGator (16/09)
+- [x] DNS: `_dmarc` TXT `v=DMARC1; p=quarantine; rua=mailto:support@devbatista.online; adkim=r; aspf=r` — publicado em 16/09 após email de teste do SES chegar no Gmail com SPF/DKIM/DMARC = PASS (`smtp.mailfrom=…@ses.devbatista.online`, `dkim header.i=@devbatista.online`). Relatórios agregados chegam em `support@`
+- [x] ~~SES: verificar identidade `support@devbatista.online`~~ — **desnecessário**: a identidade de domínio já cobre o envio; identidade de email só serviria para receber testes no sandbox, e a aprovação chega antes da 2.6
+- [x] SES: usuário IAM `launch-os-ses` com política `launch-os-ses-send` (`ses:SendEmail`/`ses:SendRawEmail`); `SES_REGION`, `SES_CONFIGURATION_SET`, `SES_ACCESS_KEY_ID`, `SES_SECRET_ACCESS_KEY` definidos no Railway (16/09)
+- [x] SES: **saída do sandbox** — solicitado e **aprovado em 16/09** (cota 50.000/dia, 14 emails/s); anotado na seção 6 do cronograma
+- [x] SES: configuration set `launch-os` com destino SNS (`ses-launch-os`) para Bounce/Complaint/Delivery (16/09)
+- [x] Caixa `support@devbatista.online` criada no cPanel e recebendo (teste 16/09). *Correção feita no caminho: `devbatista.com` estava como "Local" em Distribuição de e-mail apesar do MX no Google Workspace → trocado para "Servidor de mensagens remoto"; sem isso o Exim rejeitava remetentes `@devbatista.com` com "Sender verify failed"*
 
 ### 0.1 PayPal — spec [07](../specs/07-checkout-paypal.md)
-- [ ] Conta PayPal Business criada e verificação de identidade enviada
-- [ ] App no PayPal Developer (Sandbox): Client ID + Secret
-- [ ] App no PayPal Developer (Live): Client ID + Secret
-- [ ] Contas de comprador Sandbox criadas (US, com saldo)
-- [ ] Credenciais guardadas fora do repositório (gerenciador de senhas)
+- [x] Conta PayPal Business (CNPJ, separada da PF) criada e verificação de identidade enviada em 16/09 — prazo informado 2–4 dias úteis; Live no Developer fica "restricted" até aprovar (seção 6 do cronograma)
+- [x] App no PayPal Developer (Sandbox): `launch_os` (Merchant) criado em 16/09 na conta CNPJ; Client ID + Secret no gerenciador de senhas
+- [ ] App no PayPal Developer (Live): Client ID + Secret — *bloqueado pela verificação da conta; necessário só na 3.5*
+- [x] Contas Sandbox: business (vendedor, `sb-…@business.example.com`) e personal US com saldo (comprador) — email/senha no gerenciador de senhas (16/09)
+- [x] Credenciais Sandbox (Client ID + Secret) guardadas fora do repositório (gerenciador de senhas) (16/09)
 
 ### 0.2 Meta — spec [10](../specs/10-tracking-e-analytics.md)
 - [ ] Meta Business criado; conta de anúncios com método de pagamento
@@ -79,7 +80,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `development.rb`: `letter_opener_web`; rota `/letter_opener` só em dev
 - [x] `bin/setup` funciona em container limpo (`db:prepare`, seeds)
 - [ ] CI (GitHub Actions): rspec + rubocop + brakeman + bundler-audit
-- [x] Deploy inicial em produção: `https://launchos-production-9f6e.up.railway.app/up` → 200 (variáveis definidas via CLI; `S3_*` com valores provisórios `PENDENTE` até o bucket da 0.4)
+- [x] Deploy inicial em produção: `https://launchos-production-9f6e.up.railway.app/up` → 200 (variáveis definidas via CLI; `S3_*` e `SES_*` reais desde 16/09)
 - [ ] Serviço `worker` no Railway (mesmo repo, *Custom Start Command* `bundle exec sidekiq -C config/sidekiq.yml`, mesmas variáveis) — necessário só a partir da 2.6
 - [x] Domínio no Railway: `www.devbatista.online` adicionado; CNAME `www` → `0y02s4dz.up.railway.app` + TXT `railway-verify` na HostGator; certificado Let's Encrypt emitido; porta do domínio = 8080; `https://www.devbatista.online/up` → 200 (16/09)
 - [x] Redirect 301 do apex `devbatista.online` → `https://www.devbatista.online` no cPanel (http e https OK)
@@ -263,7 +264,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ### 3.2 GA4, Sentry, monitoramento, hardening — spec [13](../specs/13-seguranca.md)
 - [ ] GA4 (`view_item`, `begin_checkout`, `purchase` único)
 - [ ] Sentry recebendo erro de teste; integração Sidekiq (dead jobs)
-- [ ] Uptime monitor ativo; backup diário confirmado e **restauração testada**; versionamento do bucket
+- [ ] Uptime monitor ativo; backup diário confirmado e **restauração testada**; versionamento do bucket — *backup: decidir aqui entre upgrade para Railway Pro (backups de volume) ou `pg_dump` agendado para o bucket (ver 0.4)*
 - [ ] CSP com nonces (PayPal, Meta, GA); headers de segurança; `config.hosts`; `filter_parameters`
 - [ ] `brakeman` e `bundler-audit` limpos; Dependabot ativo
 - [ ] Checklist da spec 13 percorrido item a item
