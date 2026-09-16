@@ -26,7 +26,7 @@ gem "bootsnap", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.1"
 # Active Storage em bucket S3-compatível (MinIO em dev, R2/S3 em produção)
 gem "aws-sdk-s3", require: false
 
