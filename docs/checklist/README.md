@@ -13,13 +13,13 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ## Fase 0 — Contas e aprovações (S0 · 14–20/09) · sem código
 
 ### 0.4 Domínio, hospedagem, banco, bucket, SES — spec [02](../specs/02-docker-e-ambiente.md), [09](../specs/09-notificacoes-email-whatsapp.md)
-- [ ] Domínio `devbatista.online` com DNS na Cloudflare (nameservers apontados)
-- [ ] Escolher hospedagem por container (Render / Fly.io / Railway / Kamal em VPS) e criar o projeto
-- [ ] PostgreSQL 17 gerenciado com backup diário ativado
-- [ ] Redis gerenciado (ou acessório no Kamal)
+- [x] Domínio `devbatista.online`: registrado na Namecheap, DNS na HostGator — **decisão: não migrar**; app em `www.devbatista.online`, apex redireciona
+- [x] Hospedagem: **Railway** — projeto `launch_os` criado (conta `rafael@devbatista.com`), serviço `launch_os` conectado ao repo `devbatista/launch_os`, deploy automático no push em `main`
+- [ ] PostgreSQL gerenciado — *parcial: plugin Postgres criado no Railway e `DATABASE_URL` referenciado; conferir versão (17?) e ativar backup diário no dashboard*
+- [x] Redis gerenciado — plugin Redis criado no Railway; `REDIS_URL` referenciado
 - [ ] Bucket privado S3-compatível (R2 ou S3) com versionamento; usuário IAM restrito ao bucket
 - [ ] SES: criar identidade de domínio, Easy DKIM (3 CNAMEs, *DNS only*)
-- [ ] SES: custom MAIL FROM `mail.devbatista.online` (MX + TXT SPF)
+- [ ] SES: custom MAIL FROM `ses.devbatista.online` (MX + TXT SPF no subdomínio `ses`; **não** mexer em `mail.devbatista.online`, que é o email da HostGator)
 - [ ] DNS: `_dmarc` TXT (`p=quarantine`)
 - [ ] SES: verificar identidade `support@devbatista.online`
 - [ ] SES: usuário IAM só com `ses:SendEmail`/`ses:SendRawEmail`; access key → `SES_ACCESS_KEY_ID`/`SES_SECRET_ACCESS_KEY` (não gerar credenciais SMTP)
@@ -49,7 +49,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 
 ### 0.5 Sentry, uptime, Git
 - [ ] Projeto no Sentry → `SENTRY_DSN`
-- [ ] Monitor de uptime gratuito apontando para `https://devbatista.online/up`
+- [ ] Monitor de uptime gratuito apontando para `https://www.devbatista.online/up`
 - [ ] Repositório Git criado (privado); `AGENTS.md`, `docs/` commitados
 - [ ] Conta GA4 → `GA4_MEASUREMENT_ID` (pode ficar para a Fase 3)
 
@@ -79,7 +79,13 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `development.rb`: `letter_opener_web`; rota `/letter_opener` só em dev
 - [x] `bin/setup` funciona em container limpo (`db:prepare`, seeds)
 - [ ] CI (GitHub Actions): rspec + rubocop + brakeman + bundler-audit
-- [ ] Deploy inicial em produção (Railway: `web` + `worker` + plugins Postgres/Redis; `railway.json` já criado) com HTTPS respondendo `/up`
+- [x] Deploy inicial em produção: `https://launchos-production-9f6e.up.railway.app/up` → 200 (variáveis definidas via CLI; `S3_*` com valores provisórios `PENDENTE` até o bucket da 0.4)
+- [ ] Serviço `worker` no Railway (mesmo repo, *Custom Start Command* `bundle exec sidekiq -C config/sidekiq.yml`, mesmas variáveis) — necessário só a partir da 2.6
+- [x] Domínio no Railway: `www.devbatista.online` adicionado; CNAME `www` → `0y02s4dz.up.railway.app` + TXT `railway-verify` na HostGator; certificado Let's Encrypt emitido; porta do domínio = 8080; `https://www.devbatista.online/up` → 200 (16/09)
+- [x] Redirect 301 do apex `devbatista.online` → `https://www.devbatista.online` no cPanel (http e https OK)
+- [ ] *(opcional)* marcar *Wild Card Redirect* no cPanel para `devbatista.online/caminho` preservar o caminho (hoje → 404)
+- [x] `APP_HOST=www.devbatista.online` e `PORT=8080` fixados no Railway
+- [ ] `config.hosts` em production com `www.devbatista.online`, `devbatista.online`, `*.up.railway.app` (código; próximo PR)
 - [ ] ✅ Critérios de aceite das specs 01 e 02
 
 ### 1.2 Autenticação admin — spec [04](../specs/04-autenticacao-admin.md)
@@ -154,7 +160,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 
 ### 1.9 Cadastrar e publicar o produto
 - [ ] Produto *21-Day Procrastination Reset* cadastrado em produção com copy provisória, mockup e PDF placeholder
-- [ ] Publicado; `https://devbatista.online/21-day-procrastination-reset` responde 200
+- [ ] Publicado; `https://www.devbatista.online/21-day-procrastination-reset` responde 200
 - [ ] Facebook Sharing Debugger mostra og:image e description corretos
 
 **M1 — LP em produção (04/10):** critérios de saída da Fase 1 no cronograma.

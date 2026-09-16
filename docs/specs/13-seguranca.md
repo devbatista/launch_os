@@ -46,7 +46,7 @@ Checklist obrigatório. Nenhum item é opcional para ir ao ar.
       `www.facebook.com`; `frame-src` `www.paypal.com`. Nonces para scripts inline (`content_security_policy_nonce_generator`).
 - [ ] Headers: `X-Content-Type-Options`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` mínimo.
 - [ ] Rate limiting nativo (`rate_limit`) nos endpoints listados em [12-rotas.md](12-rotas.md).
-- [ ] `config.hosts` com `devbatista.online` (e `www`) em produção.
+- [ ] `config.hosts` com `www.devbatista.online`, `devbatista.online` e `*.up.railway.app` em produção.
 - [ ] Sem `raise` silencioso em jobs: erros vão ao Sentry; retentativas limitadas.
 - [ ] `brakeman` sem alertas de confiança alta; `bundle audit` limpo; Dependabot habilitado.
 - [ ] Logs de webhook, downloads, mensagens e falhas de login retidos ≥ 90 dias (Postgres) — payloads

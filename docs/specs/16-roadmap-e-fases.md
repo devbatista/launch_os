@@ -40,7 +40,7 @@ Meta leva dias) e criar a conta de anúncios com antecedência (revisão de cont
 | 3.3 | Dashboard admin | 11 |
 | 3.4 | Sentry, uptime monitor, backups, CSP, `config.hosts`, checklist de segurança | 13 |
 | 3.5 | Suite de testes T01–T27 verde; testes manuais 1–8 | 15 |
-| 3.6 | Deploy produção (container), DNS Cloudflare, HTTPS, credenciais Live | 02 |
+| 3.6 | Deploy produção (Railway), CNAME `www` na HostGator + redirect do apex, HTTPS, credenciais Live | 02 |
 | 3.7 | Compra real de US$ 14.90 + reembolso; validar Events Manager | 15 |
 | 3.8 | Publicar produto; **Definição de pronto** 100% marcada | 00 |
 

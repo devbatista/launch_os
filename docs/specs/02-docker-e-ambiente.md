@@ -260,9 +260,42 @@ Variáveis obrigatórias em `web` e `worker`: `RAILS_MASTER_KEY`, `DATABASE_URL`
 `APP_PROTOCOL=https`, `S3_*`, `SES_*`, `PAYPAL_*`, `TWILIO_*`, `META_PIXEL_ID`, `GA4_MEASUREMENT_ID`, `SENTRY_DSN`,
 `SUPPORT_EMAIL`, `MAIL_FROM`, `MAIL_DOMAIN`. Usar *shared variables* do Railway para não duplicar entre os dois serviços.
 
-Domínio: adicionar `devbatista.online` (e `www`) no serviço `web` → Railway fornece o CNAME → criar na Cloudflare
-como **DNS only** (nuvem cinza) até o certificado ser emitido; depois PODE ligar o proxy. `config.hosts` em
-production deve incluir o domínio e o host `*.up.railway.app` para o health check.
+### Domínio e DNS (HostGator, sem Cloudflare)
+
+Decisão (16/09): o domínio `devbatista.online` **permanece registrado na Namecheap com DNS na HostGator**;
+nameservers e registrador não mudam. Consequências:
+
+- O Railway só aceita **CNAME** para domínio customizado e a zona da HostGator não suporta CNAME/ALIAS no apex.
+  Portanto a aplicação vive em **`www.devbatista.online`**; o apex `devbatista.online` redireciona (301) para
+  `https://www.devbatista.online` por um *redirect* configurado no cPanel da HostGator.
+- Todas as URLs públicas (LP, Thank You, webhooks, `return_url` do PayPal, canonical, políticas) usam `www`.
+  `APP_HOST=www.devbatista.online`.
+- `config.hosts` em production: `www.devbatista.online`, `devbatista.online` e `*.up.railway.app` (health check).
+- Não há CDN/proxy na frente do Railway; o cache HTTP da LP fica por conta do Thruster + headers do Rails.
+- O email existente da HostGator (`MX mail.devbatista.online`, SPF `websitewelcome.com`) **não é alterado**; o SES
+  usa um subdomínio próprio para o MAIL FROM (ver [09](09-notificacoes-email-whatsapp.md)).
+
+Registros a criar na zona DNS da HostGator (cPanel → *Zone Editor*):
+
+| Tipo | Nome | Valor | Para |
+|---|---|---|---|
+| CNAME | `www` | alvo fornecido pelo Railway ao adicionar o domínio (ex.: `xxxx.up.railway.app`) | aplicação |
+| TXT | nome/valor fornecidos pelo Railway junto com o CNAME | verificação de posse — **obrigatório**; sem ele o domínio responde 404 mesmo com o CNAME resolvendo | verificação Railway |
+| Redirect (cPanel) | `devbatista.online` → `https://www.devbatista.online` | 301, com *wildcard* | apex → www |
+| CNAME ×3 | `<token>._domainkey` | valores do Easy DKIM do SES | assinatura DKIM |
+| MX + TXT | `ses` (MAIL FROM `ses.devbatista.online`) | `feedback-smtp.us-east-1.amazonses.com` / `v=spf1 include:amazonses.com -all` | alinhamento SPF |
+| TXT | `_dmarc` | `v=DMARC1; p=quarantine; rua=mailto:dmarc@devbatista.online` | DMARC |
+| TXT | `@` | verificação de domínio da Meta (ou meta tag na LP) | Business Manager |
+
+O `www` já existe hoje como CNAME para o apex — precisa ser **substituído** pelo alvo do Railway. Certificado TLS
+é emitido automaticamente pelo Railway após o CNAME propagar (minutos a algumas horas na HostGator).
+
+Por que o apex não pode apontar direto (documentação oficial do Railway, *Working with domains*): o Railway
+fornece apenas um alvo CNAME (`*.up.railway.app`) e um TXT de verificação — não há IP fixo nem registro `A`.
+Domínio raiz exige provedor com CNAME flattening (Cloudflare), ALIAS (DNSimple) ou ANAME; a zona da HostGator
+não tem nenhum dos três. Um `A` apontando para algum IP do Railway não é suportado e quebra a qualquer redeploy.
+Se um dia o apex precisar responder direto, a única forma é mover o DNS para um provedor com CNAME flattening —
+fora do escopo por decisão registrada.
 
 Deploy: push na branch principal → build da imagem → health check em `/up` → troca. Migrations rodam no boot do
 `web` (entrypoint). Com uma única instância `web` isso é seguro; se escalar para mais de uma, mover o

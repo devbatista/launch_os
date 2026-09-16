@@ -123,7 +123,7 @@ export function init(el) {
 <meta name="description" content="<%= @product.meta_description %>">
 <meta property="og:title" ...> <meta property="og:image" content="<%= url_for(@product.og_image.variant(:og)) %>">
 <meta name="robots" content="index,follow">   <!-- "noindex" no preview -->
-<link rel="canonical" href="https://devbatista.online/<%= @product.slug %>">
+<link rel="canonical" href="https://www.devbatista.online/<%= @product.slug %>">
 ```
 
 `og_image` variant 1200×630 WebP/JPEG.
@@ -135,7 +135,7 @@ export function init(el) {
 - JS: entry `landing.js` (importmap) que ativa só os módulos presentes na página via `data-module`
   (`attribution`, `checkout`, `tracking`, `sticky_cta`). Sem Turbo/Stimulus; sem libs. PayPal SDK sob demanda.
   Orçamento: JS próprio da LP ≤ 10 KB (sem contar SDKs de terceiros).
-- Cache: `fresh_when(@product)` (ETag/Last-Modified) + `Cache-Control: public, max-age=60` via Cloudflare;
+- Cache: `fresh_when(@product)` (ETag/Last-Modified) + `Cache-Control: public, max-age=60` (sem CDN na frente; Thruster faz cache de assets);
   tracking e checkout não dependem de sessão para cachear a página. UTMs são capturadas em cookie por
   `modules/attribution.js` no cliente **e** lidas no `POST /checkout/paypal` (ver spec 10), então cache da página
   não perde atribuição. O token CSRF é lido de `<meta name="csrf-token">` — como a página pode ser cacheada,

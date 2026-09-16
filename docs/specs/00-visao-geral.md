@@ -15,7 +15,7 @@ plataformas de terceiros (Hotmart, Gumroad, Kiwify).
 | Formato | PDF principal (30–40 p.) + workbook/tracker imprimível |
 | Mercado / idioma | Estados Unidos / inglês americano |
 | Preço | US$ 14.90 (preço comparativo opcional, ex.: US$ 29.00) |
-| Domínio | devbatista.online |
+| Domínio | `www.devbatista.online` (DNS na HostGator; apex redireciona para `www`) |
 | Pagamento | PayPal (Orders API v2 + Webhooks) |
 | Aquisição | Meta Ads (Instagram/Facebook), R$ 130 iniciais |
 | Entrega | Email (canal principal) + WhatsApp via Twilio (complementar, com opt-in) |

@@ -8,7 +8,7 @@ persistido pelo backend). O retorno do navegador à página de sucesso nunca é 
 
 - Conta PayPal Business verificada, apta a receber pagamentos internacionais.
 - App em PayPal Developer (Sandbox e Live) → `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`.
-- Webhook cadastrado apontando para `https://devbatista.online/webhooks/paypal` com os eventos:
+- Webhook cadastrado apontando para `https://www.devbatista.online/webhooks/paypal` com os eventos:
   `CHECKOUT.ORDER.APPROVED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`,
   `PAYMENT.CAPTURE.PENDING`, `PAYMENT.CAPTURE.REFUNDED`, `PAYMENT.CAPTURE.REVERSED`,
   `CUSTOMER.DISPUTE.CREATED`, `CUSTOMER.DISPUTE.RESOLVED` → `PAYPAL_WEBHOOK_ID`.
