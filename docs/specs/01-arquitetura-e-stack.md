@@ -5,7 +5,7 @@
 | Componente | Versão | Observação |
 |---|---|---|
 | Ruby | 3.4.x (última patch) | imagem `ruby:3.4-slim` |
-| Rails | **8.1.3** | fixar no Gemfile: `gem "rails", "8.1.3"` |
+| Rails | **8.1.3.x** | Gemfile: `gem "rails", "~> 8.1.3"` (lock em 8.1.3.1; patch level só corrige CVEs) |
 | PostgreSQL | 17 | imagem `postgres:17` |
 | Redis | 7 | imagem `redis:7-alpine`; usado apenas pelo Sidekiq |
 | Sidekiq | 8.x | `gem "sidekiq"`, adapter do Active Job |
@@ -39,7 +39,7 @@ Depois: `bin/rails generate authentication` (gerador nativo do Rails 8) como bas
 
 ```ruby
 # Gemfile (além do padrão gerado)
-gem "rails", "8.1.3"
+gem "rails", "~> 8.1.3"
 gem "pg"
 gem "puma"
 gem "propshaft"
@@ -237,7 +237,7 @@ ou `config/credentials/production.yml.enc` + `RAILS_MASTER_KEY`.
 |---|---|
 | `RAILS_ENV`, `RAILS_MASTER_KEY`, `SECRET_KEY_BASE` | Rails |
 | `DATABASE_URL` | PostgreSQL |
-| `APP_HOST` (`devbatista.online`), `APP_PROTOCOL` (`https`) | `default_url_options`, links em emails |
+| `APP_HOST` (`www.devbatista.online`), `APP_PROTOCOL` (`https`) | `default_url_options`, links em emails (o apex redireciona para `www`) |
 | `SUPPORT_EMAIL` (`support@devbatista.online`) | rodapé, emails, template WhatsApp |
 | `S3_ENDPOINT`, `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_FORCE_PATH_STYLE` | Active Storage (MinIO/R2/S3) |
 | `SES_REGION` (`us-east-1`), `SES_ACCESS_KEY_ID`, `SES_SECRET_ACCESS_KEY`, `SES_CONFIGURATION_SET` (`launch-os`), `MAIL_FROM`, `MAIL_DOMAIN` (`devbatista.online`) | Email transacional via API do SES (só produção); usuário IAM separado do S3 |

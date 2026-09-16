@@ -82,9 +82,11 @@ ActiveSupport.on_load(:action_mailer) { add_delivery_method :ses_api, DeliveryMe
 
 Setup no console AWS (fazer na Fase 1 — a saída do sandbox leva até 24 h):
 
-1. **Identidade de domínio** `devbatista.online` com **Easy DKIM** (3 CNAMEs no DNS da Cloudflare, *DNS only*, sem proxy).
-2. **Custom MAIL FROM domain** `mail.devbatista.online` (registro MX + TXT SPF `v=spf1 include:amazonses.com -all`)
-   para alinhamento SPF com o DMARC.
+1. **Identidade de domínio** `devbatista.online` com **Easy DKIM** (3 CNAMEs criados na zona DNS da HostGator, cPanel → *Zone Editor*).
+2. **Custom MAIL FROM domain** `ses.devbatista.online` (registro MX `feedback-smtp.us-east-1.amazonses.com` +
+   TXT SPF `v=spf1 include:amazonses.com -all` no subdomínio `ses`) para alinhamento SPF com o DMARC.
+   **Não usar `mail.devbatista.online`**: esse host já é o servidor de email da HostGator (`MX` do apex) e não
+   deve ser alterado.
 3. **DMARC** no DNS: `_dmarc.devbatista.online TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@devbatista.online"`.
 4. **Sair do sandbox** (*Request production access*): informar caso de uso transacional, volume estimado
    (< 1.000/mês), tratamento de bounces. No sandbox só é possível enviar para endereços verificados.
@@ -149,7 +151,7 @@ Webhooks de bounce do provedor ficam para depois; o admin vê `sent`/`failed`.
 - **Content Template** categoria *Utility* aprovado pela Meta → `TWILIO_TEMPLATE_ORDER_DELIVERY_SID` (`HX...`).
 - Twilio Sandbox for WhatsApp para testes (testador envia `join <code>` ao número do sandbox).
 - Status callback e inbound webhook configurados no sender:
-  `https://devbatista.online/webhooks/twilio/status` e `/webhooks/twilio/inbound`.
+  `https://www.devbatista.online/webhooks/twilio/status` e `/webhooks/twilio/inbound`.
 
 Template `order_delivery` (Utility):
 
@@ -288,7 +290,7 @@ Fila `whatsapp`. Falha final → Sentry + status visível no admin; **não** ree
 
 - [ ] Compra Sandbox (dev) → email aparece em `/letter_opener` com link funcional, HTML + texto.
 - [ ] Produção: SES fora do sandbox; DKIM, SPF (MAIL FROM) e DMARC com status *verified*; email de teste
-      chega na caixa de entrada do Gmail com "mailed-by: mail.devbatista.online" e "signed-by: devbatista.online".
+      chega na caixa de entrada do Gmail com "mailed-by: ses.devbatista.online" e "signed-by: devbatista.online".
 - [ ] Compra com telefone + opt-in (Twilio Sandbox) → mensagem recebida; `MessageLog` passa por `queued → sent → delivered`.
 - [ ] Compra sem opt-in → nenhum `MessageLog` de WhatsApp.
 - [ ] Twilio indisponível (WebMock 500) → email já enviado, pedido `paid`, `MessageLog` whatsapp `failed`, erro no admin.

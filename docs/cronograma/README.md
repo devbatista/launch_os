@@ -27,7 +27,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 
 | Fase | Período | Semanas | Horas plan. | Horas reais | Progresso | Status |
 |---|---|---|---|---|---|---|
-| Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 0/5 tarefas | 🟦 |
+| Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 0/5 (0.4 em andamento) | 🟦 |
 | Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 0/9 (1.1 em andamento) | 🟦 |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 0/8 | ⬜ |
 | Fase 3 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
@@ -47,7 +47,7 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | Marco | Data | Critério de aceite | Status | Atingido em |
 |---|---|---|---|---|
 | **M0** — Contas prontas | 20/09 | PayPal, Meta, Twilio, hospedagem, domínio, SES e Sentry criados; aprovações solicitadas | ⬜ | |
-| **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ⬜ | |
+| **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ⬜ | |
 | **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ⬜ | |
 | **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ⬜ | |
 | **M4** — Campanha no ar | 26/10 | Três anúncios aprovados pela Meta e ativos, R$ 18/dia | ⬜ | |
@@ -90,7 +90,7 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 | 0.1 | Conta PayPal Business, verificar identidade, app no PayPal Developer (Sandbox + Live), anotar credenciais | [07](../specs/07-checkout-paypal.md) | 2 | — | ⬜ | | |
 | 0.2 | Meta Business, conta de anúncios com método de pagamento, Pixel, verificação do domínio `devbatista.online` | [10](../specs/10-tracking-e-analytics.md) | 2 | 0.4 (DNS) | ⬜ | | |
 | 0.3 | Conta Twilio, solicitar WhatsApp Sender vinculado ao Meta Business, submeter template `order_delivery` (Utility), ativar Sandbox | [09](../specs/09-notificacoes-email-whatsapp.md) | 2 | 0.2 | ⬜ | | |
-| 0.4 | Domínio no Cloudflare, hospedagem (container), PostgreSQL + Redis gerenciados, bucket privado S3/R2, ⚙️ **Amazon SES**: identidade de domínio, Easy DKIM, MAIL FROM, DMARC, pedido de saída do sandbox | [02](../specs/02-docker-e-ambiente.md), [09](../specs/09-notificacoes-email-whatsapp.md) | 4 | — | ⬜ | | |
+| 0.4 | Domínio no Cloudflare, hospedagem (container), PostgreSQL + Redis gerenciados, bucket privado S3/R2, ⚙️ **Amazon SES**: identidade de domínio, Easy DKIM, MAIL FROM, DMARC, pedido de saída do sandbox | [02](../specs/02-docker-e-ambiente.md), [09](../specs/09-notificacoes-email-whatsapp.md) | 4 | — | 🟦 | | 16/09: projeto Railway + Postgres + Redis criados; app no ar em `https://www.devbatista.online` (CNAME + TXT na HostGator, apex com redirect); faltam bucket R2/S3 e SES |
 | 0.5 | Conta Sentry, monitor de uptime, repositório Git | [13](../specs/13-seguranca.md) | 1 | — | ⬜ | | |
 
 **Total: 11 h**
@@ -219,7 +219,7 @@ Escalar se parado há mais de 5 dias.
 | WhatsApp Sender aprovado (Meta via Twilio) | dias a semanas | 2.7 em produção | | ⬜ | | Lançar só com email (`TWILIO_ENABLED=false`); ativar depois por ENV |
 | Template `order_delivery` aprovado | horas a dias | 2.7 em produção | | ⬜ | | Idem; testar no Sandbox |
 | SES fora do sandbox + DKIM/SPF/DMARC verificados | até 24 h + propagação DNS | M1, 2.6 | | ⬜ | | Configurar na S0; no sandbox só envia para endereços verificados |
-| Propagação de DNS (Cloudflare) | horas | M1 | | ⬜ | | Configurar na S0 |
+| Propagação do CNAME `www` e do redirect do apex (HostGator) + certificado do Railway | horas | M1 | 16/09 | ✅ | 16/09 | `https://www.devbatista.online/up` → 200; apex 301 → www |
 | Revisão dos três anúncios pela Meta | horas a 1 dia | M4 | | ⬜ | | Subir criativos em 24/10 como rascunho |
 
 ## 7. Riscos de prazo
@@ -313,5 +313,6 @@ Template por semana: tarefas concluídas · horas reais vs. planejadas · horas 
 | 2026-09-16 | Hospedagem: **Railway** (deploy por Dockerfile, serviços `web` + `worker`, plugins Postgres e Redis); projeto gerado com `--skip-kamal` | Domínio já existe; plataforma escolhida pelo projeto | Tarefas 0.4 e 1.1; `railway.json`; entrypoint lê `PORT` |
 | 2026-09-16 | Rails travado em `~> 8.1.3` (lock em **8.1.3.1**, patch de segurança sobre a 8.1.3) | Patch level só corrige CVEs; manter exato em 8.1.3 deixaria a app vulnerável | Nenhum; `bundle update rails --conservative` quando sair novo patch |
 | 2026-09-16 | Imagens do MinIO via **quay.io** (`quay.io/minio/minio`, `quay.io/minio/mc`) | MinIO removeu as imagens do Docker Hub | compose.yml |
+| 2026-09-16 | **DNS permanece na HostGator** (domínio na Namecheap); sem migração para Cloudflare. App em **`www.devbatista.online`**, apex com redirect 301 no cPanel; MAIL FROM do SES em `ses.devbatista.online` para não tocar o email da HostGator | Railway exige CNAME e a HostGator não faz CNAME no apex; usuário optou por não alterar o registro | Todas as URLs públicas usam `www`; `APP_HOST`; `config.hosts`; specs 00/01/02/05/06/07/09/13/16 |
 | 2026-09-16 | Chave primária **`id uuid`** em todas as tabelas | Ids não sequenciais em URLs e nos identificadores enviados ao PayPal | Initializer de generators antes da 1ª migration (tarefa 1.1); `implicit_order_column = created_at`; FKs uuid |
 | | | | |

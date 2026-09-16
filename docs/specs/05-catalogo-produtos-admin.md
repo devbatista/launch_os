@@ -65,7 +65,7 @@ tamanho via `blob.byte_size`), rejeitando o attach antes de persistir.
 ## Show do produto
 
 - Status atual, botões de ação (Publish / Unpublish / Archive / Preview / View live).
-- URL pública (`https://devbatista.online/:slug`) com botão copiar.
+- URL pública (`https://www.devbatista.online/:slug`) com botão copiar.
 - Resumo: pedidos pagos, faturamento, último pedido.
 - Links para o formulário e para a lista de pedidos filtrada pelo produto.
 
