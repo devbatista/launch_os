@@ -1,0 +1,28 @@
+# Imagem de desenvolvimento e teste. Produção usa o Dockerfile (Railway).
+# Mesma versão de Ruby do .ruby-version / Dockerfile de produção.
+ARG RUBY_VERSION=3.4.10
+FROM docker.io/library/ruby:$RUBY_VERSION-slim
+
+# build-essential/libpq-dev/libyaml-dev/pkg-config: compilar gems nativas (pg, etc.)
+# libvips: variants de imagem (image_processing) | postgresql-client: bin/rails dbconsole, pg_dump
+# git: bundler com gems via git | curl: healthchecks e downloads
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      build-essential git curl libpq-dev libvips libyaml-dev pkg-config postgresql-client && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+ENV RAILS_ENV="development" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BOOTSNAP_CACHE_DIR="/tmp/bootsnap"
+
+WORKDIR /launch_os
+
+# Gems primeiro para aproveitar o cache de camadas; o volume `bundle` no compose
+# é inicializado com o conteúdo desta pasta na primeira subida.
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+COPY . .
+
+EXPOSE 3000
+CMD ["bin/rails", "server", "-b", "0.0.0.0"]

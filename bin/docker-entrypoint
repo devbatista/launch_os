@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+# Railway injeta PORT; Thruster escuta em HTTP_PORT. Sem PORT (ex.: build local), mantém 80.
+export HTTP_PORT="${PORT:-${HTTP_PORT:-80}}"
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"

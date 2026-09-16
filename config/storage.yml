@@ -1,0 +1,19 @@
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+
+# Bucket privado S3-compatível: MinIO em desenvolvimento, Cloudflare R2 ou AWS S3 em produção.
+# O PDF nunca é servido por URL pública; apenas por URL assinada e temporária (docs/specs/08).
+s3:
+  service: S3
+  endpoint: <%= ENV["S3_ENDPOINT"] %>
+  bucket: <%= ENV["S3_BUCKET"] %>
+  region: <%= ENV.fetch("S3_REGION", "auto") %>
+  access_key_id: <%= ENV["S3_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["S3_SECRET_ACCESS_KEY"] %>
+  force_path_style: <%= ENV["S3_FORCE_PATH_STYLE"] == "true" %>
+  public: false

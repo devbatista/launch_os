@@ -28,7 +28,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase | Período | Semanas | Horas plan. | Horas reais | Progresso | Status |
 |---|---|---|---|---|---|---|
 | Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 0/5 tarefas | 🟦 |
-| Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 0/9 | ⬜ |
+| Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 0/9 (1.1 em andamento) | 🟦 |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 0/8 | ⬜ |
 | Fase 3 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
 | Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
@@ -99,7 +99,7 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| 1.1 | Projeto Rails 8.1.3 (`--skip-solid --skip-hotwire --skip-test`), ⚙️ Docker dev/prod + compose (db, redis, sidekiq, minio), ⚙️ RSpec/FactoryBot/WebMock, CI, deploy inicial com HTTPS, credentials e ENV | [01](../specs/01-arquitetura-e-stack.md), [02](../specs/02-docker-e-ambiente.md) | 6 | 0.4 | ⬜ | | |
+| 1.1 | Projeto Rails 8.1.3 (`--skip-solid --skip-hotwire --skip-test`), ⚙️ Docker dev/prod + compose (db, redis, sidekiq, minio), ⚙️ RSpec/FactoryBot/WebMock, CI, deploy inicial com HTTPS, credentials e ENV | [01](../specs/01-arquitetura-e-stack.md), [02](../specs/02-docker-e-ambiente.md) | 6 | 0.4 | 🟦 | | Iniciada em 16/09 (antes da S1): projeto, Docker dev/prod, compose, Sidekiq/S3/UUID prontos e validados; faltam RSpec, importmap, Sentry, CI e deploy no Railway |
 | 1.2 | `User`: `has_secure_password`, login/logout, lockout após 5 tentativas, rate limit no login, layout do admin | [04](../specs/04-autenticacao-admin.md) | 6 | 1.1 | ⬜ | | |
 | 1.3 | `Product` + `Benefit`, `Testimonial`, `Faq`: migrations, validações, slug único, status draft/published/archived, factories | [03](../specs/03-modelo-de-dados.md) | 6 | 1.1 | ⬜ | | |
 | 1.4 | CRUD admin de produtos e dos blocos da LP, com ordenação (⚙️ JS puro + fetch, sem Turbo) | [05](../specs/05-catalogo-produtos-admin.md) | 6 | 1.2, 1.3 | ⬜ | | |
@@ -310,5 +310,8 @@ Template por semana: tarefas concluídas · horas reais vs. planejadas · horas 
 | 2026-09-16 | Testes com **RSpec + FactoryBot** em vez de Minitest | Preferência do projeto | Tarefa 1.1 inclui `rspec:install`; plano de testes mapeado para `spec/` |
 | 2026-09-16 | Autenticação do admin com o **gerador nativo do Rails 8** (`rails g authentication`), sem Devise | Um único `User`, sem cadastro público nem recuperação por email; menos dependências | Tarefa 1.2; lockout e rate limit implementados à mão conforme spec 04 |
 | 2026-09-16 | Provedores externos (PayPal, SES, Twilio) como **services em `app/services/providers/` com integração via API oficial**; email pela API do SES (não SMTP); **sem gems de SDK** (PayPal e Twilio via Faraday; única exceção `aws-sdk-sesv2`) | Fronteira única e testável com o mundo externo; erros tipados para retry; `MessageId` do SES gravado no `MessageLog` | Tarefas 2.1, 2.6, 2.7; ENVs `SES_*` de API; casos de teste T28–T30 |
+| 2026-09-16 | Hospedagem: **Railway** (deploy por Dockerfile, serviços `web` + `worker`, plugins Postgres e Redis); projeto gerado com `--skip-kamal` | Domínio já existe; plataforma escolhida pelo projeto | Tarefas 0.4 e 1.1; `railway.json`; entrypoint lê `PORT` |
+| 2026-09-16 | Rails travado em `~> 8.1.3` (lock em **8.1.3.1**, patch de segurança sobre a 8.1.3) | Patch level só corrige CVEs; manter exato em 8.1.3 deixaria a app vulnerável | Nenhum; `bundle update rails --conservative` quando sair novo patch |
+| 2026-09-16 | Imagens do MinIO via **quay.io** (`quay.io/minio/minio`, `quay.io/minio/mc`) | MinIO removeu as imagens do Docker Hub | compose.yml |
 | 2026-09-16 | Chave primária **`id uuid`** em todas as tabelas | Ids não sequenciais em URLs e nos identificadores enviados ao PayPal | Initializer de generators antes da 1ª migration (tarefa 1.1); `implicit_order_column = created_at`; FKs uuid |
 | | | | |

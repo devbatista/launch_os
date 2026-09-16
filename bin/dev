@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+# Sem foreman: web, sidekiq e css são serviços separados do compose.yml.
+# Use `docker compose up`. Este script existe apenas como atalho dentro do container `web`.
+
+export PORT="${PORT:-3000}"
+
+# Let the debug gem allow remote connections,
+# but avoid loading until `debugger` is called
+export RUBY_DEBUG_OPEN="true"
+export RUBY_DEBUG_LAZY="true"
+
+exec bin/rails server -b 0.0.0.0 -p "$PORT" "$@"

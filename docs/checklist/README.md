@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → Fase 0, item 0.4 (DNS e SES primeiro — tudo depende deles).
+**Próximo passo:** → 1.1 (restante: RSpec/FactoryBot/WebMock, importmap entries + `data-module`, Sentry, `config.hosts`, CI com rspec, deploy no Railway) e, em paralelo, Fase 0 (contas e aprovações — DNS e SES primeiro).
 
 ---
 
@@ -60,26 +60,26 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ## Fase 1 — Base (S1–S2 · 21/09–04/10)
 
 ### 1.1 Projeto, Docker, RSpec, CI, deploy — spec [01](../specs/01-arquitetura-e-stack.md), [02](../specs/02-docker-e-ambiente.md)
-- [ ] `rails _8.1.3_ new launch_os --database=postgresql --css=tailwind --skip-jbuilder --skip-solid --skip-hotwire --skip-test`
-- [ ] Gemfile conforme spec 01 (sidekiq, redis, faraday, phonelib, aws-sdk-s3, aws-sdk-sesv2, image_processing, sentry, rspec-rails, factory_bot_rails, faker, shoulda-matchers, webmock, simplecov, letter_opener_web, rubocop-rspec)
-- [ ] `config/initializers/generators.rb` com `primary_key_type: :uuid` — **antes de qualquer `rails g`**
+- [x] `rails _8.1.3_ new launch_os --database=postgresql --css=tailwind --skip-jbuilder --skip-solid --skip-hotwire --skip-test`
+- [ ] Gemfile conforme spec 01 — *parcial: sidekiq, redis, aws-sdk-s3, dotenv-rails, letter_opener_web já adicionados; faltam faraday, phonelib, aws-sdk-sesv2, sentry, rspec-rails, factory_bot_rails, faker, shoulda-matchers, webmock, simplecov, rubocop-rspec*
+- [x] `config/initializers/generators.rb` com `primary_key_type: :uuid` — **antes de qualquer `rails g`**
 - [ ] `ApplicationRecord` com `self.implicit_order_column = "created_at"`
-- [ ] `Dockerfile.dev` (libvips, libpq-dev) e `Dockerfile` de produção ajustado
-- [ ] `compose.yml`: db, redis, minio, minio-init, web, sidekiq (âncora `&rails`), css
-- [ ] `.env.example` completo; `.env` gitignored; `.dockerignore`
-- [ ] `config/storage.yml` com serviço `s3` (`public: false`); development e production usando `:s3`
-- [ ] `config/sidekiq.yml` (filas webhooks/mailers/whatsapp/default) e `initializers/sidekiq.rb` (`strict_args!`)
-- [ ] `queue_adapter = :sidekiq`; `cache_store = :redis_cache_store`
+- [x] `Dockerfile.dev` (libvips, libpq-dev) e `Dockerfile` de produção ajustado
+- [x] `compose.yml`: db, redis, minio, minio-init, web, sidekiq (âncora `&rails`), css
+- [x] `.env.example` completo; `.env` gitignored; `.dockerignore`
+- [x] `config/storage.yml` com serviço `s3` (`public: false`); development e production usando `:s3`
+- [x] `config/sidekiq.yml` (filas webhooks/mailers/whatsapp/default) e `initializers/sidekiq.rb` (`strict_args!`)
+- [x] `queue_adapter = :sidekiq`; `cache_store = :redis_cache_store`
 - [ ] `rails g rspec:install`; `rails_helper` com FactoryBot, shoulda, WebMock `disable_net_connect!`, ActiveJob `:test`
 - [ ] `config/importmap.rb` com `pin_all_from "app/javascript"`; entries `application.js` e `landing.js`; loader por `data-module`
 - [ ] `lib/http.js` (fetch JSON + CSRF) e `lib/cookies.js`
 - [ ] Layouts: `application` (admin) e `landing` (público), Tailwind
 - [ ] `app/services/providers/errors.rb` (`Providers::Error`, `TransientError`, `PermanentError`)
-- [ ] `initializers/sentry.rb`; `config/environments/production.rb` (force_ssl, hosts, `delivery_method = :ses_api`, `assume_ssl`)
-- [ ] `development.rb`: `letter_opener_web`; rota `/letter_opener` só em dev
-- [ ] `bin/setup` funciona em container limpo (`db:prepare`, seeds)
+- [ ] `initializers/sentry.rb`; `config/environments/production.rb` (force_ssl, hosts, `delivery_method = :ses_api`, `assume_ssl`) — *parcial: force_ssl/assume_ssl vêm do gerador; faltam Sentry, `config.hosts` e `:ses_api`*
+- [x] `development.rb`: `letter_opener_web`; rota `/letter_opener` só em dev
+- [x] `bin/setup` funciona em container limpo (`db:prepare`, seeds)
 - [ ] CI (GitHub Actions): rspec + rubocop + brakeman + bundler-audit
-- [ ] Deploy inicial em produção com HTTPS respondendo `/up`
+- [ ] Deploy inicial em produção (Railway: `web` + `worker` + plugins Postgres/Redis; `railway.json` já criado) com HTTPS respondendo `/up`
 - [ ] ✅ Critérios de aceite das specs 01 e 02
 
 ### 1.2 Autenticação admin — spec [04](../specs/04-autenticacao-admin.md)

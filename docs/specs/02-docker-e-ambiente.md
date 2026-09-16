@@ -6,13 +6,12 @@ precisa apenas de Docker + Docker Compose.
 ## Arquivos
 
 ```
-Dockerfile              # produção (gerado pelo Rails 8, ajustado)
+Dockerfile              # produção (gerado pelo Rails 8, ajustado) — usado pelo Railway
 Dockerfile.dev          # desenvolvimento/teste (com gems de dev, sem precompile)
-compose.yml             # dev
-compose.prod.yml        # produção self-hosted (opcional; ou Kamal/Render/Fly)
-.dockerignore
-.env.example
-bin/dev-docker          # atalhos (opcional)
+compose.yml             # dev (nome canônico do Compose v2; equivale a docker-compose.yml)
+railway.json            # builder DOCKERFILE, health check /up, restart policy
+.dockerignore           # exclui .env*, master.key, docs/, AGENTS.md, compose.yml
+.env.example            # versionado; copiar para .env (gitignored)
 ```
 
 ## Dockerfile.dev
@@ -28,7 +27,7 @@ ENV BUNDLE_PATH=/usr/local/bundle \
     RAILS_ENV=development \
     BOOTSNAP_CACHE_DIR=/tmp/bootsnap
 
-WORKDIR /rails
+WORKDIR /launch_os
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
@@ -44,8 +43,11 @@ CMD ["bin/rails", "server", "-b", "0.0.0.0"]
 Usar o gerado por `rails new` (multi-stage, usuário não-root, Thruster) com dois ajustes:
 
 1. Adicionar `libvips` e `postgresql-client` na etapa final.
-2. `ENTRYPOINT ["/rails/bin/docker-entrypoint"]` que executa `bin/rails db:prepare` quando o
-   comando é `./bin/thrust ./bin/rails server` (comportamento padrão do entrypoint do Rails 8).
+2. `bin/docker-entrypoint` exporta `HTTP_PORT="${PORT:-${HTTP_PORT:-80}}"` (Railway injeta `PORT`; Thruster
+   escuta em `HTTP_PORT`) e executa `bin/rails db:prepare` quando o comando é `./bin/thrust ./bin/rails server`.
+3. O diretório de trabalho do container de dev é `/launch_os` (não `/rails`: `rails new` usa o nome da pasta
+   como nome da aplicação, e `Rails` é uma constante reservada).
+4. `Procfile.dev`/foreman removidos: web, sidekiq e css são serviços separados do compose.
 
 `SECRET_KEY_BASE_DUMMY=1` no `assets:precompile` (já vem no Dockerfile padrão).
 
@@ -76,7 +78,7 @@ services:
       retries: 10
 
   minio:
-    image: minio/minio
+    image: quay.io/minio/minio   # MinIO saiu do Docker Hub; usar o Quay
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minio
@@ -85,7 +87,7 @@ services:
     ports: ["9000:9000", "9001:9001"]
 
   minio-init:
-    image: minio/mc
+    image: quay.io/minio/mc
     depends_on: [minio]
     entrypoint: >
       /bin/sh -c "
@@ -103,7 +105,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/launch_os_development
       REDIS_URL: redis://redis:6379/0
     volumes:
-      - .:/rails
+      - .:/launch_os
       - bundle:/usr/local/bundle
     ports: ["3000:3000"]
     depends_on:
@@ -142,7 +144,7 @@ Notas:
 - `stdin_open`/`tty` permitem `binding.irb`/`debug` via `docker compose attach web`.
 - Volume `bundle` evita reinstalar gems a cada rebuild.
 - Não há serviço de email em dev: `letter_opener_web` grava os emails em `tmp/letter_opener` (dentro do
-  volume `.:/rails`) e os exibe em `http://localhost:3000/letter_opener`. Como o Sidekiq roda em outro
+  volume `.:/launch_os`) e os exibe em `http://localhost:3000/letter_opener`. Como o Sidekiq roda em outro
   container mas compartilha o mesmo volume, emails enviados por jobs também aparecem lá.
 
 ## `.env.example`
@@ -240,16 +242,33 @@ PayPal e Twilio precisam de URL HTTPS pública para entregar webhooks. Usar um t
 (`cloudflared tunnel --url http://localhost:3000` ou ngrok) como serviço adicional do compose ou
 manualmente, e cadastrar a URL gerada no PayPal Developer / Twilio console.
 
-## Produção
+## Produção — Railway
 
-Opções aceitas (todas por container):
+Hospedagem decidida: **Railway**, deploy por `Dockerfile` (projeto gerado com `--skip-kamal`).
+`railway.json` na raiz fixa o builder `DOCKERFILE`, o health check em `/up` e a política de restart.
 
-1. **Render / Fly.io / Railway**: usam o `Dockerfile`; Postgres e Redis gerenciados; um segundo
-   serviço (*worker*) com a mesma imagem rodando `bundle exec sidekiq -C config/sidekiq.yml`.
-2. **Kamal 2** (VPS próprio): `config/deploy.yml` gerado pelo Rails; acessórios `postgres:17` e
-   `redis:7`; role `job` com `cmd: bundle exec sidekiq -C config/sidekiq.yml`; kamal-proxy com Let's Encrypt.
+Serviços no projeto Railway (todos a partir do mesmo repositório):
 
-Requisitos obrigatórios em qualquer opção:
+| Serviço | Origem | Comando | Observações |
+|---|---|---|---|
+| `web` | repo (Dockerfile) | padrão da imagem (`./bin/thrust ./bin/rails server`) | Railway injeta `PORT`; `bin/docker-entrypoint` exporta `HTTP_PORT=$PORT` para o Thruster e roda `db:prepare` antes de subir |
+| `worker` | repo (Dockerfile) | **Custom Start Command**: `bundle exec sidekiq -C config/sidekiq.yml` | mesma imagem e mesmas variáveis do `web`; não roda migrations |
+| `Postgres` | plugin Railway | — | fornece `DATABASE_URL` (referenciar como `${{Postgres.DATABASE_URL}}`) |
+| `Redis` | plugin Railway | — | fornece `REDIS_URL` (`${{Redis.REDIS_URL}}`) |
+
+Variáveis obrigatórias em `web` e `worker`: `RAILS_MASTER_KEY`, `DATABASE_URL`, `REDIS_URL`, `APP_HOST`,
+`APP_PROTOCOL=https`, `S3_*`, `SES_*`, `PAYPAL_*`, `TWILIO_*`, `META_PIXEL_ID`, `GA4_MEASUREMENT_ID`, `SENTRY_DSN`,
+`SUPPORT_EMAIL`, `MAIL_FROM`, `MAIL_DOMAIN`. Usar *shared variables* do Railway para não duplicar entre os dois serviços.
+
+Domínio: adicionar `devbatista.online` (e `www`) no serviço `web` → Railway fornece o CNAME → criar na Cloudflare
+como **DNS only** (nuvem cinza) até o certificado ser emitido; depois PODE ligar o proxy. `config.hosts` em
+production deve incluir o domínio e o host `*.up.railway.app` para o health check.
+
+Deploy: push na branch principal → build da imagem → health check em `/up` → troca. Migrations rodam no boot do
+`web` (entrypoint). Com uma única instância `web` isso é seguro; se escalar para mais de uma, mover o
+`db:prepare` para um *pre-deploy command* do Railway.
+
+Requisitos obrigatórios:
 - Redis com persistência (AOF) ou gerenciado; um worker Sidekiq sempre ativo (webhooks dependem dele).
 - HTTPS com renovação automática.
 - Backup diário do Postgres (recurso da plataforma ou `pg_dump` agendado para o bucket).

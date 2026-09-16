@@ -1,0 +1,23 @@
+# PostgreSQL 17. A conexão vem sempre de DATABASE_URL:
+#   dev/test → definida no compose.yml (host `db`)
+#   produção → injetada pelo plugin Postgres do Railway
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV["DATABASE_URL"] %>
+
+development:
+  <<: *default
+  database: launch_os_development
+
+# O banco de teste usa o mesmo servidor do compose, com nome próprio.
+test:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"]&.sub(/launch_os_\w+\z/, "launch_os_test") %>
+  database: launch_os_test
+
+production:
+  <<: *default

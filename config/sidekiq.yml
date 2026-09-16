@@ -1,0 +1,7 @@
+# Filas em ordem de prioridade (peso). Ver docs/specs/01-arquitetura-e-stack.md
+:concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY", 5).to_i %>
+:queues:
+  - [webhooks, 4]
+  - [mailers, 3]
+  - [whatsapp, 2]
+  - [default, 1]

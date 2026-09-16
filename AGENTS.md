@@ -150,7 +150,7 @@ O papel do agente não é agradar nem discordar por princípio: é elevar a qual
 - Ao encontrar comportamento ambíguo, confirme com o usuário antes de assumir algo que possa afetar pagamentos, entrega, consentimento ou fluxo de produção.
 - Item que não está no MVP vai para a Fase 5 do cronograma, não para o código atual. Diga isso quando o pedido extrapolar o escopo.
 - Se a tarefa envolver UI, preserve o estilo visual existente (Tailwind) e valide responsividade em ~375 px; a landing page é mobile first.
-- Ao concluir uma tarefa do cronograma, indique o ID (ex.: `2.2`) para o usuário atualizar o status.
+- **Ao concluir um item do checklist, marque-o como concluído** em [docs/checklist/README.md](docs/checklist/README.md) (`- [ ]` → `- [x]`), na mesma entrega do código. Só marque o que foi de fato feito e verificado (código + teste verde + critério de aceite); item parcial fica desmarcado com uma nota do que falta. Quando um bloco inteiro fechar (ex.: `1.1`), atualize também o status, a data e as horas reais da tarefa no [cronograma](docs/cronograma/README.md) e mova a linha **"Próximo passo"** do checklist para o próximo item. Ao final da resposta, cite os IDs marcados.
 
 ## Projeto
 
