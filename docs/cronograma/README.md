@@ -27,7 +27,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 
 | Fase | Período | Semanas | Horas plan. | Horas reais | Progresso | Status |
 |---|---|---|---|---|---|---|
-| Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 0/5 (0.4 em andamento) | 🟦 |
+| Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 1/5 (0.4 ✅; 0.1 aguardando verificação PayPal) | 🟦 |
 | Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 0/9 (1.1 em andamento) | 🟦 |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 0/8 | ⬜ |
 | Fase 3 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
@@ -87,10 +87,10 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| 0.1 | Conta PayPal Business, verificar identidade, app no PayPal Developer (Sandbox + Live), anotar credenciais | [07](../specs/07-checkout-paypal.md) | 2 | — | ⬜ | | |
+| 0.1 | Conta PayPal Business, verificar identidade, app no PayPal Developer (Sandbox + Live), anotar credenciais | [07](../specs/07-checkout-paypal.md) | 2 | — | 🟦 | | 16/09: conta CNPJ criada, verificação enviada (2–4 dias úteis); app Sandbox `launch_os` + contas de teste prontas; credenciais no `.env` e no Railway. Falta só o app Live (bloqueado até a verificação) |
 | 0.2 | Meta Business, conta de anúncios com método de pagamento, Pixel, verificação do domínio `devbatista.online` | [10](../specs/10-tracking-e-analytics.md) | 2 | 0.4 (DNS) | ⬜ | | |
 | 0.3 | Conta Twilio, solicitar WhatsApp Sender vinculado ao Meta Business, submeter template `order_delivery` (Utility), ativar Sandbox | [09](../specs/09-notificacoes-email-whatsapp.md) | 2 | 0.2 | ⬜ | | |
-| 0.4 | Domínio no Cloudflare, hospedagem (container), PostgreSQL + Redis gerenciados, bucket privado S3/R2, ⚙️ **Amazon SES**: identidade de domínio, Easy DKIM, MAIL FROM, DMARC, pedido de saída do sandbox | [02](../specs/02-docker-e-ambiente.md), [09](../specs/09-notificacoes-email-whatsapp.md) | 4 | — | 🟦 | | 16/09: projeto Railway + Postgres + Redis criados; app no ar em `https://www.devbatista.online` (CNAME + TXT na HostGator, apex com redirect); faltam bucket R2/S3 e SES |
+| 0.4 | Domínio no Cloudflare, hospedagem (container), PostgreSQL + Redis gerenciados, bucket privado S3/R2, ⚙️ **Amazon SES**: identidade de domínio, Easy DKIM, MAIL FROM, DMARC, pedido de saída do sandbox | [02](../specs/02-docker-e-ambiente.md), [09](../specs/09-notificacoes-email-whatsapp.md) | 4 | — | ✅ | 16/09 | Railway (Postgres 18 + Redis, sem backup automático — plano Hobby), app em `https://www.devbatista.online`; SES verificado e fora do sandbox, config set `launch-os`; bucket S3 `launch-os-prod`; `S3_*`/`SES_*` no Railway; caixa `support@` recebendo; DMARC `p=quarantine` após teste do SES com SPF/DKIM/DMARC PASS |
 | 0.5 | Conta Sentry, monitor de uptime, repositório Git | [13](../specs/13-seguranca.md) | 1 | — | ⬜ | | |
 
 **Total: 11 h**
@@ -214,11 +214,11 @@ Escalar se parado há mais de 5 dias.
 
 | Dependência | Prazo típico | Necessário para | Solicitado em | Status | Aprovado em | Plano B se atrasar |
 |---|---|---|---|---|---|---|
-| Verificação da conta PayPal Business | dias | M2 (Live), M3 | | ⬜ | | Fase 2 inteira em Sandbox; go-live aguarda |
+| Verificação da conta PayPal Business | dias | M2 (Live), M3 | 16/09 | 🟦 | | Conta CNPJ criada; documentos enviados, PayPal informou 2–4 dias úteis (até ~22/09). Live no Developer bloqueado até lá. Fase 2 inteira em Sandbox; go-live aguarda |
 | Verificação do domínio + revisão da conta de anúncios Meta | horas a dias | M4 | | ⬜ | | Criar tudo na S0; anúncios só sobem após aprovação |
 | WhatsApp Sender aprovado (Meta via Twilio) | dias a semanas | 2.7 em produção | | ⬜ | | Lançar só com email (`TWILIO_ENABLED=false`); ativar depois por ENV |
 | Template `order_delivery` aprovado | horas a dias | 2.7 em produção | | ⬜ | | Idem; testar no Sandbox |
-| SES fora do sandbox + DKIM/SPF/DMARC verificados | até 24 h + propagação DNS | M1, 2.6 | | ⬜ | | Configurar na S0; no sandbox só envia para endereços verificados |
+| SES fora do sandbox + DKIM/SPF/DMARC verificados | até 24 h + propagação DNS | M1, 2.6 | 16/09 | ✅ | 16/09 | DKIM e MAIL FROM *verified*; acesso à produção aprovado no mesmo dia (cota 50.000/dia, 14/s); DMARC `p=quarantine` publicado após teste PASS no Gmail |
 | Propagação do CNAME `www` e do redirect do apex (HostGator) + certificado do Railway | horas | M1 | 16/09 | ✅ | 16/09 | `https://www.devbatista.online/up` → 200; apex 301 → www |
 | Revisão dos três anúncios pela Meta | horas a 1 dia | M4 | | ⬜ | | Subir criativos em 24/10 como rascunho |
 
