@@ -60,7 +60,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes: [pgdata:/var/lib/postgresql/data]
-    ports: ["5432:5432"]
+    ports: ["${DB_PORT:-5432}:5432"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -70,7 +70,7 @@ services:
     image: redis:7-alpine
     command: redis-server --appendonly yes
     volumes: [redisdata:/data]
-    ports: ["6379:6379"]
+    ports: ["${REDIS_PORT:-6379}:6379"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -83,7 +83,7 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio12345
     volumes: [miniodata:/data]
-    ports: ["9000:9000", "9001:9001"]
+    ports: ["${MINIO_PORT:-9000}:9000", "${MINIO_CONSOLE_PORT:-9001}:9001"]
 
   minio-init:
     image: quay.io/minio/mc
@@ -106,7 +106,7 @@ services:
     volumes:
       - .:/launch_os
       - bundle:/usr/local/bundle
-    ports: ["3000:3000"]
+    ports: ["${WEB_PORT:-3100}:3000"]   # porta do host configurável no .env
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -143,13 +143,20 @@ Notas:
 - `stdin_open`/`tty` permitem `binding.irb`/`debug` via `docker compose attach web`.
 - Volume `bundle` evita reinstalar gems a cada rebuild.
 - Não há serviço de email em dev: `letter_opener_web` grava os emails em `tmp/letter_opener` (dentro do
-  volume `.:/launch_os`) e os exibe em `http://localhost:3000/letter_opener`. Como o Sidekiq roda em outro
+  volume `.:/launch_os`) e os exibe em `http://localhost:3100/letter_opener`. Como o Sidekiq roda em outro
   container mas compartilha o mesmo volume, emails enviados por jobs também aparecem lá.
 
 ## `.env.example`
 
 ```
-APP_HOST=localhost:3000
+# Portas do host (mude se conflitarem com outros projetos; APP_HOST acompanha WEB_PORT)
+WEB_PORT=3100
+DB_PORT=5432
+REDIS_PORT=6379
+MINIO_PORT=9000
+MINIO_CONSOLE_PORT=9001
+
+APP_HOST=localhost:3100
 APP_PROTOCOL=http
 REDIS_URL=redis://redis:6379/0
 SIDEKIQ_CONCURRENCY=5
@@ -227,8 +234,8 @@ ou usar `S3_ENDPOINT=http://localhost:9000` com `network_mode` adequado. Documen
 | Gerador | `docker compose exec web bin/rails g model Product ...` |
 | Logs de jobs | `docker compose logs -f sidekiq` |
 | Reiniciar worker após editar um job | `docker compose restart sidekiq` |
-| Painel do Sidekiq | `http://localhost:3000/admin/sidekiq` (requer login admin) |
-| Emails enviados em dev | `http://localhost:3000/letter_opener` |
+| Painel do Sidekiq | `http://localhost:3100/admin/sidekiq` (requer login admin) |
+| Emails enviados em dev | `http://localhost:3100/letter_opener` |
 | Limpar Redis (dev) | `docker compose exec redis redis-cli FLUSHALL` |
 
 System specs: adicionar serviço `selenium/standalone-chromium` no compose (perfil `test`, `docker compose --profile test up selenium`)
@@ -238,7 +245,7 @@ e configurar Capybara com driver `remote` (`SELENIUM_URL=http://selenium:4444`, 
 ## Webhooks em desenvolvimento
 
 PayPal e Twilio precisam de URL HTTPS pública para entregar webhooks. Usar um túnel
-(`cloudflared tunnel --url http://localhost:3000` ou ngrok) como serviço adicional do compose ou
+(`cloudflared tunnel --url http://localhost:3100` ou ngrok) como serviço adicional do compose ou
 manualmente, e cadastrar a URL gerada no PayPal Developer / Twilio console.
 
 ## Produção — Railway
@@ -318,9 +325,9 @@ step de testes por `bundle exec rspec`.
 
 ## Critérios de aceite
 
-- [ ] Clone limpo + `cp .env.example .env` + `docker compose up` + `bin/setup` → app em `http://localhost:3000`.
+- [ ] Clone limpo + `cp .env.example .env` + `docker compose up` + `bin/setup` → app em `http://localhost:3100`.
 - [ ] Upload de imagem no admin aparece no bucket do MinIO (`localhost:9001`).
-- [ ] Email de teste (enviado via job no container `sidekiq`) aparece em `localhost:3000/letter_opener`.
+- [ ] Email de teste (enviado via job no container `sidekiq`) aparece em `localhost:3100/letter_opener`.
 - [ ] Job enfileirado é processado pelo serviço `sidekiq` (visível em `docker compose logs sidekiq` e em `/admin/sidekiq`).
 - [ ] Parar o `sidekiq`, enfileirar um job, subir de novo → job processado (persistência do Redis).
 - [ ] Imagem de produção builda com `docker build .` e sobe com `RAILS_MASTER_KEY` + `DATABASE_URL`.

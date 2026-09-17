@@ -14,5 +14,19 @@ Rails.application.routes.draw do
 
     root to: redirect("/admin/dashboard")
     resource :dashboard, only: :show
+
+    # :id e :product_id são o slug do produto (Product#to_param).
+    resources :products do
+      member do
+        patch :publish
+        patch :unpublish
+        patch :archive
+      end
+
+      # Coleções da LP: respondem com o partial da lista (fetch) ou redirect (sem JS).
+      resources :benefits, :testimonials, :faqs, only: %i[create update destroy] do
+        member { patch :move }
+      end
+    end
   end
 end

@@ -24,10 +24,13 @@ docker compose up                                    # web, sidekiq, css, db, re
 
 | Serviço | URL |
 |---|---|
-| Aplicação | http://localhost:3000 |
-| Health check | http://localhost:3000/up |
-| Emails enviados (dev) | http://localhost:3000/letter_opener |
+| Aplicação | http://localhost:3100 |
+| Health check | http://localhost:3100/up |
+| Emails enviados (dev) | http://localhost:3100/letter_opener |
 | Console do MinIO | http://localhost:9001 (`minio` / `minio12345`) |
+
+As portas do host são definidas no `.env` (`WEB_PORT`, `DB_PORT`, `REDIS_PORT`, `MINIO_PORT`, `MINIO_CONSOLE_PORT`)
+para não conflitar com outros projetos; ao mudar `WEB_PORT`, ajuste `APP_HOST` junto.
 
 Comandos comuns (sempre dentro do container):
 

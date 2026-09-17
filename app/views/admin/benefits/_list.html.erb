@@ -1,0 +1,5 @@
+<%= render "admin/products/collection_list", product:, items:, invalid_item:, collection: :benefits, label: "benefício",
+      fields: [
+        { name: :title, label: "Título", required: true },
+        { name: :description, label: "Descrição", type: :textarea }
+      ] %>

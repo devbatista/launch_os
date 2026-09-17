@@ -43,6 +43,9 @@ gem "phonelib"                      # validação/normalização E.164
 # Autenticação do admin (bcrypt para has_secure_password)
 gem "bcrypt", "~> 3.1"
 
+# Traduções padrão (erros de validação, datas) para o admin em pt-BR; a LP fica em :en
+gem "rails-i18n", "~> 8.0"
+
 # Erros em produção
 gem "sentry-ruby"
 gem "sentry-rails"

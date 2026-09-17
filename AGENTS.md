@@ -171,7 +171,7 @@ docker compose restart sidekiq                                 # após editar um
 
 - Para testes focados, rode apenas os arquivos afetados; a suíte completa antes de declarar a tarefa concluída.
 - Quando migrations forem adicionadas, rode-as no ambiente necessário e confirme `db/schema.rb` atualizado no diff.
-- Emails em dev ficam em `http://localhost:3000/letter_opener`; painel do Sidekiq em `/admin/sidekiq` (requer login).
+- Emails em dev ficam em `http://localhost:3100/letter_opener` (porta do host = `WEB_PORT` no `.env`); painel do Sidekiq em `/admin/sidekiq` (requer login).
 - Webhooks em dev exigem túnel HTTPS (cloudflared/ngrok); não presuma que um webhook "funcionou" sem um `WebhookEvent` gravado.
 
 ## Qualidade

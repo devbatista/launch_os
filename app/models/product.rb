@@ -77,6 +77,14 @@ class Product < ApplicationRecord
 
   def publishable? = missing_for_publish.empty?
 
+  # Excluir só rascunho sem pedidos (spec 05). A checagem de `orders` entra na 2.1, quando a tabela existir.
+  def deletable? = draft?
+
+  # URL pública da LP (spec 05: "URL pública com botão copiar").
+  def public_url
+    "#{ENV.fetch('APP_PROTOCOL', 'https')}://#{ENV.fetch('APP_HOST', 'www.devbatista.online')}/#{slug}"
+  end
+
   def publish
     self.status = :published
     self.published_at ||= Time.current

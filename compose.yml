@@ -2,6 +2,9 @@
 #   docker compose up                                      → web, sidekiq, css, db, redis, minio
 #   docker compose run --rm web bin/setup --skip-server    (primeira vez)
 # Ver docs/specs/02-docker-e-ambiente.md
+#
+# Portas do host são configuráveis no .env (WEB_PORT, DB_PORT, REDIS_PORT, MINIO_PORT, MINIO_CONSOLE_PORT)
+# para não conflitar com outros projetos. Entre containers os serviços usam sempre as portas internas.
 
 services:
   db:
@@ -12,7 +15,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -25,7 +28,7 @@ services:
     volumes:
       - redisdata:/data
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -42,8 +45,8 @@ services:
     volumes:
       - miniodata:/data
     ports:
-      - "9000:9000"   # API S3
-      - "9001:9001"   # console web
+      - "${MINIO_PORT:-9000}:9000"           # API S3
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"   # console web
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s
@@ -75,7 +78,7 @@ services:
       - .:/launch_os
       - bundle:/usr/local/bundle
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3100}:3000"
     depends_on:
       db:
         condition: service_healthy
