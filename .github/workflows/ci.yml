@@ -96,5 +96,10 @@ jobs:
       - name: Prepare database
         run: bin/rails db:prepare
 
+      # app/assets/builds/tailwind.css é gitignored; os layouts referenciam "tailwind" pelo nome e o
+      # Propshaft levanta MissingAssetError sem o arquivo.
+      - name: Build Tailwind CSS
+        run: bin/rails tailwindcss:build
+
       - name: Run RSpec
         run: bundle exec rspec
