@@ -1,7 +1,9 @@
 <%# Bloco 7 — oferta (#buy): preço do backend, telefone + opt-in só com TWILIO_ENABLED, botão PayPal.
-    modules/checkout.js carrega o SDK do PayPal sob demanda (implementação na 2.1; por ora placeholder). %>
+    modules/checkout.js carrega o SDK do PayPal sob demanda (implementação na 2.1; por ora placeholder).
+    No preview do admin (`preview`) o módulo não é ativado: compra desabilitada, SDK nunca carrega. %>
+<% preview = local_assigns.fetch(:preview, false) %>
 <section id="buy" class="bg-slate-900 text-white"
-         data-module="checkout"
+         <% unless preview %>data-module="checkout"<% end %>
          data-product-id="<%= product.id %>"
          data-paypal-client-id="<%= paypal_client_id %>"
          data-create-url="/checkout/paypal"
@@ -34,7 +36,7 @@
         <button type="button" disabled class="w-full cursor-not-allowed rounded-lg bg-emerald-500/60 px-8 py-4 text-lg font-bold text-slate-900">
           <%= product.cta_text %> — <%= money(product.price_cents, product.currency) %>
         </button>
-        <p class="mt-2 text-center text-xs text-slate-400">Secure checkout with PayPal — opening soon.</p>
+        <p class="mt-2 text-center text-xs text-slate-400"><%= preview ? "Purchases are disabled in preview." : "Secure checkout with PayPal — opening soon." %></p>
       </div>
       <noscript><p class="text-sm text-amber-300">Please enable JavaScript to complete your purchase.</p></noscript>
     </form>

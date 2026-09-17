@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         patch :publish
         patch :unpublish
         patch :archive
+        get :preview # LP em modo rascunho, qualquer status
       end
 
       # Remoção individual de arquivos (PDF, imagens, previews) — id = ActiveStorage::Attachment.

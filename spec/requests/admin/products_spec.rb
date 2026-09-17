@@ -17,6 +17,8 @@ RSpec.describe "Admin products" do
     expect(response).to redirect_to(admin_login_path)
     patch publish_admin_product_path(product)
     expect(response).to redirect_to(admin_login_path)
+    get preview_admin_product_path(product)
+    expect(response).to redirect_to(admin_login_path)
   end
 
   context "quando autenticado" do
@@ -133,6 +135,45 @@ RSpec.describe "Admin products" do
         expect { delete admin_product_path(product) }.not_to change(Product, :count)
         expect(response).to redirect_to(admin_product_path(product))
         expect(flash[:alert]).to include("Arquive")
+      end
+    end
+
+    describe "GET /admin/products/:slug/preview" do
+      it "renderiza a LP de um rascunho com banner, noindex e compra desabilitada" do
+        product = create(:product, :with_lp_content, slug: "draft-preview")
+
+        get preview_admin_product_path(product)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("DRAFT PREVIEW", "Status: draft", "Purchases are disabled in preview",
+                                         '<meta name="robots" content="noindex,nofollow">', "Sound familiar?")
+        expect(response.body).not_to include('data-module="checkout"')
+        expect(response.headers["Cache-Control"]).not_to include("public")
+      end
+
+      it "funciona para archived e published, em inglês" do
+        create(:product, :archived, slug: "arch")
+        create(:product, :published, slug: "pub")
+
+        get preview_admin_product_path("arch")
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Status: archived")
+
+        get preview_admin_product_path("pub")
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Status: published", "What you'll get", "$14.90")
+      end
+
+      it "mostra os links Preview e Ver ao vivo na tela do produto" do
+        draft = create(:product, slug: "d")
+        published = create(:product, :published, slug: "p")
+
+        get admin_product_path(draft)
+        expect(response.body).to include(preview_admin_product_path(draft))
+        expect(response.body).not_to include(%(href="#{draft.public_url}"))
+
+        get admin_product_path(published)
+        expect(response.body).to include(preview_admin_product_path(published), "Ver ao vivo", %(href="#{published.public_url}"))
       end
     end
 

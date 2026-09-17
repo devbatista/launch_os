@@ -98,7 +98,7 @@ end
 - [x] Criar produto em draft com todos os campos e arquivos via admin.
 - [x] Tentar publicar sem PDF mostra erro e mantém draft.
 - [ ] Publicar altera status, preenche `published_at`, LP responde 200 em `/:slug`.
-- [ ] Preview de draft funciona para o admin e `/:slug` retorna 404 ao público.
+- [x] Preview de draft funciona para o admin e `/:slug` retorna 404 ao público.
 - [x] Adicionar/reordenar/remover benefit, testimonial e FAQ sem recarregar a página inteira (fetch + partial HTML).
 - [ ] Com JavaScript desabilitado, as mesmas ações funcionam com reload da página.
 - [ ] Segundo produto de teste cadastrado e publicado sem intervenção em código (H5).
