@@ -28,7 +28,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase | Período | Semanas | Horas plan. | Horas reais | Progresso | Status |
 |---|---|---|---|---|---|---|
 | Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 3/5 (0.2, 0.4, 0.5 ✅; 0.1 aguarda verificação PayPal; 0.3 Sender adiado) | 🟦 |
-| Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 0/9 (1.1 em andamento) | 🟦 |
+| Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 1/9 (1.2 ✅; 1.1 só com critérios dependentes de fases seguintes) | 🟦 |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 0/8 | ⬜ |
 | Fase 3 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
 | Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
@@ -100,7 +100,7 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
 | 1.1 | Projeto Rails 8.1.3 (`--skip-solid --skip-hotwire --skip-test`), ⚙️ Docker dev/prod + compose (db, redis, sidekiq, minio), ⚙️ RSpec/FactoryBot/WebMock, CI, deploy inicial com HTTPS, credentials e ENV | [01](../specs/01-arquitetura-e-stack.md), [02](../specs/02-docker-e-ambiente.md) | 6 | 0.4 | 🟦 | | Iniciada em 16/09 (antes da S1). Feito: projeto, Docker, compose, Sidekiq/S3/UUID, deploy no Railway com domínio, RSpec/FactoryBot/WebMock/SimpleCov, importmap + `data-module`, layouts, `Providers::*Error`, Sentry, `config.hosts`, CI com RSpec. Serviço `sidekiq` no Railway no ar (17/09). Resta só o critério da spec 02 que depende de upload/email/jobs |
-| 1.2 | `User`: `has_secure_password`, login/logout, lockout após 5 tentativas, rate limit no login, layout do admin | [04](../specs/04-autenticacao-admin.md) | 6 | 1.1 | ⬜ | | |
+| 1.2 | `User`: `has_secure_password`, login/logout, lockout após 5 tentativas, rate limit no login, layout do admin | [04](../specs/04-autenticacao-admin.md) | 6 | 1.1 | ✅ | 17/09 | Gerador de autenticação adaptado ao namespace `/admin`; lockout, rate limit (429), sidebar, seed do admin. Pin `json < 3` (ActiveSupport 8.1.3 quebra cookies assinados com json 3) |
 | 1.3 | `Product` + `Benefit`, `Testimonial`, `Faq`: migrations, validações, slug único, status draft/published/archived, factories | [03](../specs/03-modelo-de-dados.md) | 6 | 1.1 | ⬜ | | |
 | 1.4 | CRUD admin de produtos e dos blocos da LP, com ordenação (⚙️ JS puro + fetch, sem Turbo) | [05](../specs/05-catalogo-produtos-admin.md) | 6 | 1.2, 1.3 | ⬜ | | |
 | 1.5 | Uploads Active Storage em bucket privado: PDF, capa, mockup, og_image, previews; validação de tipo/tamanho; variants WebP | [05](../specs/05-catalogo-produtos-admin.md) | 5 | 1.3 | ⬜ | | |

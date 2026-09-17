@@ -19,7 +19,16 @@
   </head>
 
   <body class="h-full text-gray-900 antialiased">
-    <%# Sidebar e navegação do admin entram na tarefa 1.2 (Admin::BaseController). %>
-    <%= yield %>
+    <% if authenticated? %>
+      <div class="flex min-h-screen">
+        <%= render "admin/shared/sidebar" %>
+        <main class="flex-1 px-8 py-6">
+          <%= render "admin/shared/flash" %>
+          <%= yield %>
+        </main>
+      </div>
+    <% else %>
+      <%= yield %>
+    <% end %>
   </body>
 </html>

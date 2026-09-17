@@ -2,8 +2,10 @@ require "rails_helper"
 
 # Cada área carrega só o seu entrypoint do importmap (docs/specs/01, seção "Frontend").
 RSpec.describe "Layouts" do
+  # env_config traz o key_generator dos cookies assinados, que o layout do admin consulta
+  # (`authenticated?`) para decidir se mostra a sidebar.
   def render_layout(name)
-    ApplicationController.render(
+    ApplicationController.renderer.new(Rails.application.env_config).render(
       inline: "<p>conteúdo</p>",
       layout: "layouts/#{name}"
     )
