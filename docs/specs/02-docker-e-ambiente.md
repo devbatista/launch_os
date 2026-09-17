@@ -10,7 +10,7 @@ Dockerfile              # produção (gerado pelo Rails 8, ajustado) — usado p
 Dockerfile.dev          # desenvolvimento/teste (com gems de dev, sem precompile)
 compose.yml             # dev (nome canônico do Compose v2; equivale a docker-compose.yml)
 railway.json            # serviço web: builder DOCKERFILE, health check /up, restart policy
-railway.worker.json     # serviço worker (Sidekiq): mesmo builder, startCommand do Sidekiq, sem health check
+railway.sidekiq.json    # serviço sidekiq: mesmo builder, startCommand do Sidekiq, sem health check
 .dockerignore           # exclui .env*, master.key, docs/, AGENTS.md, compose.yml
 .env.example            # versionado; copiar para .env (gitignored)
 ```
@@ -253,11 +253,11 @@ Serviços no projeto Railway (todos a partir do mesmo repositório):
 | Serviço | Origem | Comando | Observações |
 |---|---|---|---|
 | `web` | repo (Dockerfile) | padrão da imagem (`./bin/thrust ./bin/rails server`) | Railway injeta `PORT`; `bin/docker-entrypoint` exporta `HTTP_PORT=$PORT` para o Thruster e roda `db:prepare` antes de subir |
-| `worker` | repo (Dockerfile) | `bundle exec sidekiq -C config/sidekiq.yml` via **`railway.worker.json`** (Settings → Config-as-code → *Config File Path*) | mesma imagem e mesmas variáveis do `web`; não roda migrations. Precisa do config próprio porque o `railway.json` da raiz vale para todo serviço do repo e traria o health check `/up`, que o Sidekiq não atende |
+| `sidekiq` | repo (Dockerfile) | `bundle exec sidekiq -C config/sidekiq.yml` via **`railway.sidekiq.json`** (Settings → Config-as-code → *Config File Path*) | mesma imagem e mesmas variáveis do `web`; não roda migrations. Precisa do config próprio porque o `railway.json` da raiz vale para todo serviço do repo e traria o health check `/up`, que o Sidekiq não atende |
 | `Postgres` | plugin Railway | — | fornece `DATABASE_URL` (referenciar como `${{Postgres.DATABASE_URL}}`) |
 | `Redis` | plugin Railway | — | fornece `REDIS_URL` (`${{Redis.REDIS_URL}}`) |
 
-Variáveis obrigatórias em `web` e `worker`: `RAILS_MASTER_KEY`, `DATABASE_URL`, `REDIS_URL`, `APP_HOST`,
+Variáveis obrigatórias em `web` e `sidekiq`: `RAILS_MASTER_KEY`, `DATABASE_URL`, `REDIS_URL`, `APP_HOST`,
 `APP_PROTOCOL=https`, `S3_*`, `SES_*`, `PAYPAL_*`, `TWILIO_*`, `META_PIXEL_ID`, `GA4_MEASUREMENT_ID`, `SENTRY_DSN`,
 `SUPPORT_EMAIL`, `MAIL_FROM`, `MAIL_DOMAIN`. Usar *shared variables* do Railway para não duplicar entre os dois serviços.
 
