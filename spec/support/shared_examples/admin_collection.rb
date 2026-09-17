@@ -37,7 +37,7 @@ RSpec.shared_examples "coleção do produto no admin" do |collection:, factory:,
       it "devolve 422 com o partial e os erros quando inválido" do
         post collection_path.(product), params: { singular => invalid }, headers: xhr_headers
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).not_to include("<html")
         expect(response.body).to include("não pode ficar em branco")
         expect(product.public_send(collection).count).to eq(0)

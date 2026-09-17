@@ -54,7 +54,7 @@ RSpec.describe "Admin products" do
       it "reexibe o formulário com erros (422)" do
         post admin_products_path, params: valid_params.deep_merge(product: { slug: "admin", price: "0" })
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("reservado", "Preço")
         expect(Product.count).to eq(0)
       end
@@ -87,7 +87,7 @@ RSpec.describe "Admin products" do
 
         patch admin_product_path(product), params: { product: { headline: "" } }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
