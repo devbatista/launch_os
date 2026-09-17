@@ -30,8 +30,8 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  # O health check do Railway chega por HTTP interno: não redirecionar /up para https.
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
@@ -52,21 +52,14 @@ Rails.application.configure do
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :sidekiq
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Email pela API do SES (docs/specs/09-notificacoes-email-whatsapp.md). O delivery method
+  # `:ses_api` é registrado em config/initializers/action_mailer.rb (tarefa 2.6); até lá nenhum
+  # mailer existe em produção. Erros de entrega sobem até o job → retry ou Sentry.
+  config.action_mailer.delivery_method = :ses_api
+  config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "devbatista.online"), protocol: ENV.fetch("APP_PROTOCOL", "https") }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "www.devbatista.online"), protocol: ENV.fetch("APP_PROTOCOL", "https") }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -78,12 +71,14 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Proteção contra DNS rebinding (docs/specs/13-seguranca.md). O apex só redireciona para www
+  # (cPanel), mas fica na lista para não responder 403 se alguém chegar direto por ele.
+  config.hosts = [
+    "www.devbatista.online",
+    "devbatista.online",
+    /.*\.up\.railway\.app\z/
+  ]
+
+  # O health check do Railway usa um Host próprio (healthcheck.railway.app).
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

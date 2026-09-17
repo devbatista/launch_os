@@ -1,1 +1,4 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+// Entry do admin (layout "application"). Só ativa os módulos presentes na página via data-module.
+import { activate } from "lib/modules";
+
+activate();

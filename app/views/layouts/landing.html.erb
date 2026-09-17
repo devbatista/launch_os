@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full bg-gray-50">
+<html lang="en" class="h-full bg-white">
   <head>
-    <title><%= content_for(:title) || "Launch OS — Admin" %></title>
+    <title><%= content_for(:title) || "DevBatista" %></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="robots" content="noindex, nofollow">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%# Meta tags de SEO/OG, canonical e snippets de tracking (com nonce) vêm do controller/view via content_for. %>
     <%= yield :head %>
 
     <link rel="icon" href="/icon.png" type="image/png">
@@ -15,11 +15,13 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%= stylesheet_link_tag :app %>
-    <%= javascript_importmap_tags "application" %>
+    <%= javascript_importmap_tags "landing" %>
   </head>
 
   <body class="h-full text-gray-900 antialiased">
-    <%# Sidebar e navegação do admin entram na tarefa 1.2 (Admin::BaseController). %>
     <%= yield %>
+
+    <%# Rodapé com suporte e links legais entra na tarefa 1.6 (partial compartilhado). %>
+    <%= yield :footer %>
   </body>
 </html>

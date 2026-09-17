@@ -26,9 +26,24 @@ gem "bootsnap", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+# image_processing 2.x não puxa mais o ruby-vips: declarar explicitamente (Active Storage usa :vips)
+gem "image_processing", "~> 2.1"
+gem "ruby-vips", require: false
 # Active Storage em bucket S3-compatível (MinIO em dev, R2/S3 em produção)
 gem "aws-sdk-s3", require: false
+
+# Provedores externos em app/services/providers/ (docs/specs/01-arquitetura-e-stack.md)
+gem "aws-sdk-sesv2", require: false # Providers::Ses::Client — email pela API do SES (única gem de SDK)
+gem "faraday"                       # Providers::Paypal::Client e Providers::Twilio::Client (REST)
+gem "phonelib"                      # validação/normalização E.164
+
+# Autenticação do admin (bcrypt para has_secure_password)
+gem "bcrypt", "~> 3.1"
+
+# Erros em produção
+gem "sentry-ruby"
+gem "sentry-rails"
+gem "sentry-sidekiq"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -45,6 +60,20 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem "rubocop-rspec", require: false
+
+  # Testes (docs/specs/15-plano-de-testes.md)
+  gem "rspec-rails", "~> 8.0"
+  gem "factory_bot_rails"
+  gem "faker"
+end
+
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "webmock"                 # bloqueia HTTP real (PayPal, Twilio, SES) nos testes
+  gem "shoulda-matchers"        # validações/associações em uma linha
+  gem "simplecov", require: false
 end
 
 group :development do

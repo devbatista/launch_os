@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.1 (restante: Gemfile, RSpec/FactoryBot/WebMock, `implicit_order_column`, importmap entries + `data-module`, layouts, `Providers::Error`, Sentry, `config.hosts`, CI) e, em paralelo, Fase 0 restante: PayPal (0.1), Meta (0.2), Twilio (0.3), Sentry/uptime (0.5). Infra da 0.4 concluída em 16/09.
+**Próximo passo:** → 1.2 (autenticação admin). Da 1.1 ficam só itens que dependem de fases posteriores (worker no Railway → 2.6; critérios da spec 02 que exigem upload/email/jobs). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -62,32 +62,32 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 
 ### 1.1 Projeto, Docker, RSpec, CI, deploy — spec [01](../specs/01-arquitetura-e-stack.md), [02](../specs/02-docker-e-ambiente.md)
 - [x] `rails _8.1.3_ new launch_os --database=postgresql --css=tailwind --skip-jbuilder --skip-solid --skip-hotwire --skip-test`
-- [ ] Gemfile conforme spec 01 — *parcial: sidekiq, redis, aws-sdk-s3, dotenv-rails, letter_opener_web já adicionados; faltam faraday, phonelib, aws-sdk-sesv2, sentry, rspec-rails, factory_bot_rails, faker, shoulda-matchers, webmock, simplecov, rubocop-rspec*
+- [x] Gemfile conforme spec 01 (faraday, phonelib, aws-sdk-sesv2, bcrypt, sentry-ruby/rails/sidekiq, rspec-rails, factory_bot_rails, faker, rubocop-rspec, capybara, selenium-webdriver, webmock, shoulda-matchers, simplecov). `image_processing` 2.1 + `ruby-vips` explícito (PR #5 do Dependabot fechado por isso)
 - [x] `config/initializers/generators.rb` com `primary_key_type: :uuid` — **antes de qualquer `rails g`**
-- [ ] `ApplicationRecord` com `self.implicit_order_column = "created_at"`
+- [x] `ApplicationRecord` com `self.implicit_order_column = "created_at"`
 - [x] `Dockerfile.dev` (libvips, libpq-dev) e `Dockerfile` de produção ajustado
 - [x] `compose.yml`: db, redis, minio, minio-init, web, sidekiq (âncora `&rails`), css
 - [x] `.env.example` completo; `.env` gitignored; `.dockerignore`
 - [x] `config/storage.yml` com serviço `s3` (`public: false`); development e production usando `:s3`
 - [x] `config/sidekiq.yml` (filas webhooks/mailers/whatsapp/default) e `initializers/sidekiq.rb` (`strict_args!`)
 - [x] `queue_adapter = :sidekiq`; `cache_store = :redis_cache_store`
-- [ ] `rails g rspec:install`; `rails_helper` com FactoryBot, shoulda, WebMock `disable_net_connect!`, ActiveJob `:test`
-- [ ] `config/importmap.rb` com `pin_all_from "app/javascript"`; entries `application.js` e `landing.js`; loader por `data-module`
-- [ ] `lib/http.js` (fetch JSON + CSRF) e `lib/cookies.js`
-- [ ] Layouts: `application` (admin) e `landing` (público), Tailwind
-- [ ] `app/services/providers/errors.rb` (`Providers::Error`, `TransientError`, `PermanentError`)
-- [ ] `initializers/sentry.rb`; `config/environments/production.rb` (force_ssl, hosts, `delivery_method = :ses_api`, `assume_ssl`) — *parcial: force_ssl/assume_ssl vêm do gerador; faltam Sentry, `config.hosts` e `:ses_api`*
+- [x] `rails g rspec:install`; `rails_helper` com FactoryBot, shoulda, WebMock `disable_net_connect!`, ActiveJob::TestHelper, `Sidekiq.strict_args!`; SimpleCov em `spec_helper` com grupos Services/Jobs/Webhooks (mínimo sobe para 90 na Fase 2); `coverage/` gitignored
+- [x] `config/importmap.rb` com `pin_all_from "app/javascript"`; entries `application.js` e `landing.js`; loader `lib/modules.js` (`activate()` importa `modules/<nome>` e chama `init(el)`; suporta vários módulos por elemento e `admin/<nome>`)
+- [x] `lib/http.js` (fetch JSON + CSRF + `HttpError` com o corpo) e `lib/cookies.js` (get/set/remove, SameSite=Lax, Secure em https)
+- [x] Layouts: `application` (admin, `lang=pt-BR`, `noindex`, entry `application`) e `landing` (público, `lang=en`, entry `landing`, `yield :head`/`:footer`), Tailwind — spec em `spec/views/layouts_spec.rb`
+- [x] `Providers::Error`, `TransientError`, `PermanentError` — em `app/services/providers.rb` (não `providers/errors.rb`: o Zeitwerk exigiria a constante `Providers::Errors`; divergência da spec 01 anotada no arquivo)
+- [x] `initializers/sentry.rb` (só production, `send_default_pii = false`, sem tracing); `production.rb` com force_ssl/assume_ssl, `ssl_options` e `host_authorization` liberando `/up`, `delivery_method = :ses_api` + `raise_delivery_errors` (o delivery method em si é registrado na 2.6)
 - [x] `development.rb`: `letter_opener_web`; rota `/letter_opener` só em dev
 - [x] `bin/setup` funciona em container limpo (`db:prepare`, seeds)
-- [ ] CI (GitHub Actions): rspec + rubocop + brakeman + bundler-audit
+- [x] CI (GitHub Actions): job `test` (Postgres 17 + libvips + `bundle exec rspec`) somado a lint/brakeman/bundler-audit/importmap audit; `bin/ci` com step RSpec
 - [x] Deploy inicial em produção: `https://launchos-production-9f6e.up.railway.app/up` → 200 (variáveis definidas via CLI; `S3_*` e `SES_*` reais desde 16/09)
 - [ ] Serviço `worker` no Railway (mesmo repo, *Custom Start Command* `bundle exec sidekiq -C config/sidekiq.yml`, mesmas variáveis) — necessário só a partir da 2.6
 - [x] Domínio no Railway: `www.devbatista.online` adicionado; CNAME `www` → `0y02s4dz.up.railway.app` + TXT `railway-verify` na HostGator; certificado Let's Encrypt emitido; porta do domínio = 8080; `https://www.devbatista.online/up` → 200 (16/09)
 - [x] Redirect 301 do apex `devbatista.online` → `https://www.devbatista.online` no cPanel (http e https OK)
 - [ ] *(opcional)* marcar *Wild Card Redirect* no cPanel para `devbatista.online/caminho` preservar o caminho (hoje → 404)
 - [x] `APP_HOST=www.devbatista.online` e `PORT=8080` fixados no Railway
-- [ ] `config.hosts` em production com `www.devbatista.online`, `devbatista.online`, `*.up.railway.app` (código; próximo PR)
-- [ ] ✅ Critérios de aceite das specs 01 e 02
+- [x] `config.hosts` em production com `www.devbatista.online`, `devbatista.online`, `/.*\.up\.railway\.app\z/` (verificado com boot em `RAILS_ENV=production`)
+- [ ] ✅ Critérios de aceite das specs 01 e 02 — *spec 01: os 4 conferidos (compose sobe, rspec verde em container, `git grep` de segredos vazio, brakeman/bundler-audit limpos). Spec 02: faltam os que dependem de código posterior — upload no MinIO (1.5), email via job em `/letter_opener` e job processado pelo `sidekiq` (2.6), persistência do Redis (2.6)*
 
 ### 1.2 Autenticação admin — spec [04](../specs/04-autenticacao-admin.md)
 - [ ] `rails g authentication`; conferir `users`/`sessions` com `id: :uuid` e `user_id` uuid; mover rotas para `/admin/login`, `/admin/logout`
