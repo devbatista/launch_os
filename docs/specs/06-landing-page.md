@@ -163,4 +163,4 @@ Contraste AA, botão de compra com texto claro, `alt` em imagens, foco visível,
 - [ ] Lighthouse mobile: Performance ≥ 85, Accessibility ≥ 90.
 - [x] `/qualquer-slug-inexistente` → 404 com página amigável.
 - [x] Slug reservado (`admin`) não pode ser salvo como slug de produto.
-- [ ] `og:image` e `description` corretos ao colar a URL no Facebook Debugger.
+- [x] `og:image` e `description` corretos ao colar a URL no Facebook Debugger.
