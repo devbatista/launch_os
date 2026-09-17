@@ -1,0 +1,40 @@
+<%# Template Direct Response (spec 06): um objetivo, o botão de compra em #buy. Blocos opcionais somem quando vazios. %>
+<% product = @product %>
+<% content_for :title, product.meta_title.presence || product.name %>
+<% content_for :head do %>
+  <meta name="description" content="<%= product.meta_description.presence || product.subheadline %>">
+  <meta name="robots" content="<%= @preview ? "noindex,nofollow" : "index,follow" %>">
+  <link rel="canonical" href="<%= product.public_url %>">
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="<%= product.meta_title.presence || product.name %>">
+  <meta property="og:description" content="<%= product.meta_description.presence || product.subheadline %>">
+  <meta property="og:url" content="<%= product.public_url %>">
+  <meta property="og:site_name" content="DevBatista">
+  <% if product.social_image.attached? %>
+    <meta property="og:image" content="<%= og_image_url(product) %>">
+    <% if product.og_image.attached? %>
+      <meta property="og:image:width" content="1200">
+      <meta property="og:image:height" content="630">
+    <% end %>
+    <meta name="twitter:card" content="summary_large_image">
+  <% end %>
+  <meta property="product:price:amount" content="<%= product.price %>">
+  <meta property="product:price:currency" content="<%= product.currency %>">
+<% end %>
+
+<main>
+  <%= render "landing_pages/templates/direct_response/hero", product: product %>
+  <%= render "landing_pages/templates/direct_response/problem", product: product if product.problem_text.present? %>
+  <%= render "landing_pages/templates/direct_response/benefits", product: product %>
+  <%= render "landing_pages/templates/direct_response/whats_inside", product: product if product.description.present? %>
+  <%= render "landing_pages/templates/direct_response/previews", product: product if product.preview_images.attached? %>
+  <%= render "landing_pages/templates/direct_response/testimonials", product: product if product.testimonials.any? %>
+  <%= render "landing_pages/templates/direct_response/offer", product: product %>
+  <%= render "landing_pages/templates/direct_response/guarantee", product: product if product.guarantee_text.present? %>
+  <%= render "landing_pages/templates/direct_response/faq", product: product if product.faqs.any? %>
+  <%= render "landing_pages/templates/direct_response/final_cta", product: product %>
+</main>
+
+<% content_for :after_footer do %>
+  <%= render "landing_pages/templates/direct_response/sticky_cta", product: product %>
+<% end %>

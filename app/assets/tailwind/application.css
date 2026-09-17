@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* Bloco "What's inside" da LP: HTML do Action Text estilizado como texto corrido (plugin embutido no CLI standalone). */
+@plugin "@tailwindcss/typography";

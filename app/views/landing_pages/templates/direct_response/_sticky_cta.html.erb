@@ -1,0 +1,7 @@
+<%# Barra fixa mobile (spec 06): aparece após rolar além do hero e some quando #buy está visível — modules/sticky_cta.js. %>
+<div data-module="sticky_cta" data-hide-when="#hero, #buy" hidden
+     class="fixed inset-x-0 bottom-0 z-10 border-t border-slate-200 bg-white/95 p-3 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] backdrop-blur md:hidden">
+  <a href="#buy" class="flex w-full items-center justify-center rounded-lg bg-emerald-700 px-6 py-3 text-base font-bold text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300">
+    <%= product.cta_text %> — <%= money(product.price_cents, product.currency) %>
+  </a>
+</div>

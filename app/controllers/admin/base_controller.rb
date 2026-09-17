@@ -2,6 +2,7 @@ module Admin
   # Base de todo o painel: exige sessão (Authentication já está em ApplicationController) e
   # usa o layout `application`, que renderiza a sidebar quando há usuário autenticado.
   class BaseController < ApplicationController
+    allow_browser versions: :modern
     before_action :require_authentication
     around_action :use_admin_locale
 

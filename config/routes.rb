@@ -32,4 +32,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # LP pública. Sempre a ÚLTIMA rota: captura qualquer /:slug que não bateu nas rotas fixas acima
+  # (slugs reservados são rejeitados no modelo — Product::RESERVED_SLUGS).
+  get "/:slug", to: "landing_pages#show", as: :landing_page, constraints: { slug: /[a-z0-9-]+/ }
 end

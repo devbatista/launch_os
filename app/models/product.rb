@@ -11,6 +11,7 @@ class Product < ApplicationRecord
   IMAGE_MAX_BYTES = 5.megabytes
   PREVIEW_IMAGES_MAX = 8
   ATTACHMENT_NAMES = %w[pdf_file cover_image mockup_image og_image preview_images].freeze
+  TEMPLATES = %w[direct_response].freeze # app/views/landing_pages/templates/<template>/show
 
   has_many :benefits, -> { ordered }, dependent: :destroy, inverse_of: :product
   has_many :testimonials, -> { ordered }, dependent: :destroy, inverse_of: :product
@@ -25,7 +26,10 @@ class Product < ApplicationRecord
   has_one_attached :mockup_image do |a|
     a.variant :lp, resize_to_limit: [ 900, 900 ], format: :webp, saver: { quality: 82 }, preprocessed: true
   end
-  has_one_attached :og_image
+  has_one_attached :og_image do |a|
+    # 1200×630 JPEG: o scraper do Facebook não lida bem com WebP.
+    a.variant :og, resize_to_fill: [ 1200, 630 ], format: :jpeg, saver: { quality: 85 }, preprocessed: true
+  end
   has_many_attached :preview_images do |a|
     a.variant :thumb, resize_to_limit: [ 600, 800 ], format: :webp, preprocessed: true
   end
@@ -43,6 +47,7 @@ class Product < ApplicationRecord
   validates :compare_at_price_cents, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :refund_days, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :currency, length: { is: 3 }
+  validates :template, inclusion: { in: TEMPLATES }
 
   validate :compare_at_price_greater_than_price
   validate :pdf_file_format
@@ -77,6 +82,12 @@ class Product < ApplicationRecord
   end
 
   def publishable? = missing_for_publish.empty?
+
+  # Imagem do hero da LP: mockup, ou a capa quando não há mockup (publicar exige uma das duas).
+  def hero_image = mockup_image.attached? ? mockup_image : cover_image
+
+  # Imagem para compartilhamento (og:image): a og_image, senão a do hero.
+  def social_image = og_image.attached? ? og_image : hero_image
 
   # Remover este anexo deixaria o produto sem o que a publicação exige? (PDF, ou a única imagem principal)
   def required_for_publish?(attachment)

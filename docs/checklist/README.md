@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.6 (landing page). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.7 (preview de rascunho). Da 1.6 ficam o Lighthouse em produção e o botão PayPal real (2.1). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -136,19 +136,20 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Confirmar: objeto no bucket não acessível sem assinatura (403) — *`GET http://localhost:9000/launch-os-dev/<key>` → 403*
 
 ### 1.6 Landing page — spec [06](../specs/06-landing-page.md)
-- [ ] Rota `GET /:slug` por último em `routes.rb`, com constraint
-- [ ] `LandingPagesController#show` (`Product.published`, 404 caso contrário, `fresh_when`)
-- [ ] Partials do template `direct_response`: hero, problem, benefits, whats_inside, previews, testimonials, offer, guarantee, faq, final_cta, footer
-- [ ] Blocos opcionais somem quando vazios
-- [ ] Bloco `#buy` com `data-module="checkout"` e `data-*` (botão PayPal entra na 2.1; por ora placeholder)
-- [ ] Campo telefone + opt-in renderizado só com `TWILIO_ENABLED=true`
-- [ ] Meta tags: title, description, og:*, canonical, robots
-- [ ] `modules/sticky_cta.js` (barra mobile após o hero)
-- [ ] Imagens com variants WebP, `loading="lazy"`, width/height
-- [ ] Rodapé com suporte e links legais
-- [ ] Lighthouse mobile ≥ 85 / acessibilidade ≥ 90
-- [ ] Specs: `spec/requests/landing_pages_spec.rb` (T14); `spec/system/landing_page_spec.rb` (opcional)
-- [ ] ✅ Critérios de aceite da spec 06
+- [x] Rota `GET /:slug` por último em `routes.rb`, com constraint
+- [x] `LandingPagesController#show` (`Product.published`, 404 caso contrário, `fresh_when`) — *`stale?(@product, public: true)` + `expires_in 60s, public`; `belongs_to :product, touch: true` nas coleções para o ETag invalidar (anexos e Action Text já dão touch)*
+- [x] Partials do template `direct_response`: hero, problem, benefits, whats_inside, previews, testimonials, offer, guarantee, faq, final_cta, footer — *`app/views/landing_pages/templates/direct_response/`; rodapé em `shared/_footer` pelo layout `landing` (serve às demais páginas públicas)*
+- [x] Blocos opcionais somem quando vazios
+- [x] Bloco `#buy` com `data-module="checkout"` e `data-*` (botão PayPal entra na 2.1; por ora placeholder) — *`modules/checkout.js` é um stub com `init` vazio; o placeholder é um botão desabilitado "opening soon"*
+- [x] Campo telefone + opt-in renderizado só com `TWILIO_ENABLED=true`
+- [x] Meta tags: title, description, og:*, canonical, robots — *`og:image` = variant `:og` 1200×630 **JPEG** (scraper do Facebook e WebP não combinam) ou a imagem do hero na falta de og_image; URL absoluta via proxy*
+- [x] `modules/sticky_cta.js` (barra mobile após o hero) — *some enquanto `#hero` ou `#buy` estão visíveis (IntersectionObserver)*
+- [x] Imagens com variants WebP, `loading="lazy"`, width/height — *`lp_image_tag` calcula width/height dos metadados do blob (após o AnalyzeJob); hero é `eager` + `fetchpriority=high`*
+- [x] Rodapé com suporte e links legais — *links `/privacy`, `/terms`, `/refund-policy` (rotas na 1.8)*
+- [ ] Lighthouse mobile ≥ 85 / acessibilidade ≥ 90 — *17/09 em dev (Chrome amd64 emulado + servidor de dev sem gzip): Accessibility **100**, SEO **100**, Performance 68 (TBT/main-thread do emulador; LCP 1,8 s, CLS 0, 73 KB no total, JS próprio 5,6 KB). Medir de novo em produção na 1.9*
+- [x] Specs: `spec/requests/landing_pages_spec.rb` (T14) — *12 exemplos; system spec fica opcional*
+- [ ] ✅ Critérios de aceite da spec 06 — *feitos: blocos/opcionais, 375/1280 px sem overflow (screenshots headless), 404 amigável (Rails), slug reservado. Faltam: botão PayPal em mobile (2.1), Lighthouse em produção e Facebook Debugger (1.9)*
+- Decisões: (1) imagens públicas pelo **proxy** do Active Storage (`resolve_model_to_route = :rails_storage_proxy`): URL estável e cacheável pelo Thruster, sem 302 por imagem, e o navegador em dev não precisa resolver `minio`. (2) `allow_browser versions: :modern` saiu de `ApplicationController` e ficou só no admin — na LP devolveria 406 a compradores com navegador in-app antigo. (3) `config/importmap.rb` restringe `preload` por entry: a LP não pré-carrega trix/actiontext/módulos do admin (antes baixava 526 KB de Trix); layout `landing` carrega só `tailwind` + `application.css`. (4) `@plugin "@tailwindcss/typography"` (embutido no CLI standalone) para o Action Text da LP (`prose`).
 
 ### 1.7 Preview de rascunho
 - [ ] `Admin::ProductsController#preview` renderizando o mesmo template com `@preview = true`
