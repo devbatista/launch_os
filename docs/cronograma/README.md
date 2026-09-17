@@ -47,7 +47,7 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | Marco | Data | Critério de aceite | Status | Atingido em |
 |---|---|---|---|---|
 | **M0** — Contas prontas | 20/09 | PayPal, Meta, Twilio, hospedagem, domínio, SES e Sentry criados; aprovações solicitadas | ⬜ | |
-| **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Debugger da Meta ok; falta só o teste do email de suporte |
+| **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Debugger da Meta e email de suporte ok — Fase 1 concluída |
 | **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ⬜ | |
 | **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ⬜ | |
 | **M4** — Campanha no ar | 26/10 | Três anúncios aprovados pela Meta e ativos, R$ 18/dia | ⬜ | |
@@ -106,8 +106,8 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 | 1.5 | Uploads Active Storage em bucket privado: PDF, capa, mockup, og_image, previews; validação de tipo/tamanho; variants WebP | [05](../specs/05-catalogo-produtos-admin.md) | 5 | 1.3 | ✅ | | 17/09: seção Arquivos no admin com remoção individual, `file_preview.js`, MinIO ok (403 sem assinatura). Falta só confirmar no bucket de produção (na 1.9); bucket de produção confirmado na 1.9 (403 sem assinatura) |
 | 1.6 | Template Direct Response: rota `/:slug`, todos os blocos, mobile first, meta tags e og_image, entry `landing.js` | [06](../specs/06-landing-page.md) | 10 | 1.4, 1.5 | 🟦 | | 17/09: rota `/:slug`, template `direct_response` completo, sticky CTA, meta/OG, cache ETag, imagens via proxy, preload por entry no importmap. Faltam Lighthouse em produção (1.9) e botão PayPal (2.1) |
 | 1.7 | Preview de rascunho para admin; 404 público para não publicados | [05](../specs/05-catalogo-produtos-admin.md), [06](../specs/06-landing-page.md) | 2 | 1.6 | ✅ | | 17/09: preview com banner, noindex e compra desabilitada; links Preview/Ver ao vivo no admin |
-| 1.8 | Páginas legais (Privacy, Terms, Refund Policy) e contato de suporte, em inglês | [14](../specs/14-paginas-legais.md) | 3 | 1.6 | ✅ | | 17/09: três páginas em inglês, refund lê `refund_days` do produto, rodapé com as rotas. Faltam Facebook BM e teste do email (1.9); Facebook BM e email ficam listados na 1.9 |
-| 1.9 | Cadastrar o *21-Day Procrastination Reset* com copy provisória e publicar em produção | [16](../specs/16-roadmap-e-fases.md) | 2 | 1.6, 1.8 | ✅ | | 17/09: produto cadastrado e publicado em produção; LP 200; Lighthouse 100/100/100/100. Facebook Debugger ok em 17/09; falta só o teste do email de suporte |
+| 1.8 | Páginas legais (Privacy, Terms, Refund Policy) e contato de suporte, em inglês | [14](../specs/14-paginas-legais.md) | 3 | 1.6 | ✅ | | 17/09: três páginas em inglês, refund lê `refund_days` do produto, rodapé com as rotas. Faltam Facebook BM e teste do email (1.9); Meta e email verificados na 1.9 |
+| 1.9 | Cadastrar o *21-Day Procrastination Reset* com copy provisória e publicar em produção | [16](../specs/16-roadmap-e-fases.md) | 2 | 1.6, 1.8 | ✅ | | 17/09: produto cadastrado e publicado em produção; LP 200; Lighthouse 100/100/100/100. Facebook Debugger e email de suporte ok em 17/09 — tarefa fechada |
 
 **Total: 46 h (≈ 23 h/semana)**
 
