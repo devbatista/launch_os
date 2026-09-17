@@ -10,6 +10,7 @@ class Product < ApplicationRecord
   IMAGE_CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
   IMAGE_MAX_BYTES = 5.megabytes
   PREVIEW_IMAGES_MAX = 8
+  ATTACHMENT_NAMES = %w[pdf_file cover_image mockup_image og_image preview_images].freeze
 
   has_many :benefits, -> { ordered }, dependent: :destroy, inverse_of: :product
   has_many :testimonials, -> { ordered }, dependent: :destroy, inverse_of: :product
@@ -76,6 +77,16 @@ class Product < ApplicationRecord
   end
 
   def publishable? = missing_for_publish.empty?
+
+  # Remover este anexo deixaria o produto sem o que a publicação exige? (PDF, ou a única imagem principal)
+  def required_for_publish?(attachment)
+    case attachment.name
+    when "pdf_file" then true
+    when "cover_image" then !mockup_image.attached?
+    when "mockup_image" then !cover_image.attached?
+    else false
+    end
+  end
 
   # Excluir só rascunho sem pedidos (spec 05). A checagem de `orders` entra na 2.1, quando a tabela existir.
   def deletable? = draft?

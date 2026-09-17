@@ -1,5 +1,5 @@
-<%# Seções 1–3 e 5 da spec 05. Arquivos (seção 4) entram na 1.5; coleções (6–8) ficam em _collections. %>
-<%= form_with model: [:admin, product], class: "space-y-8" do |form| %>
+<%# Seções 1–5 da spec 05; coleções (6–8) ficam nos containers nested_list em edit.html.erb. %>
+<%= form_with model: [:admin, product], class: "space-y-8", id: "product-form" do |form| %>
   <%= error_messages_for(product) %>
 
   <section class="rounded-lg border border-gray-200 bg-white p-5 space-y-4">
@@ -72,6 +72,28 @@
     </div>
   </section>
 
+  <%# Arquivos: input + arquivo atual (com botão Remover que dispara um form DELETE fora deste form, via atributo `form`). %>
+  <section id="files" class="rounded-lg border border-gray-200 bg-white p-5 space-y-5" data-module="admin/file_preview">
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500">Arquivos</h2>
+    <p class="text-xs text-gray-500">PDF até 50 MB. Imagens JPEG, PNG ou WebP até 5 MB cada; até <%= Product::PREVIEW_IMAGES_MAX %> previews. Enviar um novo arquivo substitui o atual (exceto previews, que são acrescentados).</p>
+
+    <%= render "admin/products/attachment_field", form:, product:, name: :pdf_file, label: "PDF do produto",
+               hint: "O arquivo entregue ao comprador. Nunca fica em URL pública.", accept: Product::PDF_CONTENT_TYPE, max_bytes: Product::PDF_MAX_BYTES %>
+
+    <div class="grid gap-5 md:grid-cols-3">
+      <%= render "admin/products/attachment_field", form:, product:, name: :cover_image, label: "Capa",
+                 hint: "Hero da LP (ou o mockup).", accept: Product::IMAGE_CONTENT_TYPES.join(","), max_bytes: Product::IMAGE_MAX_BYTES %>
+      <%= render "admin/products/attachment_field", form:, product:, name: :mockup_image, label: "Mockup",
+                 hint: "Imagem do produto em 3D/dispositivo.", accept: Product::IMAGE_CONTENT_TYPES.join(","), max_bytes: Product::IMAGE_MAX_BYTES %>
+      <%= render "admin/products/attachment_field", form:, product:, name: :og_image, label: "Imagem OG",
+                 hint: "Compartilhamento em redes (1200×630).", accept: Product::IMAGE_CONTENT_TYPES.join(","), max_bytes: Product::IMAGE_MAX_BYTES %>
+    </div>
+
+    <%= render "admin/products/attachment_field", form:, product:, name: :preview_images, label: "Previews (páginas de amostra)",
+               hint: "Selecione uma ou mais imagens; elas são acrescentadas às existentes.", accept: Product::IMAGE_CONTENT_TYPES.join(","),
+               max_bytes: Product::IMAGE_MAX_BYTES, multiple: true %>
+  </section>
+
   <section class="rounded-lg border border-gray-200 bg-white p-5 space-y-4">
     <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500">SEO</h2>
     <div>
@@ -88,4 +110,15 @@
     <%= form.submit(product.persisted? ? "Salvar" : "Criar produto", class: button_classes(:primary)) %>
     <%= link_to "Cancelar", (product.persisted? ? admin_product_path(product) : admin_products_path), class: button_classes(:secondary) %>
   </div>
+<% end %>
+
+<%# Forms de remoção de arquivo, fora do form principal (HTML não permite forms aninhados); os botões
+    "Remover" da seção Arquivos apontam para eles pelo atributo `form`. %>
+<% if product.persisted? %>
+  <% Product::ATTACHMENT_NAMES.each do |name| %>
+    <% attachments_for(product, name).each do |attachment| %>
+      <%= form_with url: admin_product_attachment_path(product, attachment), method: :delete, id: "remove-attachment-#{attachment.id}",
+                    class: "hidden", data: { confirm: "Remover #{attachment.filename}? Não dá para desfazer." } do %><% end %>
+    <% end %>
+  <% end %>
 <% end %>

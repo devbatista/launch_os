@@ -67,7 +67,7 @@ module Admin
 
       def respond_invalid
         if request.xhr?
-          render_list(status: :unprocessable_entity, invalid_item: @item)
+          render_list(status: :unprocessable_content, invalid_item: @item)
         else
           redirect_to edit_admin_product_path(@product, anchor: collection_name),
                       alert: "#{collection_label}: #{@item.errors.full_messages.to_sentence}", status: :see_other

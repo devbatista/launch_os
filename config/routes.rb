@@ -23,6 +23,9 @@ Rails.application.routes.draw do
         patch :archive
       end
 
+      # Remoção individual de arquivos (PDF, imagens, previews) — id = ActiveStorage::Attachment.
+      resources :attachments, only: :destroy
+
       # Coleções da LP: respondem com o partial da lista (fetch) ou redirect (sem JS).
       resources :benefits, :testimonials, :faqs, only: %i[create update destroy] do
         member { patch :move }

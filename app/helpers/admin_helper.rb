@@ -40,6 +40,17 @@ module AdminHelper
     end
   end
 
+  # Anexos persistidos de um `has_one_attached`/`has_many_attached`, sempre como array.
+  def attachments_for(record, name)
+    attached = record.public_send(name)
+    attached.is_a?(ActiveStorage::Attached::Many) ? attached.attachments.select(&:persisted?) : [ attached.attachment ].compact.select(&:persisted?)
+  end
+
+  # Tamanho de arquivo legível (KB/MB) para a lista de anexos.
+  def file_size(bytes)
+    number_to_human_size(bytes, precision: 2)
+  end
+
   # Lista de erros de um registro (form principal e itens das coleções).
   def error_messages_for(record)
     return unless record.errors.any?

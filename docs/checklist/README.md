@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.5 (uploads). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.5–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.6 (landing page). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -124,15 +124,16 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `modules/admin/confirm.js` (`data-confirm` em forms/links, fase de captura) ativado no `<main>` do layout
 - [x] Specs: `spec/requests/admin/products_spec.rb`; shared example "coleção do produto no admin" usado por `benefits_spec`, `testimonials_spec`, `faqs_spec`; helper `sign_in_admin`
 - [ ] Polir o visual do admin (sidebar, formulários, tabelas, flashes) — o layout da 1.2 é o mínimo funcional; fazer aqui, quando o painel ganha as primeiras telas reais
-- [ ] ✅ Critérios de aceite da spec 05 (exceto preview) — *feito: criar draft via admin, publicar sem PDF mantém draft, publish preenche `published_at`, coleções via fetch e sem JS. Faltam: arquivos via admin (1.5), LP 200 em `/:slug` (1.6), preview (1.7), segundo produto (H5, após 1.9)*
+- [ ] ✅ Critérios de aceite da spec 05 (exceto preview) — *feito: criar draft via admin, publicar sem PDF mantém draft, publish preenche `published_at`, coleções via fetch e sem JS. Faltam: LP 200 em `/:slug` (1.6), preview (1.7), segundo produto (H5, após 1.9)*
 
 ### 1.5 Uploads — spec [05](../specs/05-catalogo-produtos-admin.md)
-- [ ] Campos de upload no formulário (PDF, capa, mockup, og_image, previews múltiplos com remoção individual)
-- [ ] `modules/admin/file_preview.js`
-- [ ] Upload funcionando no MinIO (dev) e no bucket real (produção)
-- [ ] Variants pré-processados ao publicar (`preprocessed: true`)
-- [ ] Spec: upload em request spec com `fixture_file_upload`; rejeição de tipo/tamanho inválidos
-- [ ] Confirmar: objeto no bucket não acessível sem assinatura (403)
+- [x] Campos de upload no formulário (PDF, capa, mockup, og_image, previews múltiplos com remoção individual) — *seção "Arquivos" em `_form` + partial `_attachment_field`; remoção via `Admin::AttachmentsController#destroy` (forms DELETE fora do form principal, ligados pelo atributo `form`; funciona sem JS). Previews são acrescentados no update (Rails ≥ 7.1 substituiria a coleção); campos vazios são descartados (`""` apagaria o anexo). Arquivo obrigatório de produto publicado não pode ser removido sem despublicar. Imagens atuais servidas pelo proxy do Active Storage (sem mexer no /etc/hosts)*
+- [x] `modules/admin/file_preview.js` — *nome, tamanho, miniatura e aviso local de tipo/tamanho*
+- [x] Upload funcionando no MinIO (dev) — *17/09: og_image + preview via admin → `service_name: s3`, objeto no bucket `launch-os-dev`*
+- [ ] Upload funcionando no bucket real (produção) — *confirmar na 1.9, ao cadastrar o produto real (precisa de `ADMIN_EMAIL`/`ADMIN_PASSWORD` no Railway)*
+- [x] Variants pré-processados (`preprocessed: true`) — *já definidos na 1.3; o `TransformJob` roda no Sidekiq no upload (antes ainda de publicar); conferido `processed? == true` em dev*
+- [x] Spec: upload em request spec com fixtures; rejeição de tipo/tamanho inválidos — *`spec/requests/admin/product_uploads_spec.rb` (13 exemplos)*
+- [x] Confirmar: objeto no bucket não acessível sem assinatura (403) — *`GET http://localhost:9000/launch-os-dev/<key>` → 403*
 
 ### 1.6 Landing page — spec [06](../specs/06-landing-page.md)
 - [ ] Rota `GET /:slug` por último em `routes.rb`, com constraint
