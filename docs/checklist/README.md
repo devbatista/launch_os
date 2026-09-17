@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.2 (autenticação admin). Da 1.1 ficam só itens que dependem de fases posteriores (serviço `sidekiq` no Railway → 2.6; critérios da spec 02 que exigem upload/email/jobs). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.2 (autenticação admin). Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -81,7 +81,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `bin/setup` funciona em container limpo (`db:prepare`, seeds)
 - [x] CI (GitHub Actions): job `test` (Postgres 17 + libvips + `bundle exec rspec`) somado a lint/brakeman/bundler-audit/importmap audit; `bin/ci` com step RSpec
 - [x] Deploy inicial em produção: `https://launchos-production-9f6e.up.railway.app/up` → 200 (variáveis definidas via CLI; `S3_*` e `SES_*` reais desde 16/09)
-- [ ] Serviço `sidekiq` no Railway (mesmo repo, mesmas variáveis — `DATABASE_URL`/`REDIS_URL` como referências aos plugins; *Custom Start Command* `bundle exec sidekiq -C config/sidekiq.yml`, sem healthcheck) — *17/09: serviço criado com as 27 variáveis e repo conectado; `railway.json`/`railway.sidekiq.json` removidos (Config as Code descontinuado pelo Railway). Falta: definir no dashboard o start command do `sidekiq` e o healthcheck `/up` do `launch_os`, e confirmar o boot do Sidekiq nos logs*
+- [x] Serviço `sidekiq` no Railway: mesmo repo (branch `main`), 27 variáveis copiadas do web (`DATABASE_URL`/`REDIS_URL` como referências aos plugins), *Custom Start Command* `bundle exec sidekiq -C config/sidekiq.yml` no dashboard, sem healthcheck. Logs confirmam Sidekiq 8.1.7 conectado ao Redis interno (17/09). Config as Code do Railway removido — ver decisão de 17/09 no cronograma
 - [x] Domínio no Railway: `www.devbatista.online` adicionado; CNAME `www` → `0y02s4dz.up.railway.app` + TXT `railway-verify` na HostGator; certificado Let's Encrypt emitido; porta do domínio = 8080; `https://www.devbatista.online/up` → 200 (16/09)
 - [x] Redirect 301 do apex `devbatista.online` → `https://www.devbatista.online` no cPanel (http e https OK)
 - [ ] *(opcional)* marcar *Wild Card Redirect* no cPanel para `devbatista.online/caminho` preservar o caminho (hoje → 404)
