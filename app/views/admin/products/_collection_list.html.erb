@@ -1,0 +1,61 @@
+<%# Lista genérica de uma coleção da LP (benefits, testimonials, faqs).
+    Locals: product, items, invalid_item (registro com erros ou nil), collection (:benefits…), label, fields.
+    Cada item tem seu próprio form (PATCH) + botões ↑ ↓ Remover; no fim, o form de novo item (POST).
+    Tudo dentro de [data-module="admin/nested_list"], que troca este HTML pelo retornado no fetch. %>
+<% singular = collection.to_s.singularize %>
+<% item_path = ->(item) { polymorphic_path([:admin, product, item]) } %>
+<% move_path = ->(item, direction) { send("move_admin_product_#{singular}_path", product, item, direction:) } %>
+<% field_html = lambda do |form, item, field| %>
+  <% id = "#{singular}_#{item.id || 'new'}_#{field[:name]}" %>
+  <div class="<%= field[:full] ? 'md:col-span-2' : '' %>">
+    <%= form.label field[:name], field[:label], for: id, class: "block text-xs font-medium text-gray-600" %>
+    <% if field[:type] == :textarea %>
+      <%= form.text_area field[:name], id:, rows: 2, required: field[:required], class: input_classes(item.errors[field[:name]].any?) %>
+    <% else %>
+      <%= form.text_field field[:name], id:, required: field[:required], class: input_classes(item.errors[field[:name]].any?) %>
+    <% end %>
+  </div>
+<% end %>
+
+<% if items.empty? %>
+  <p class="mb-4 text-sm text-gray-500">Nenhum <%= label %> ainda.</p>
+<% end %>
+
+<ol class="space-y-3 mb-6">
+  <% items.each_with_index do |persisted, index| %>
+    <% item = (invalid_item&.persisted? && invalid_item.id == persisted.id) ? invalid_item : persisted %>
+    <li class="rounded-md border border-gray-200 p-3" id="<%= dom_id(persisted) %>">
+      <div class="flex items-start gap-3">
+        <span class="mt-2 w-6 text-center text-xs font-semibold text-gray-400"><%= index + 1 %></span>
+        <div class="flex-1 min-w-0">
+          <%= error_messages_for(item) %>
+          <%= form_with model: [:admin, product, item], url: item_path.(persisted), method: :patch, class: "grid gap-3 md:grid-cols-2" do |form| %>
+            <% fields.each { |field| field_html.(form, item, field) } %>
+            <div class="md:col-span-2">
+              <%= form.submit "Salvar", class: button_classes(:small) %>
+            </div>
+          <% end %>
+        </div>
+        <div class="flex flex-col gap-1">
+          <%= button_to "↑", move_path.(persisted, :up), method: :patch, class: button_classes(:small), disabled: index.zero?, title: "Mover para cima" %>
+          <%= button_to "↓", move_path.(persisted, :down), method: :patch, class: button_classes(:small), disabled: index == items.size - 1, title: "Mover para baixo" %>
+          <%= button_to "Remover", item_path.(persisted), method: :delete, class: "#{button_classes(:small)} text-red-700",
+                form: { data: { confirm: "Remover este #{label}?" } } %>
+        </div>
+      </div>
+    </li>
+  <% end %>
+</ol>
+
+<%# `klass.new` em vez de `build` para não pendurar um registro novo na associação carregada. %>
+<% new_item = (invalid_item&.new_record? ? invalid_item : product.association(collection).klass.new(product:)) %>
+<div class="rounded-md border border-dashed border-gray-300 p-3">
+  <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Novo <%= label %></p>
+  <%= error_messages_for(new_item) %>
+  <%= form_with model: [:admin, product, new_item], url: polymorphic_path([:admin, product, collection]), class: "grid gap-3 md:grid-cols-2" do |form| %>
+    <% fields.each { |field| field_html.(form, new_item, field) } %>
+    <div class="md:col-span-2">
+      <%= form.submit "Adicionar", class: button_classes(:primary) %>
+    </div>
+  <% end %>
+</div>

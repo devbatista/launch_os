@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.4 (CRUD admin de produtos). Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.5 (uploads). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.5–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -114,17 +114,17 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] ✅ Critérios de aceite da spec 03 (parte de Product): migrate em banco limpo, factories com traits, specs de slug/compare_at/PDF ao publicar, schema 100% uuid, sem float/decimal, `implicit_order_column`
 
 ### 1.4 CRUD admin de produtos — spec [05](../specs/05-catalogo-produtos-admin.md)
-- [ ] Rotas `admin/products` + `publish`/`unpublish`/`archive`/`preview`
-- [ ] `Admin::ProductsController` (index, new, create, show, edit, update, destroy só draft sem pedidos)
-- [ ] Formulário com seções: básico, oferta (preço em dólares → cents), conteúdo (Trix), SEO
-- [ ] Ações publish/unpublish/archive com validações e `published_at`
-- [ ] Show com status, URL pública (copiar), resumo de pedidos
-- [ ] Controllers aninhados `benefits`, `testimonials`, `faqs`: create/update/destroy/move respondendo partial HTML (fetch) ou redirect (sem JS)
-- [ ] `modules/admin/nested_list.js` (submit interceptado → fetch → troca `innerHTML`)
-- [ ] `modules/admin/confirm.js` (`data-confirm`)
-- [ ] Specs: `spec/requests/admin/products_spec.rb`, `spec/requests/admin/benefits_spec.rb` (um por coleção)
+- [x] Rotas `admin/products` + `publish`/`unpublish`/`archive` (`:id` = slug); `preview` entra com a action na 1.7
+- [x] `Admin::ProductsController` (index, new, create, show, edit, update, destroy só draft — checagem de pedidos entra na 2.1 com a tabela `orders`)
+- [x] Formulário com seções: básico, oferta (preço em dólares → cents via `Product#price=`), conteúdo (Trix), SEO; arquivos entram na 1.5
+- [x] Ações publish/unpublish/archive com validações e `published_at`; botão Publicar desabilitado com o que falta no `title`
+- [x] Show com status, URL pública (botão copiar via `modules/admin/copy.js`), blocos/arquivos; resumo de pedidos é placeholder até a Fase 2
+- [x] `Admin::CollectionItemsController` base + `benefits`/`testimonials`/`faqs`: create/update/destroy/move → partial `_list` (200/422) com `X-Requested-With`, redirect com flash sem JS; partial genérico `admin/products/_collection_list`
+- [x] `modules/admin/nested_list.js` (submit interceptado → fetch form-encoded com token do `<meta>` → troca `innerHTML`; fallback para submit normal se a rede falhar)
+- [x] `modules/admin/confirm.js` (`data-confirm` em forms/links, fase de captura) ativado no `<main>` do layout
+- [x] Specs: `spec/requests/admin/products_spec.rb`; shared example "coleção do produto no admin" usado por `benefits_spec`, `testimonials_spec`, `faqs_spec`; helper `sign_in_admin`
 - [ ] Polir o visual do admin (sidebar, formulários, tabelas, flashes) — o layout da 1.2 é o mínimo funcional; fazer aqui, quando o painel ganha as primeiras telas reais
-- [ ] ✅ Critérios de aceite da spec 05 (exceto preview)
+- [ ] ✅ Critérios de aceite da spec 05 (exceto preview) — *feito: criar draft via admin, publicar sem PDF mantém draft, publish preenche `published_at`, coleções via fetch e sem JS. Faltam: arquivos via admin (1.5), LP 200 em `/:slug` (1.6), preview (1.7), segundo produto (H5, após 1.9)*
 
 ### 1.5 Uploads — spec [05](../specs/05-catalogo-produtos-admin.md)
 - [ ] Campos de upload no formulário (PDF, capa, mockup, og_image, previews múltiplos com remoção individual)

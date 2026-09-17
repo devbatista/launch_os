@@ -4,8 +4,10 @@
   <div class="px-5 py-4 text-lg font-bold text-white border-b border-gray-800">Launch OS</div>
 
   <nav class="flex-1 px-3 py-4 space-y-1" aria-label="Principal">
-    <%= link_to "Dashboard", admin_dashboard_path,
-          class: "block rounded-md px-3 py-2 text-sm font-medium #{current_page?(admin_dashboard_path) ? 'bg-gray-800 text-white' : 'hover:bg-gray-800 hover:text-white'}" %>
+    <% nav_items = [ [ "Dashboard", admin_dashboard_path, controller_name == "dashboards" ], [ "Produtos", admin_products_path, controller_path.start_with?("admin/products", "admin/benefits", "admin/testimonials", "admin/faqs") ] ] %>
+    <% nav_items.each do |label, path, active| %>
+      <%= link_to label, path, class: "block rounded-md px-3 py-2 text-sm font-medium #{active ? 'bg-gray-800 text-white' : 'hover:bg-gray-800 hover:text-white'}" %>
+    <% end %>
   </nav>
 
   <div class="px-5 py-4 border-t border-gray-800 text-sm">

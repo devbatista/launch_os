@@ -22,7 +22,7 @@
     <% if authenticated? %>
       <div class="flex min-h-screen">
         <%= render "admin/shared/sidebar" %>
-        <main class="flex-1 px-8 py-6">
+        <main class="flex-1 px-8 py-6" data-module="admin/confirm">
           <%= render "admin/shared/flash" %>
           <%= yield %>
         </main>

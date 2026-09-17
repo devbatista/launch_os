@@ -1,0 +1,49 @@
+# Admin em português (AGENTS.md). rails-i18n fornece as mensagens padrão; aqui só os nomes dos
+# modelos/atributos usados no painel. O público (LP, emails) usa :en com textos próprios.
+pt-BR:
+  activerecord:
+    models:
+      product: Produto
+      benefit: Benefício
+      testimonial: Depoimento
+      faq: Pergunta
+      user: Usuário
+    attributes:
+      product:
+        name: Nome
+        slug: Slug
+        headline: Headline
+        subheadline: Subheadline
+        cta_text: Texto do botão
+        price_cents: Preço
+        compare_at_price_cents: Preço "de"
+        currency: Moeda
+        status: Status
+        description: Descrição
+        problem_text: Bloco do problema
+        guarantee_text: Garantia
+        refund_days: Dias para reembolso
+        meta_title: Meta title
+        meta_description: Meta description
+        pdf_file: PDF
+        cover_image: Imagem de capa
+        mockup_image: Mockup
+        og_image: Imagem OG
+        preview_images: Previews
+      benefit:
+        title: Título
+        description: Descrição
+        position: Posição
+      testimonial:
+        author_name: Nome
+        author_role: Cargo / contexto
+        quote: Depoimento
+        position: Posição
+      faq:
+        question: Pergunta
+        answer: Resposta
+        position: Posição
+      user:
+        name: Nome
+        email_address: E-mail
+        password: Senha

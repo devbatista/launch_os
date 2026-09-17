@@ -1,0 +1,8 @@
+<% content_for :title, "Novo produto — Launch OS" %>
+
+<p class="text-sm text-gray-500 mb-1"><%= link_to "Produtos", admin_products_path, class: "hover:underline" %> /</p>
+<h1 class="text-2xl font-bold text-gray-900 mb-6">Novo produto</h1>
+
+<div class="max-w-4xl">
+  <%= render "form", product: @product %>
+</div>

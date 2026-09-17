@@ -1,0 +1,6 @@
+<%= render "admin/products/collection_list", product:, items:, invalid_item:, collection: :testimonials, label: "depoimento",
+      fields: [
+        { name: :author_name, label: "Nome", required: true },
+        { name: :author_role, label: "Cargo / contexto" },
+        { name: :quote, label: "Depoimento", type: :textarea, required: true, full: true }
+      ] %>
