@@ -5,7 +5,7 @@ module Positioned
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :product
+    belongs_to :product, touch: true # invalida o ETag da LP (`fresh_when(@product)`)
 
     validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 

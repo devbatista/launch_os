@@ -1,0 +1,10 @@
+<%# Bloco 8 — garantia. %>
+<section class="mx-auto max-w-3xl px-4 py-14">
+  <div class="flex flex-col items-center gap-6 rounded-xl border-2 border-emerald-200 bg-emerald-50 p-8 text-center sm:flex-row sm:text-left">
+    <svg class="h-14 w-14 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6l-8-3Z" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>
+      <h2 class="text-2xl font-bold"><%= product.refund_days %>-day money-back guarantee</h2>
+      <div class="mt-2 space-y-2 text-slate-700"><%= simple_format product.guarantee_text, {}, wrapper_tag: "p" %></div>
+    </div>
+  </div>
+</section>

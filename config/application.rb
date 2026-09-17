@@ -32,6 +32,11 @@ module LaunchOs
     config.i18n.available_locales = [ :en, :"pt-BR" ]
     config.i18n.default_locale = :en
 
+    # Imagens públicas (LP, og:image) servidas pelo proxy do Active Storage: URL estável (o scraper do
+    # Facebook cacheia por URL), sem um 302 por imagem antes do S3 e cacheável pelo Thruster. Em dev
+    # também evita o host `minio` que o navegador não resolve. O PDF continua só por URL assinada (spec 08).
+    config.active_storage.resolve_model_to_route = :rails_storage_proxy
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

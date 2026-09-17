@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-white">
+<html lang="en" class="h-full bg-white scroll-smooth">
   <head>
     <title><%= content_for(:title) || "DevBatista" %></title>
     <meta charset="utf-8">
@@ -14,14 +14,15 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%= stylesheet_link_tag :app %>
+    <%# Só Tailwind: actiontext.css (Trix) é do admin; o conteúdo do Action Text na LP usa `prose`. %>
+    <%= stylesheet_link_tag "tailwind", "application" %>
     <%= javascript_importmap_tags "landing" %>
   </head>
 
-  <body class="h-full text-gray-900 antialiased">
+  <body class="h-full text-slate-900 antialiased">
     <%= yield %>
 
-    <%# Rodapé com suporte e links legais entra na tarefa 1.6 (partial compartilhado). %>
-    <%= yield :footer %>
+    <%= render "shared/footer" %>
+    <%= yield :after_footer %>
   </body>
 </html>

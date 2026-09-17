@@ -1,0 +1,17 @@
+<%# Bloco 9 — FAQ com <details> nativo (acessível por teclado, sem JS). %>
+<section class="bg-slate-50">
+  <div class="mx-auto max-w-3xl px-4 py-14">
+    <h2 class="text-2xl font-bold sm:text-3xl">Frequently asked questions</h2>
+    <div class="mt-6 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <% product.faqs.each do |faq| %>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+            <%= faq.question %>
+            <span class="text-slate-400 transition group-open:rotate-45" aria-hidden="true">+</span>
+          </summary>
+          <div class="mt-3 space-y-2 text-slate-700"><%= simple_format faq.answer, {}, wrapper_tag: "p" %></div>
+        </details>
+      <% end %>
+    </div>
+  </div>
+</section>

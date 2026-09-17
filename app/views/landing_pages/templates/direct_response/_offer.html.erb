@@ -1,0 +1,43 @@
+<%# Bloco 7 — oferta (#buy): preço do backend, telefone + opt-in só com TWILIO_ENABLED, botão PayPal.
+    modules/checkout.js carrega o SDK do PayPal sob demanda (implementação na 2.1; por ora placeholder). %>
+<section id="buy" class="bg-slate-900 text-white"
+         data-module="checkout"
+         data-product-id="<%= product.id %>"
+         data-paypal-client-id="<%= paypal_client_id %>"
+         data-create-url="/checkout/paypal"
+         data-capture-url="/checkout/paypal/capture"
+         data-whatsapp-enabled="<%= twilio_enabled? %>">
+  <div class="mx-auto max-w-lg px-4 py-14 text-center sm:py-20">
+    <h2 class="text-2xl font-bold sm:text-3xl">Get <%= product.name %> today</h2>
+    <p class="mt-6 text-5xl font-extrabold tracking-tight">
+      <%= money(product.price_cents, product.currency) %>
+      <% if product.compare_at_price_cents %><s class="ml-2 align-middle text-2xl font-medium text-slate-400"><%= money(product.compare_at_price_cents, product.currency) %></s><% end %>
+    </p>
+    <p class="mt-2 text-slate-300">One-time payment · Instant download</p>
+
+    <form class="mt-8 space-y-4 text-left" onsubmit="return false">
+      <% if twilio_enabled? %>
+        <div>
+          <label for="checkout-phone" class="block text-sm font-medium text-slate-200">Phone (optional)</label>
+          <input id="checkout-phone" type="tel" name="phone" placeholder="+1 555 123 4567" autocomplete="tel" inputmode="tel"
+                 class="mt-1 block w-full rounded-md border-0 px-3 py-2 text-slate-900 shadow-sm focus:ring-2 focus:ring-emerald-400">
+        </div>
+        <label class="flex items-start gap-2 text-sm text-slate-200">
+          <input type="checkbox" name="whatsapp_opt_in" value="1" class="mt-1 h-4 w-4 rounded">
+          <span>Send my download link on WhatsApp too</span>
+        </label>
+        <p class="text-xs text-slate-400">Standard messaging rates may apply. Reply STOP to opt out.</p>
+      <% end %>
+
+      <div id="paypal-button-container" class="pt-2">
+        <%# Placeholder até a 2.1: o botão real é renderizado pelo SDK do PayPal. %>
+        <button type="button" disabled class="w-full cursor-not-allowed rounded-lg bg-emerald-500/60 px-8 py-4 text-lg font-bold text-slate-900">
+          <%= product.cta_text %> — <%= money(product.price_cents, product.currency) %>
+        </button>
+        <p class="mt-2 text-center text-xs text-slate-400">Secure checkout with PayPal — opening soon.</p>
+      </div>
+      <noscript><p class="text-sm text-amber-300">Please enable JavaScript to complete your purchase.</p></noscript>
+    </form>
+    <p class="mt-6 text-sm text-slate-400"><%= product.refund_days %>-day money-back guarantee. Delivered by email right after payment.</p>
+  </div>
+</section>

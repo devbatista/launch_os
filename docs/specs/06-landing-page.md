@@ -157,10 +157,10 @@ Contraste AA, botão de compra com texto claro, `alt` em imagens, foco visível,
 
 ## Critérios de aceite
 
-- [ ] `/21-day-procrastination-reset` renderiza todos os blocos com dados do admin; blocos opcionais somem quando vazios.
-- [ ] Layout OK em 375 px (iPhone SE) e 1280 px; nenhum overflow horizontal.
+- [x] `/21-day-procrastination-reset` renderiza todos os blocos com dados do admin; blocos opcionais somem quando vazios.
+- [x] Layout OK em 375 px (iPhone SE) e 1280 px; nenhum overflow horizontal.
 - [ ] Botão PayPal aparece em mobile Safari e Chrome Android.
 - [ ] Lighthouse mobile: Performance ≥ 85, Accessibility ≥ 90.
-- [ ] `/qualquer-slug-inexistente` → 404 com página amigável.
-- [ ] Slug reservado (`admin`) não pode ser salvo como slug de produto.
+- [x] `/qualquer-slug-inexistente` → 404 com página amigável.
+- [x] Slug reservado (`admin`) não pode ser salvo como slug de produto.
 - [ ] `og:image` e `description` corretos ao colar a URL no Facebook Debugger.

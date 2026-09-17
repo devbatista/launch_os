@@ -1,0 +1,17 @@
+<%# Bloco 3 — benefícios (publicar exige ≥ 1). Ícone genérico de check. %>
+<section class="bg-slate-50">
+  <div class="mx-auto max-w-3xl px-4 py-14">
+    <h2 class="text-2xl font-bold sm:text-3xl">What you'll get</h2>
+    <ul class="mt-8 grid gap-6 sm:grid-cols-2">
+      <% product.benefits.each do |benefit| %>
+        <li class="flex gap-3">
+          <svg class="mt-1 h-6 w-6 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div>
+            <h3 class="font-semibold"><%= benefit.title %></h3>
+            <% if benefit.description.present? %><p class="mt-1 text-slate-600"><%= benefit.description %></p><% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</section>

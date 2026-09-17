@@ -1,0 +1,13 @@
+<%# Bloco 5 — galeria de páginas de amostra (variant :thumb 600×800 WebP, lazy). %>
+<section class="bg-slate-50">
+  <div class="mx-auto max-w-5xl px-4 py-14">
+    <h2 class="text-center text-2xl font-bold sm:text-3xl">Take a peek inside</h2>
+    <ul class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+      <% product.preview_images.each_with_index do |image, index| %>
+        <li class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <%= lp_image_tag image, :thumb, limit: [ 600, 800 ], alt: "#{product.name} — sample page #{index + 1}", class: "aspect-[3/4] h-auto w-full object-cover" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</section>

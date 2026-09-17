@@ -140,6 +140,32 @@ RSpec.describe Product do
     end
   end
 
+  describe "imagens da LP" do
+    it "usa o mockup no hero, ou a capa na falta dele" do
+      product = build(:product)
+      product.cover_image.attach(image_upload)
+      expect(product.hero_image).to eq(product.cover_image)
+
+      product.mockup_image.attach(image_upload)
+      expect(product.hero_image).to eq(product.mockup_image)
+    end
+
+    it "usa a og_image como imagem social, ou a do hero na falta dela" do
+      product = build(:product, :with_images)
+      expect(product.social_image).to eq(product.mockup_image)
+
+      product.og_image.attach(image_upload)
+      expect(product.social_image).to eq(product.og_image)
+    end
+  end
+
+  describe "template" do
+    it "só aceita templates existentes" do
+      expect(build(:product, template: "direct_response")).to be_valid
+      expect(build(:product, template: "nope")).not_to be_valid
+    end
+  end
+
   describe "publicação" do
     it "lista o que falta para publicar" do
       product = create(:product)

@@ -34,6 +34,9 @@ Rails.application.configure do
   # Arquivos no MinIO (bucket privado S3-compatível), como em produção.
   config.active_storage.service = :s3
 
+  # Permite acessar o servidor de dev a partir de outros containers (ex.: Lighthouse via host.docker.internal).
+  config.hosts << "host.docker.internal"
+
   # Emails ficam em /letter_opener; nenhum envio real em desenvolvimento.
   config.action_mailer.delivery_method = :letter_opener_web
   config.action_mailer.perform_deliveries = true

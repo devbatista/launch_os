@@ -11,14 +11,6 @@ module AdminHelper
     tag.span(label, class: "inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold #{classes}")
   end
 
-  # Dinheiro sempre a partir de centavos (nunca float).
-  def money(cents, currency = "USD")
-    return "—" if cents.nil?
-    # Formato americano fixo (produto vendido em USD), independente do locale pt-BR do admin.
-    number_to_currency(cents.to_d / 100, unit: currency == "USD" ? "$" : "#{currency} ", precision: 2,
-                                         separator: ".", delimiter: ",", format: "%u%n")
-  end
-
   # Datas do admin no formato brasileiro, no fuso de São Paulo (sem depender de rails-i18n).
   def datetime_br(time)
     return "—" if time.nil?
