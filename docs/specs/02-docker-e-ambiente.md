@@ -9,8 +9,6 @@ precisa apenas de Docker + Docker Compose.
 Dockerfile              # produção (gerado pelo Rails 8, ajustado) — usado pelo Railway
 Dockerfile.dev          # desenvolvimento/teste (com gems de dev, sem precompile)
 compose.yml             # dev (nome canônico do Compose v2; equivale a docker-compose.yml)
-railway.json            # serviço web: builder DOCKERFILE, health check /up, restart policy
-railway.sidekiq.json    # serviço sidekiq: mesmo builder, startCommand do Sidekiq, sem health check
 .dockerignore           # exclui .env*, master.key, docs/, AGENTS.md, compose.yml
 .env.example            # versionado; copiar para .env (gitignored)
 ```
@@ -245,19 +243,22 @@ manualmente, e cadastrar a URL gerada no PayPal Developer / Twilio console.
 
 ## Produção — Railway
 
-Hospedagem decidida: **Railway**, deploy por `Dockerfile` (projeto gerado com `--skip-kamal`).
-`railway.json` na raiz fixa o builder `DOCKERFILE`, o health check em `/up` e a política de restart.
+Hospedagem decidida: **Railway**, deploy por `Dockerfile` (projeto gerado com `--skip-kamal`). O builder
+é detectado pela presença do `Dockerfile`; as demais configurações de cada serviço ficam **no dashboard**
+(decisão de 17/09, seção 11 do cronograma): o *Config as Code* (`railway.json`) foi descontinuado pelo Railway —
+arquivos existentes valem só até 01/12/2026 e serviços criados após 28/08/2026 não podem usá-lo. O substituto
+(*Infrastructure as Code*, `.railway/railway.ts` + `railway config apply`) fica para a Fase 5.
 
-Serviços no projeto Railway (todos a partir do mesmo repositório):
+Serviços no projeto Railway (todos a partir do mesmo repositório, branch `main`):
 
-| Serviço | Origem | Comando | Observações |
+| Serviço | Origem | Configuração no dashboard (Settings → Deploy) | Observações |
 |---|---|---|---|
-| `web` | repo (Dockerfile) | padrão da imagem (`./bin/thrust ./bin/rails server`) | Railway injeta `PORT`; `bin/docker-entrypoint` exporta `HTTP_PORT=$PORT` para o Thruster e roda `db:prepare` antes de subir |
-| `sidekiq` | repo (Dockerfile) | `bundle exec sidekiq -C config/sidekiq.yml` via **`railway.sidekiq.json`** (Settings → Config-as-code → *Config File Path*) | mesma imagem e mesmas variáveis do `web`; não roda migrations. Precisa do config próprio porque o `railway.json` da raiz vale para todo serviço do repo e traria o health check `/up`, que o Sidekiq não atende |
+| `launch_os` (web) | repo (Dockerfile) | Start Command vazio (padrão da imagem: `./bin/thrust ./bin/rails server`); **Healthcheck Path `/up`**, timeout 120 s; Restart Policy *On Failure*, 5 tentativas | Railway injeta `PORT`; `bin/docker-entrypoint` exporta `HTTP_PORT=$PORT` para o Thruster e roda `db:prepare` antes de subir |
+| `sidekiq` | repo (Dockerfile) | **Custom Start Command `bundle exec sidekiq -C config/sidekiq.yml`**; **sem** healthcheck (Sidekiq não abre porta HTTP); Restart Policy *On Failure*, 5 tentativas | mesma imagem e mesmas variáveis do web; não roda migrations (o entrypoint só migra para `rails server`) |
 | `Postgres` | plugin Railway | — | fornece `DATABASE_URL` (referenciar como `${{Postgres.DATABASE_URL}}`) |
 | `Redis` | plugin Railway | — | fornece `REDIS_URL` (`${{Redis.REDIS_URL}}`) |
 
-Variáveis obrigatórias em `web` e `sidekiq`: `RAILS_MASTER_KEY`, `DATABASE_URL`, `REDIS_URL`, `APP_HOST`,
+Variáveis obrigatórias em `launch_os` e `sidekiq`: `RAILS_MASTER_KEY`, `DATABASE_URL`, `REDIS_URL`, `APP_HOST`,
 `APP_PROTOCOL=https`, `S3_*`, `SES_*`, `PAYPAL_*`, `TWILIO_*`, `META_PIXEL_ID`, `GA4_MEASUREMENT_ID`, `SENTRY_DSN`,
 `SUPPORT_EMAIL`, `MAIL_FROM`, `MAIL_DOMAIN`. Usar *shared variables* do Railway para não duplicar entre os dois serviços.
 

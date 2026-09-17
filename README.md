@@ -49,10 +49,11 @@ adicione `127.0.0.1 minio` ao `/etc/hosts`.
 
 ## Produção (Railway)
 
-Deploy por `Dockerfile` (ver `railway.json`). Dois serviços a partir deste repositório:
+Deploy por `Dockerfile`; a configuração de cada serviço fica no dashboard do Railway (o *Config as Code* foi
+descontinuado pela plataforma). Dois serviços a partir deste repositório:
 
-- **web** — comando padrão da imagem; o Railway injeta `PORT` e o entrypoint roda `db:prepare` no boot.
-- **worker** — *Custom Start Command*: `bundle exec sidekiq -C config/sidekiq.yml`.
+- **launch_os** (web) — comando padrão da imagem, healthcheck em `/up`; o Railway injeta `PORT` e o entrypoint roda `db:prepare` no boot.
+- **sidekiq** — *Custom Start Command*: `bundle exec sidekiq -C config/sidekiq.yml`, sem healthcheck.
 
 Mais os plugins **Postgres** (`DATABASE_URL`) e **Redis** (`REDIS_URL`). Variáveis obrigatórias e passo a passo
 em [docs/specs/02-docker-e-ambiente.md](docs/specs/02-docker-e-ambiente.md#produção--railway).
