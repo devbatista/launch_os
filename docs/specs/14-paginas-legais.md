@@ -49,5 +49,5 @@ de contato. Nenhum email de marketing no MVP.
 
 - [x] As três páginas respondem 200, têm layout consistente com a LP e links no rodapé de todas as páginas públicas.
 - [x] Refund policy exibe o mesmo número de dias configurado no produto.
-- [ ] Facebook Business Manager aceita a URL da política de privacidade na verificação do domínio.
+- [x] Facebook Business Manager aceita a URL da política de privacidade na verificação do domínio. *(Não há campo de URL; a exigência é o link no rodapé da LP — presente. 17/09)*
 - [ ] Email de suporte recebe e responde uma mensagem de teste.

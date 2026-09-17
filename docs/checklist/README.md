@@ -161,13 +161,13 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Textos em inglês cobrindo os itens mínimos da spec (dados coletados, PayPal/Twilio/SES/Meta/GA, cookies, CCPA/LGPD, reembolso com `refund_days`) — *views em `app/views/legal_pages/` com moldura `_page`. **Conferir**: operador escrito como "DevBatista (Rafael Batista), based in Brazil" — ajustar para a razão social/CNPJ se o contador pedir; retenção "typically 5 years" e logs 90 dias são premissas*
 - [x] `last_updated` visível; links no rodapé de todas as páginas públicas — *datas em `LegalPagesController::LAST_UPDATED` (atualizar ao mudar o texto); rodapé `shared/_footer` usa as rotas*
 - [x] Spec: 200 nas três rotas; não capturadas por `/:slug` — *`spec/requests/legal_pages_spec.rb` (8 exemplos)*
-- [ ] Critérios da spec 14 que dependem do site no ar: URL da privacy aceita no Facebook Business Manager; email de suporte recebe/responde teste — *itens listados na 1.9*
+- [ ] Critérios da spec 14 que dependem do site no ar: URL da privacy aceita pela Meta (✅ ver 1.9); email de suporte recebe/responde teste — *pendente, listado na 1.9*
 
 ### 1.9 Cadastrar e publicar o produto
 - [x] Produto *21-Day Procrastination Reset* cadastrado em produção com copy provisória, mockup e PDF placeholder — *17/09 pelo admin de produção (admin criado via seed com `ADMIN_EMAIL`/`ADMIN_PASSWORD` no Railway; a senha pode sair do Railway depois). Sem depoimentos de propósito: os do seed são fictícios — só entram depoimentos reais*
 - [x] Publicado; `https://www.devbatista.online/21-day-procrastination-reset` responde 200 — *17/09: 200 com ETag e `public, max-age=60`; legais 200; `/nao-existe` 404. Lighthouse mobile em produção (Chrome nativo): **Performance 100, Accessibility 100, Best Practices 100, SEO 100**; LCP 1,4 s, CLS 0, 73 KB. PDF e capa no bucket `launch-os-prod` (S3), 403 sem assinatura*
-- [ ] Facebook Sharing Debugger mostra og:image e description corretos — *colar a URL em https://developers.facebook.com/tools/debug/ (conta do Business); sem `og_image` dedicada a imagem social é a capa (WebP 900×900) — subir uma OG 1200×630 no admin melhora o card*
-- [ ] Facebook Business Manager aceita `https://www.devbatista.online/privacy` como política de privacidade (spec 14)
+- [x] Facebook Sharing Debugger mostra og:image e description corretos — *17/09: 200, canônica, og:title/description/image/alt lidos; único aviso é `fb:app_id` ausente (opcional, não temos app na Meta e não precisamos — Pixel/CAPI se configuram no Events Manager). A capa atual é um placeholder (foto sem relação com o produto): **trocar por mockup real + OG 1200×630 antes dos anúncios***
+- [x] Política de privacidade aceita pela Meta — *não existe campo para cadastrar a URL no Business Manager; a exigência é o link no rodapé da LP, já presente. `https://www.devbatista.online/privacy` só é digitada se a revisão do anúncio (Fase 4) ou a Página do Facebook pedir*
 - [ ] Email de suporte: enviar um teste para `support@devbatista.online` e responder (spec 14)
 
 **M1 — LP em produção (04/10):** critérios de saída da Fase 1 no cronograma.
