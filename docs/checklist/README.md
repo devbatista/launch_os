@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.3 (Product, Benefit, Testimonial, Faq). Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.4 (CRUD admin de produtos). Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -87,7 +87,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] *(opcional)* marcar *Wild Card Redirect* no cPanel para `devbatista.online/caminho` preservar o caminho (hoje → 404)
 - [x] `APP_HOST=www.devbatista.online` e `PORT=8080` fixados no Railway
 - [x] `config.hosts` em production com `www.devbatista.online`, `devbatista.online`, `/.*\.up\.railway\.app\z/` (verificado com boot em `RAILS_ENV=production`)
-- [ ] ✅ Critérios de aceite das specs 01 e 02 — *spec 01: os 4 conferidos (compose sobe, rspec verde em container, `git grep` de segredos vazio, brakeman/bundler-audit limpos). Spec 02: faltam os que dependem de código posterior — upload no MinIO (1.5), email via job em `/letter_opener` e job processado pelo `sidekiq` (2.6), persistência do Redis (2.6)*
+- [ ] ✅ Critérios de aceite das specs 01 e 02 — *spec 01: os 4 conferidos (compose sobe, rspec verde em container, `git grep` de segredos vazio, brakeman/bundler-audit limpos). Spec 02: upload no MinIO conferido na 1.3 (seed + variant WebP); faltam email via job em `/letter_opener`, job processado pelo `sidekiq` e persistência do Redis (2.6)*
 
 ### 1.2 Autenticação admin — spec [04](../specs/04-autenticacao-admin.md)
 - [x] `rails g authentication`; `users`/`sessions` com `id: :uuid` e `user_id` uuid; rotas em `/admin/login` (GET/POST) e `DELETE /admin/logout`; `PasswordsController`/`PasswordsMailer` e Action Cable removidos (reset só por console)
@@ -102,16 +102,16 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] ✅ Critérios de aceite da spec 04 — todos cobertos por spec e conferidos no servidor de dev (login → dashboard com sidebar → logout → redirect)
 
 ### 1.3 Product, Benefit, Testimonial, Faq — spec [03](../specs/03-modelo-de-dados.md)
-- [ ] Migration `products` (todas as colunas da spec, `price_cents`, `status` string, índices slug/status)
-- [ ] Action Text instalado (`description`); Active Storage instalado — conferir `id: :uuid` e `record_id` uuid nas tabelas geradas
-- [ ] Migrations `benefits`, `testimonials`, `faqs` com `position` e índice `(product_id, position)`
-- [ ] `Product`: enum status, validações (slug formato/único, price > 0, compare_at > price, slugs reservados), `to_param = slug`
-- [ ] `Product`: attachments (`pdf_file`, `cover_image`, `mockup_image`, `og_image`, `preview_images`) com variants WebP e validação de tipo/tamanho
-- [ ] `Product#publishable?` (PDF, imagem, headline, price, ≥1 benefit) e validação ao publicar
-- [ ] Factories com traits `:draft`, `:published`, `:archived`, `:with_pdf`, `:with_images`, `:with_lp_content`
-- [ ] Seed de produto de exemplo em development
-- [ ] Specs: `spec/models/product_spec.rb` (T23, T24), benefit/testimonial/faq
-- [ ] ✅ Critérios de aceite da spec 03 (parte de Product)
+- [x] Migration `products` (todas as colunas da spec, `price_cents`/`compare_at_price_cents` integer, `status` string, índices `slug` único e `status`)
+- [x] Action Text (`description`) e Active Storage instalados; 10 tabelas, todas `id: :uuid`, todas as `*_id` uuid, sem pgcrypto, sem float/decimal. Trix importado no entry `application.js`
+- [x] Migrations `benefits`, `testimonials`, `faqs` com `position` e índice `(product_id, position)`; concern `Positioned` (posição sequencial por produto, `move(:up|:down)`)
+- [x] `Product`: enum status, validações (slug formato/único/normalizado, gerado do nome, `RESERVED_SLUGS`, price > 0, compare_at > price), `to_param = slug`, `price`/`compare_at_price` em BigDecimal para o formulário
+- [x] `Product`: attachments (`pdf_file`, `cover_image`, `mockup_image`, `og_image`, `preview_images`) com variants WebP `:lp`/`:thumb` (`preprocessed: true`) e validação de content type/tamanho/quantidade (PDF ≤ 50 MB; JPEG/PNG/WebP ≤ 5 MB; ≤ 8 previews) — variant conferido no MinIO
+- [x] `Product#publishable?`/`missing_for_publish` (PDF, imagem, headline, price, ≥1 benefit), validação ao publicar, `publish`/`unpublish`/`archive`
+- [x] Factories `product` (traits `:draft`, `:published`, `:archived`, `:with_pdf`, `:with_images`, `:with_lp_content`), `benefit`, `testimonial`, `faq`; fixtures `spec/fixtures/files` (PNG, PDF, TXT) + helper `AttachmentHelpers`
+- [x] Seed de produto de exemplo em development (draft completo e publicável, com placeholders em `db/seeds/files`)
+- [x] Specs: `spec/models/product_spec.rb` (T23, T24, anexos, publicação), `spec/models/positioned_spec.rb` (benefit/testimonial/faq)
+- [x] ✅ Critérios de aceite da spec 03 (parte de Product): migrate em banco limpo, factories com traits, specs de slug/compare_at/PDF ao publicar, schema 100% uuid, sem float/decimal, `implicit_order_column`
 
 ### 1.4 CRUD admin de produtos — spec [05](../specs/05-catalogo-produtos-admin.md)
 - [ ] Rotas `admin/products` + `publish`/`unpublish`/`archive`/`preview`
