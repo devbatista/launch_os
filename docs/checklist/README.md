@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.7 (preview de rascunho). Da 1.6 ficam o Lighthouse em produção e o botão PayPal real (2.1). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.8 (páginas legais). Da 1.6 ficam o Lighthouse em produção e o botão PayPal real (2.1). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -152,9 +152,9 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - Decisões: (1) imagens públicas pelo **proxy** do Active Storage (`resolve_model_to_route = :rails_storage_proxy`): URL estável e cacheável pelo Thruster, sem 302 por imagem, e o navegador em dev não precisa resolver `minio`. (2) `allow_browser versions: :modern` saiu de `ApplicationController` e ficou só no admin — na LP devolveria 406 a compradores com navegador in-app antigo. (3) `config/importmap.rb` restringe `preload` por entry: a LP não pré-carrega trix/actiontext/módulos do admin (antes baixava 526 KB de Trix); layout `landing` carrega só `tailwind` + `application.css`. (4) `@plugin "@tailwindcss/typography"` (embutido no CLI standalone) para o Action Text da LP (`prose`).
 
 ### 1.7 Preview de rascunho
-- [ ] `Admin::ProductsController#preview` renderizando o mesmo template com `@preview = true`
-- [ ] Banner "DRAFT PREVIEW", tracking desligado, botão de compra desabilitado
-- [ ] Spec: preview 200 para draft/archived; público 404 (T14)
+- [x] `Admin::ProductsController#preview` renderizando o mesmo template com `@preview = true` — *`GET /admin/products/:slug/preview`, layout `landing`, sem o locale pt-BR do admin (a página é a pública tal qual) e sem cache público; links "Preview" e "Ver ao vivo" (só publicado) na tela do produto*
+- [x] Banner "DRAFT PREVIEW", tracking desligado, botão de compra desabilitado — *`_preview_banner` (status + voltar ao admin), `robots noindex,nofollow`, bloco `#buy` sem `data-module="checkout"` (SDK nunca carrega); tracking ainda não existe (3.1) e já nasce condicionado a `@preview`*
+- [x] Spec: preview 200 para draft/archived; público 404 (T14) — *em `spec/requests/admin/products_spec.rb`; o 404 público está em `landing_pages_spec`*
 
 ### 1.8 Páginas legais — spec [14](../specs/14-paginas-legais.md)
 - [ ] `LegalPagesController` com `/privacy`, `/terms`, `/refund-policy`

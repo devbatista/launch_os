@@ -1,0 +1,6 @@
+<%# Banner fixo do preview do admin (spec 05): deixa claro que a página não é pública e leva de volta ao painel. %>
+<div role="status" class="sticky top-0 z-20 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-amber-400 px-4 py-2 text-center text-sm font-semibold text-slate-900">
+  <span>DRAFT PREVIEW — not visible to the public</span>
+  <span class="font-normal">Status: <%= product.status %></span>
+  <%= link_to "Back to admin", admin_product_path(product), class: "underline" %>
+</div>

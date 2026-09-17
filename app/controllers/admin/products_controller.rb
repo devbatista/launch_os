@@ -1,8 +1,10 @@
 module Admin
-  # CRUD do catálogo (docs/specs/05-catalogo-produtos-admin.md), incluindo os arquivos (PDF e imagens).
-  # Preview da LP na 1.7.
+  # CRUD do catálogo (docs/specs/05-catalogo-produtos-admin.md), incluindo os arquivos (PDF e imagens)
+  # e o preview da LP em rascunho.
   class ProductsController < BaseController
-    before_action :set_product, only: %i[show edit update destroy publish unpublish archive]
+    before_action :set_product, only: %i[show edit update destroy publish unpublish archive preview]
+    # O preview é a LP pública tal qual: em inglês, sem o locale pt-BR do admin.
+    skip_around_action :use_admin_locale, only: :preview
 
     def index
       @products = Product.recent
@@ -72,6 +74,13 @@ module Admin
     def archive
       @product.archive
       redirect_to admin_product_path(@product), notice: "Produto arquivado. A landing page passa a responder 404."
+    end
+
+    # Mesmo template da LP pública (LandingPagesController#show), para qualquer status, com banner
+    # "DRAFT PREVIEW", noindex, compra desabilitada e sem tracking. Nunca cacheado (página do admin).
+    def preview
+      @preview = true
+      render "landing_pages/templates/#{@product.template}/show", layout: "landing"
     end
 
     private
