@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.8 (páginas legais). Da 1.6 ficam o Lighthouse em produção e o botão PayPal real (2.1). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.9 (cadastrar e publicar o produto em produção). Da 1.8 ficam o Facebook Business Manager e o teste do email de suporte (com o site no ar). Da 1.6 ficam o Lighthouse em produção e o botão PayPal real (2.1). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -157,10 +157,11 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Spec: preview 200 para draft/archived; público 404 (T14) — *em `spec/requests/admin/products_spec.rb`; o 404 público está em `landing_pages_spec`*
 
 ### 1.8 Páginas legais — spec [14](../specs/14-paginas-legais.md)
-- [ ] `LegalPagesController` com `/privacy`, `/terms`, `/refund-policy`
-- [ ] Textos em inglês cobrindo os itens mínimos da spec (dados coletados, PayPal/Twilio/SES/Meta/GA, cookies, CCPA/LGPD, reembolso com `refund_days`)
-- [ ] `last_updated` visível; links no rodapé de todas as páginas públicas
-- [ ] Spec: 200 nas três rotas; não capturadas por `/:slug`
+- [x] `LegalPagesController` com `/privacy`, `/terms`, `/refund-policy` — *layout `landing`, `Cache-Control public, max-age=1h`; refund aceita `?product=<slug>` (o rodapé da LP passa) e usa `refund_days` do produto, senão 14*
+- [x] Textos em inglês cobrindo os itens mínimos da spec (dados coletados, PayPal/Twilio/SES/Meta/GA, cookies, CCPA/LGPD, reembolso com `refund_days`) — *views em `app/views/legal_pages/` com moldura `_page`. **Conferir**: operador escrito como "DevBatista (Rafael Batista), based in Brazil" — ajustar para a razão social/CNPJ se o contador pedir; retenção "typically 5 years" e logs 90 dias são premissas*
+- [x] `last_updated` visível; links no rodapé de todas as páginas públicas — *datas em `LegalPagesController::LAST_UPDATED` (atualizar ao mudar o texto); rodapé `shared/_footer` usa as rotas*
+- [x] Spec: 200 nas três rotas; não capturadas por `/:slug` — *`spec/requests/legal_pages_spec.rb` (8 exemplos)*
+- [ ] Critérios da spec 14 que dependem do site no ar: URL da privacy aceita no Facebook Business Manager; email de suporte recebe/responde teste — *na 1.9*
 
 ### 1.9 Cadastrar e publicar o produto
 - [ ] Produto *21-Day Procrastination Reset* cadastrado em produção com copy provisória, mockup e PDF placeholder

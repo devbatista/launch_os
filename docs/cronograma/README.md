@@ -106,7 +106,7 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 | 1.5 | Uploads Active Storage em bucket privado: PDF, capa, mockup, og_image, previews; validação de tipo/tamanho; variants WebP | [05](../specs/05-catalogo-produtos-admin.md) | 5 | 1.3 | 🟦 | | 17/09: seção Arquivos no admin com remoção individual, `file_preview.js`, MinIO ok (403 sem assinatura). Falta só confirmar no bucket de produção (na 1.9) |
 | 1.6 | Template Direct Response: rota `/:slug`, todos os blocos, mobile first, meta tags e og_image, entry `landing.js` | [06](../specs/06-landing-page.md) | 10 | 1.4, 1.5 | 🟦 | | 17/09: rota `/:slug`, template `direct_response` completo, sticky CTA, meta/OG, cache ETag, imagens via proxy, preload por entry no importmap. Faltam Lighthouse em produção (1.9) e botão PayPal (2.1) |
 | 1.7 | Preview de rascunho para admin; 404 público para não publicados | [05](../specs/05-catalogo-produtos-admin.md), [06](../specs/06-landing-page.md) | 2 | 1.6 | ✅ | | 17/09: preview com banner, noindex e compra desabilitada; links Preview/Ver ao vivo no admin |
-| 1.8 | Páginas legais (Privacy, Terms, Refund Policy) e contato de suporte, em inglês | [14](../specs/14-paginas-legais.md) | 3 | 1.6 | ⬜ | | |
+| 1.8 | Páginas legais (Privacy, Terms, Refund Policy) e contato de suporte, em inglês | [14](../specs/14-paginas-legais.md) | 3 | 1.6 | 🟦 | | 17/09: três páginas em inglês, refund lê `refund_days` do produto, rodapé com as rotas. Faltam Facebook BM e teste do email (1.9) |
 | 1.9 | Cadastrar o *21-Day Procrastination Reset* com copy provisória e publicar em produção | [16](../specs/16-roadmap-e-fases.md) | 2 | 1.6, 1.8 | ⬜ | | |
 
 **Total: 46 h (≈ 23 h/semana)**
