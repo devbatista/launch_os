@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.2 (autenticação admin). Da 1.1 ficam só itens que dependem de fases posteriores (worker no Railway → 2.6; critérios da spec 02 que exigem upload/email/jobs). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.2 (autenticação admin). Da 1.1 ficam só itens que dependem de fases posteriores (serviço `sidekiq` no Railway → 2.6; critérios da spec 02 que exigem upload/email/jobs). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -81,7 +81,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `bin/setup` funciona em container limpo (`db:prepare`, seeds)
 - [x] CI (GitHub Actions): job `test` (Postgres 17 + libvips + `bundle exec rspec`) somado a lint/brakeman/bundler-audit/importmap audit; `bin/ci` com step RSpec
 - [x] Deploy inicial em produção: `https://launchos-production-9f6e.up.railway.app/up` → 200 (variáveis definidas via CLI; `S3_*` e `SES_*` reais desde 16/09)
-- [ ] Serviço `worker` no Railway (mesmo repo, *Custom Start Command* `bundle exec sidekiq -C config/sidekiq.yml`, mesmas variáveis) — necessário só a partir da 2.6
+- [ ] Serviço `sidekiq` no Railway (mesmo repo, config `railway.sidekiq.json` com `startCommand` do Sidekiq e sem health check, mesmas variáveis; `DATABASE_URL`/`REDIS_URL` como referências aos plugins) — *em andamento 17/09: arquivo criado; serviço `sidekiq` criado com as 27 variáveis do web; falta conectar o repo e apontar o Config File Path no dashboard e confirmar o boot do Sidekiq nos logs*
 - [x] Domínio no Railway: `www.devbatista.online` adicionado; CNAME `www` → `0y02s4dz.up.railway.app` + TXT `railway-verify` na HostGator; certificado Let's Encrypt emitido; porta do domínio = 8080; `https://www.devbatista.online/up` → 200 (16/09)
 - [x] Redirect 301 do apex `devbatista.online` → `https://www.devbatista.online` no cPanel (http e https OK)
 - [ ] *(opcional)* marcar *Wild Card Redirect* no cPanel para `devbatista.online/caminho` preservar o caminho (hoje → 404)
