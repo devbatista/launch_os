@@ -33,6 +33,10 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include ActiveJob::TestHelper
+  config.include ActiveSupport::Testing::TimeHelpers
+
+  # Contadores de `rate_limit` vivem no cache: zera entre exemplos.
+  config.before { Rails.cache.clear }
 
   config.before(:each, type: :system) do
     driven_by :selenium, using: :headless_chrome, options: { url: ENV["SELENIUM_URL"] }

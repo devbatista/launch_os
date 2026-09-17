@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.2 (autenticação admin). Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 1.3 (Product, Benefit, Testimonial, Faq). Da 1.1 ficam só os critérios da spec 02 que exigem upload/email/jobs (1.5 e 2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -90,16 +90,16 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] ✅ Critérios de aceite das specs 01 e 02 — *spec 01: os 4 conferidos (compose sobe, rspec verde em container, `git grep` de segredos vazio, brakeman/bundler-audit limpos). Spec 02: faltam os que dependem de código posterior — upload no MinIO (1.5), email via job em `/letter_opener` e job processado pelo `sidekiq` (2.6), persistência do Redis (2.6)*
 
 ### 1.2 Autenticação admin — spec [04](../specs/04-autenticacao-admin.md)
-- [ ] `rails g authentication`; conferir `users`/`sessions` com `id: :uuid` e `user_id` uuid; mover rotas para `/admin/login`, `/admin/logout`
-- [ ] Migration: `name`, `role`, `last_sign_in_at`, `failed_attempts`, `locked_at` em `users`
-- [ ] `User#locked?`, `register_failed_attempt!` (bloqueia na 5ª por 15 min), reset ao logar
-- [ ] Senha mínima de 12 caracteres
-- [ ] `rate_limit to: 10, within: 3.minutes` em `Admin::SessionsController#create`
-- [ ] `Admin::BaseController` com `require_authentication`; layout com sidebar
-- [ ] Mensagem de erro genérica ("Invalid email or password") sem revelar existência
-- [ ] Seed do admin via `ADMIN_EMAIL` / `ADMIN_PASSWORD`
-- [ ] Specs: `spec/requests/admin/sessions_spec.rb` (T13, T26), `spec/models/user_spec.rb`
-- [ ] ✅ Critérios de aceite da spec 04
+- [x] `rails g authentication`; `users`/`sessions` com `id: :uuid` e `user_id` uuid; rotas em `/admin/login` (GET/POST) e `DELETE /admin/logout`; `PasswordsController`/`PasswordsMailer` e Action Cable removidos (reset só por console)
+- [x] Migration `create_users` com `name`, `role` (default `admin`), `last_sign_in_at`, `failed_attempts` (0, not null), `locked_at`
+- [x] `User#locked?`, `register_failed_attempt!` (bloqueia na 5ª por 15 min; bloqueio expirado zera a contagem), `register_successful_sign_in!`
+- [x] Senha mínima de 12 caracteres (`User::PASSWORD_MIN_LENGTH`)
+- [x] `rate_limit to: 10, within: 3.minutes` em `Admin::SessionsController#create` → 429; test env com `:memory_store` para o limite funcionar nos specs
+- [x] `Admin::BaseController` com `require_authentication`; layout `application` renderiza sidebar (`admin/shared/_sidebar`) + flash quando autenticado; `Admin::DashboardsController#show` placeholder (cards na 3.3)
+- [x] Mensagem genérica sem revelar existência — em português ("E-mail ou senha inválidos."), conforme regra de idioma do admin no AGENTS.md; a spec 04 cita o texto em inglês só como exemplo
+- [x] Seed idempotente do admin via `ADMIN_EMAIL` / `ADMIN_PASSWORD` (+ `ADMIN_NAME` opcional)
+- [x] Specs: `spec/requests/admin/sessions_spec.rb` (T13, T26, logout, return_to), `spec/requests/admin/dashboards_spec.rb`, `spec/models/user_spec.rb`, factory `users`
+- [x] ✅ Critérios de aceite da spec 04 — todos cobertos por spec e conferidos no servidor de dev (login → dashboard com sidebar → logout → redirect)
 
 ### 1.3 Product, Benefit, Testimonial, Faq — spec [03](../specs/03-modelo-de-dados.md)
 - [ ] Migration `products` (todas as colunas da spec, `price_cents`, `status` string, índices slug/status)
@@ -123,6 +123,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] `modules/admin/nested_list.js` (submit interceptado → fetch → troca `innerHTML`)
 - [ ] `modules/admin/confirm.js` (`data-confirm`)
 - [ ] Specs: `spec/requests/admin/products_spec.rb`, `spec/requests/admin/benefits_spec.rb` (um por coleção)
+- [ ] Polir o visual do admin (sidebar, formulários, tabelas, flashes) — o layout da 1.2 é o mínimo funcional; fazer aqui, quando o painel ganha as primeiras telas reais
 - [ ] ✅ Critérios de aceite da spec 05 (exceto preview)
 
 ### 1.5 Uploads — spec [05](../specs/05-catalogo-produtos-admin.md)

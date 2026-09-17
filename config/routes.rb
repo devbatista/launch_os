@@ -6,4 +6,13 @@ Rails.application.routes.draw do
 
   # Caixa de saída de emails em desenvolvimento.
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
+  namespace :admin do
+    get    "login",  to: "sessions#new",     as: :login
+    post   "login",  to: "sessions#create"
+    delete "logout", to: "sessions#destroy", as: :logout
+
+    root to: redirect("/admin/dashboard")
+    resource :dashboard, only: :show
+  end
 end
