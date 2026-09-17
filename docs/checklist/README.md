@@ -36,22 +36,22 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Credenciais Sandbox (Client ID + Secret) guardadas fora do repositório (gerenciador de senhas) (16/09)
 
 ### 0.2 Meta — spec [10](../specs/10-tracking-e-analytics.md)
-- [ ] Meta Business criado; conta de anúncios com método de pagamento
-- [ ] Pixel criado → `META_PIXEL_ID`
-- [ ] Domínio `devbatista.online` verificado no Business Manager (meta tag ou DNS)
+- [x] Meta Business: portfólio `DevBatista` e conta de anúncios `DevBatista` (ID `2425512304918484`, BRL, São Paulo, CNPJ) já existiam; forma de pagamento adicionada em 16/09
+- [x] Conjunto de dados (Pixel) `LaunchOS` criado → `META_PIXEL_ID=2908081392894300` no `.env` e no Railway (16/09)
+- [x] Domínio `devbatista.online` verificado no portfólio DevBatista via TXT `facebook-domain-verification=…` no apex (16/09). *A 1ª tentativa deu "já verificado por outra empresa"; a 2ª passou — mensagem antiga fica na tela, ignorar*
 - [ ] Eventos priorizados (Aggregated Event Measurement) com Purchase no topo — pode ficar para a Fase 3
 
 ### 0.3 Twilio — spec [09](../specs/09-notificacoes-email-whatsapp.md)
-- [ ] Conta Twilio; Account SID + Auth Token
-- [ ] Sandbox for WhatsApp ativado; número de teste com `join <code>` enviado
-- [ ] Solicitar WhatsApp Sender (número Twilio dedicado) vinculado ao Meta Business
-- [ ] Submeter Content Template `order_delivery` (Utility) com as 4 variáveis → anotar SID `HX…`
-- [ ] Anotar datas de solicitação na seção 6 do cronograma
+- [x] Twilio: **subconta `launch_os`** (SID `AC661274f8…`) criada dentro da conta existente para isolar credenciais, números e Sender do outro app; `TWILIO_ACCOUNT_SID`/`TWILIO_AUTH_TOKEN` no `.env` (16/09)
+- [x] Sandbox for WhatsApp ativado na subconta (`join soil-brick` → `+1 415 523 8886`); template de teste entregue e resposta (inbound) recebida (16/09)
+- [ ] Solicitar WhatsApp Sender (número Twilio dedicado) vinculado ao Meta Business — **adiado (decisão 16/09)**: exige upgrade da conta Twilio com saldo pré-pago mínimo de US$ 20; desenvolvimento segue no Sandbox. Plano B ativo: lançar com `TWILIO_ENABLED=false` (só email). Reavaliar até **04/10 (M1)** — depois disso a aprovação da Meta dificilmente chega antes do go-live
+- [ ] Submeter Content Template `order_delivery` (Utility) com as 4 variáveis → anotar SID `HX…` — *depende do Sender; no Sandbox usar um template de teste criado no Content Template Builder (não precisa de aprovação)*
+- [x] Datas anotadas na seção 6 do cronograma (16/09: Sandbox ativo; Sender adiado)
 
 ### 0.5 Sentry, uptime, Git
-- [ ] Projeto no Sentry → `SENTRY_DSN`
-- [ ] Monitor de uptime gratuito apontando para `https://www.devbatista.online/up`
-- [ ] Repositório Git criado (privado); `AGENTS.md`, `docs/` commitados
+- [x] Sentry: org `devbatista`, projeto Rails `launch_os` (plano grátis, só Error Monitoring) → `SENTRY_DSN` no `.env` e no Railway (16/09). Gems + initializer entram na 1.1 (`send_default_pii = false`)
+- [x] UptimeRobot (grátis): monitor HTTP `https://www.devbatista.online/up` a cada 5 min, alerta por email (16/09)
+- [x] Repositório Git `devbatista/launch_os` (privado); `AGENTS.md`, `docs/` commitados; CI do Rails (lint/brakeman) e Dependabot ativos
 - [ ] Conta GA4 → `GA4_MEASUREMENT_ID` (pode ficar para a Fase 3)
 
 **M0 — Contas prontas (20/09):** todos os itens acima marcados ou com data de solicitação registrada.
