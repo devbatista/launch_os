@@ -9,7 +9,8 @@ precisa apenas de Docker + Docker Compose.
 Dockerfile              # produção (gerado pelo Rails 8, ajustado) — usado pelo Railway
 Dockerfile.dev          # desenvolvimento/teste (com gems de dev, sem precompile)
 compose.yml             # dev (nome canônico do Compose v2; equivale a docker-compose.yml)
-railway.json            # builder DOCKERFILE, health check /up, restart policy
+railway.json            # serviço web: builder DOCKERFILE, health check /up, restart policy
+railway.worker.json     # serviço worker (Sidekiq): mesmo builder, startCommand do Sidekiq, sem health check
 .dockerignore           # exclui .env*, master.key, docs/, AGENTS.md, compose.yml
 .env.example            # versionado; copiar para .env (gitignored)
 ```
@@ -252,7 +253,7 @@ Serviços no projeto Railway (todos a partir do mesmo repositório):
 | Serviço | Origem | Comando | Observações |
 |---|---|---|---|
 | `web` | repo (Dockerfile) | padrão da imagem (`./bin/thrust ./bin/rails server`) | Railway injeta `PORT`; `bin/docker-entrypoint` exporta `HTTP_PORT=$PORT` para o Thruster e roda `db:prepare` antes de subir |
-| `worker` | repo (Dockerfile) | **Custom Start Command**: `bundle exec sidekiq -C config/sidekiq.yml` | mesma imagem e mesmas variáveis do `web`; não roda migrations |
+| `worker` | repo (Dockerfile) | `bundle exec sidekiq -C config/sidekiq.yml` via **`railway.worker.json`** (Settings → Config-as-code → *Config File Path*) | mesma imagem e mesmas variáveis do `web`; não roda migrations. Precisa do config próprio porque o `railway.json` da raiz vale para todo serviço do repo e traria o health check `/up`, que o Sidekiq não atende |
 | `Postgres` | plugin Railway | — | fornece `DATABASE_URL` (referenciar como `${{Postgres.DATABASE_URL}}`) |
 | `Redis` | plugin Railway | — | fornece `REDIS_URL` (`${{Redis.REDIS_URL}}`) |
 
