@@ -1,0 +1,27 @@
+<%= render layout: "legal_pages/page", locals: { title: "Refund Policy", last_updated: @last_updated,
+           description: "Our #{@refund_days}-day money-back guarantee: how to request a refund and what happens next." } do %>
+  <p>We want you to be happy with your purchase. If <%= @product ? @product.name : "a product you bought from DevBatista" %> is not what you expected, you can ask for your money back within <strong><%= @refund_days %> days</strong> of purchase — no questions asked.</p>
+
+  <h2>How to request a refund</h2>
+  <ol>
+    <li>Email <a href="mailto:<%= support_email %>"><%= support_email %></a> <strong>from the email address you used at checkout</strong>, within <%= @refund_days %> days of the purchase date shown on your PayPal receipt.</li>
+    <li>Write "Refund" in the subject and include the product name. You can tell us why if you want to (it helps us improve), but you do not have to.</li>
+    <li>That's it. We do not require you to "return" anything — it is a digital file.</li>
+  </ol>
+
+  <h2>What happens next</h2>
+  <ul>
+    <li>We reply within <strong>1 business day</strong> and issue the refund through PayPal to the original payment method. PayPal usually shows the money back in 3–5 business days; card issuers may take a little longer.</li>
+    <li>Once refunded, your download link is revoked and your license to use the product ends. Please delete any copies you kept.</li>
+    <li>Refunds are for the full amount you paid to us. Currency conversion or bank fees charged by third parties are outside our control.</li>
+  </ul>
+
+  <h2>After the guarantee period</h2>
+  <p>Requests received more than <%= @refund_days %> days after purchase are handled case by case — write to us and we will do our best. Refunds may be declined when the request comes after the guarantee period or in cases of clear abuse, such as repeated purchases and refunds of the same product.</p>
+
+  <h2>Disputes</h2>
+  <p>Please contact us before opening a PayPal dispute or chargeback: a direct refund is faster and simpler for both of us. If you do open a dispute, we will respond to PayPal with the purchase and delivery records, and a refund already issued by us counts toward its resolution.</p>
+
+  <h2>Contact</h2>
+  <p>DevBatista — <a href="mailto:<%= support_email %>"><%= support_email %></a></p>
+<% end %>

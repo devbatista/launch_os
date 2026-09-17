@@ -1,11 +1,11 @@
-<%# Rodapé de todas as páginas públicas (spec 06, bloco 11): suporte e links legais. As rotas legais entram na 1.8. %>
+<%# Rodapé de todas as páginas públicas (spec 06/14): suporte e links legais. Na LP, a refund policy recebe o slug do produto para mostrar o prazo dele. %>
 <footer class="border-t border-slate-200 bg-slate-50">
   <div class="mx-auto flex max-w-3xl flex-col items-center gap-3 px-4 py-8 text-center text-sm text-slate-500 sm:flex-row sm:justify-between sm:text-left">
     <p>&copy; <%= Time.current.year %> DevBatista. Questions? <a href="mailto:<%= support_email %>" class="underline hover:text-slate-700"><%= support_email %></a></p>
     <nav aria-label="Legal" class="flex gap-4">
-      <a href="/privacy" class="hover:text-slate-700">Privacy</a>
-      <a href="/terms" class="hover:text-slate-700">Terms</a>
-      <a href="/refund-policy" class="hover:text-slate-700">Refund Policy</a>
+      <%= link_to "Privacy Policy", privacy_path, class: "hover:text-slate-700" %>
+      <%= link_to "Terms of Service", terms_path, class: "hover:text-slate-700" %>
+      <%= link_to "Refund Policy", refund_policy_path(product: @product&.slug), class: "hover:text-slate-700" %>
     </nav>
   </div>
 </footer>

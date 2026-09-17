@@ -34,6 +34,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # Páginas legais (spec 14). `?product=<slug>` na refund policy mostra o prazo daquele produto.
+  get "privacy",       to: "legal_pages#privacy", as: :privacy
+  get "terms",         to: "legal_pages#terms",   as: :terms
+  get "refund-policy", to: "legal_pages#refund",  as: :refund_policy
+
   # LP pública. Sempre a ÚLTIMA rota: captura qualquer /:slug que não bateu nas rotas fixas acima
   # (slugs reservados são rejeitados no modelo — Product::RESERVED_SLUGS).
   get "/:slug", to: "landing_pages#show", as: :landing_page, constraints: { slug: /[a-z0-9-]+/ }

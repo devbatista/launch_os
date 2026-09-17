@@ -1,0 +1,40 @@
+<%= render layout: "legal_pages/page", locals: { title: "Terms of Service", last_updated: @last_updated,
+           description: "The terms that apply when you buy and use DevBatista digital products." } do %>
+  <p>These terms apply to every purchase made on this website, operated by <strong>DevBatista</strong> (Rafael Batista), based in Brazil ("we", "us"). By completing a purchase you agree to them. If you do not agree, please do not buy.</p>
+
+  <h2>What you are buying</h2>
+  <p>Our products are <strong>digital</strong>: downloadable PDF files. Nothing is shipped. After PayPal confirms your payment, we email you a link to download the file (and send it on WhatsApp too, if you asked us to). Prices are shown and charged in <strong>US dollars (USD)</strong>. The price you pay is the one displayed on the page at the moment of purchase; your bank or PayPal may apply currency conversion fees.</p>
+
+  <h2>Delivery and access</h2>
+  <p>Delivery is immediate: the download link is sent within minutes of payment confirmation. Links are temporary for security reasons. If your link has expired, or you did not receive it, email <a href="mailto:<%= support_email %>"><%= support_email %></a> from the address you used at checkout and we will send a new one at no cost. Check your spam folder first — the email comes from an <em>@devbatista.online</em> address.</p>
+
+  <h2>License</h2>
+  <p>When you buy a product you receive a <strong>personal, non-exclusive, non-transferable</strong> license to download and use it for your own personal, non-commercial use. You may print it and keep copies on your own devices. You may <strong>not</strong>:</p>
+  <ul>
+    <li>share, resell, sublicense, rent or give the file (or the download link) to anyone else;</li>
+    <li>publish it, in whole or in part, on any website, social network, forum or file-sharing service;</li>
+    <li>modify it and present the result as your own work, or remove any copyright notice.</li>
+  </ul>
+  <p>All content remains the intellectual property of DevBatista. Violating this license ends it immediately and may lead to legal action.</p>
+
+  <h2>Refunds</h2>
+  <p>We offer a money-back guarantee. The exact period is shown on each product page and in our <%= link_to "Refund Policy", refund_policy_path %>, which is part of these terms.</p>
+
+  <h2>No professional advice</h2>
+  <p>Our products contain general self-improvement and productivity information. They are <strong>not</strong> medical, psychological, financial or legal advice, and they do not replace treatment or advice from a qualified professional. Results depend on you; we make no guarantee of any specific outcome.</p>
+
+  <h2>Limitation of liability</h2>
+  <p>To the fullest extent permitted by law, our total liability for any claim related to a purchase is limited to the amount you paid for that product. We are not liable for indirect, incidental or consequential damages, or for issues caused by services outside our control (such as your email provider, PayPal or your internet connection). Nothing in these terms limits liability that cannot be limited under applicable law, including your statutory consumer rights.</p>
+
+  <h2>Payments and disputes</h2>
+  <p>Payments are processed by PayPal under PayPal's own terms. If you have a problem with a purchase, please contact us before opening a PayPal dispute — we resolve most issues within one business day and a direct refund is faster than a dispute.</p>
+
+  <h2>Changes to the products and to these terms</h2>
+  <p>We may update our products and these terms at any time. Changes apply to purchases made after the update. The date at the top shows when these terms were last changed.</p>
+
+  <h2>Governing law</h2>
+  <p>These terms are governed by the laws of Brazil, without prejudice to any mandatory consumer-protection rules of the country where you live. Any dispute that cannot be resolved amicably will be submitted to the courts of Brazil, unless applicable law gives you the right to sue in your own jurisdiction.</p>
+
+  <h2>Contact</h2>
+  <p>DevBatista — <a href="mailto:<%= support_email %>"><%= support_email %></a></p>
+<% end %>

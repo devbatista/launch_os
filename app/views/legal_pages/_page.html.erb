@@ -1,0 +1,17 @@
+<%# Moldura comum das páginas legais: título, data de atualização, meta tags e o texto (bloco). Locals: title, description, last_updated. %>
+<% content_for :title, "#{title} — DevBatista" %>
+<% content_for :head do %>
+  <meta name="description" content="<%= description %>">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="<%= request.base_url + request.path %>">
+<% end %>
+
+<main class="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+  <header class="mb-8 border-b border-slate-200 pb-6">
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl"><%= title %></h1>
+    <p class="mt-2 text-sm text-slate-500">Last updated: <time datetime="<%= last_updated.iso8601 %>"><%= last_updated.strftime("%B %-d, %Y") %></time></p>
+  </header>
+  <div class="prose prose-slate max-w-none">
+    <%= yield %>
+  </div>
+</main>
