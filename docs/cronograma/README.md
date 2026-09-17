@@ -47,7 +47,7 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | Marco | Data | Critério de aceite | Status | Atingido em |
 |---|---|---|---|---|
 | **M0** — Contas prontas | 20/09 | PayPal, Meta, Twilio, hospedagem, domínio, SES e Sentry criados; aprovações solicitadas | ⬜ | |
-| **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ⬜ | |
+| **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Faltam só verificações manuais na Meta (Debugger, BM) e o teste do email de suporte |
 | **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ⬜ | |
 | **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ⬜ | |
 | **M4** — Campanha no ar | 26/10 | Três anúncios aprovados pela Meta e ativos, R$ 18/dia | ⬜ | |
@@ -103,11 +103,11 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 | 1.2 | `User`: `has_secure_password`, login/logout, lockout após 5 tentativas, rate limit no login, layout do admin | [04](../specs/04-autenticacao-admin.md) | 6 | 1.1 | ✅ | 17/09 | Gerador de autenticação adaptado ao namespace `/admin`; lockout, rate limit (429), sidebar, seed do admin. Pin `json < 3` (ActiveSupport 8.1.3 quebra cookies assinados com json 3) |
 | 1.3 | `Product` + `Benefit`, `Testimonial`, `Faq`: migrations, validações, slug único, status draft/published/archived, factories | [03](../specs/03-modelo-de-dados.md) | 6 | 1.1 | ✅ | 17/09 | Action Text + Active Storage (uuid), `Positioned`, validação de anexos, regra de publicação, seed de dev com placeholders; 80 specs verdes |
 | 1.4 | CRUD admin de produtos e dos blocos da LP, com ordenação (⚙️ JS puro + fetch, sem Turbo) | [05](../specs/05-catalogo-produtos-admin.md) | 6 | 1.2, 1.3 | 🟦 | | 17/09: CRUD, publish/unpublish/archive, coleções aninhadas com `nested_list.js` (fetch + partial, fallback sem JS), `confirm.js`, admin em pt-BR (`rails-i18n`). Falta só polir o visual (junto da 1.5) |
-| 1.5 | Uploads Active Storage em bucket privado: PDF, capa, mockup, og_image, previews; validação de tipo/tamanho; variants WebP | [05](../specs/05-catalogo-produtos-admin.md) | 5 | 1.3 | 🟦 | | 17/09: seção Arquivos no admin com remoção individual, `file_preview.js`, MinIO ok (403 sem assinatura). Falta só confirmar no bucket de produção (na 1.9) |
+| 1.5 | Uploads Active Storage em bucket privado: PDF, capa, mockup, og_image, previews; validação de tipo/tamanho; variants WebP | [05](../specs/05-catalogo-produtos-admin.md) | 5 | 1.3 | ✅ | | 17/09: seção Arquivos no admin com remoção individual, `file_preview.js`, MinIO ok (403 sem assinatura). Falta só confirmar no bucket de produção (na 1.9); bucket de produção confirmado na 1.9 (403 sem assinatura) |
 | 1.6 | Template Direct Response: rota `/:slug`, todos os blocos, mobile first, meta tags e og_image, entry `landing.js` | [06](../specs/06-landing-page.md) | 10 | 1.4, 1.5 | 🟦 | | 17/09: rota `/:slug`, template `direct_response` completo, sticky CTA, meta/OG, cache ETag, imagens via proxy, preload por entry no importmap. Faltam Lighthouse em produção (1.9) e botão PayPal (2.1) |
 | 1.7 | Preview de rascunho para admin; 404 público para não publicados | [05](../specs/05-catalogo-produtos-admin.md), [06](../specs/06-landing-page.md) | 2 | 1.6 | ✅ | | 17/09: preview com banner, noindex e compra desabilitada; links Preview/Ver ao vivo no admin |
-| 1.8 | Páginas legais (Privacy, Terms, Refund Policy) e contato de suporte, em inglês | [14](../specs/14-paginas-legais.md) | 3 | 1.6 | 🟦 | | 17/09: três páginas em inglês, refund lê `refund_days` do produto, rodapé com as rotas. Faltam Facebook BM e teste do email (1.9) |
-| 1.9 | Cadastrar o *21-Day Procrastination Reset* com copy provisória e publicar em produção | [16](../specs/16-roadmap-e-fases.md) | 2 | 1.6, 1.8 | ⬜ | | |
+| 1.8 | Páginas legais (Privacy, Terms, Refund Policy) e contato de suporte, em inglês | [14](../specs/14-paginas-legais.md) | 3 | 1.6 | ✅ | | 17/09: três páginas em inglês, refund lê `refund_days` do produto, rodapé com as rotas. Faltam Facebook BM e teste do email (1.9); Facebook BM e email ficam listados na 1.9 |
+| 1.9 | Cadastrar o *21-Day Procrastination Reset* com copy provisória e publicar em produção | [16](../specs/16-roadmap-e-fases.md) | 2 | 1.6, 1.8 | ✅ | | 17/09: produto cadastrado e publicado em produção; LP 200; Lighthouse 100/100/100/100. Faltam só Facebook Debugger/BM e teste do email (manuais) |
 
 **Total: 46 h (≈ 23 h/semana)**
 
@@ -146,7 +146,7 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 | C.2 | Revisão do inglês (nativo ou ferramenta) | — | 4 | S3 (11/10) | ⬜ | | |
 | C.3 | Diagramação do PDF e do tracker imprimível | — | 8 | S4 (18/10) | ⬜ | | |
 | C.4 | Copy final da LP (headline, benefícios, FAQ, garantia) e mockup do produto | [06](../specs/06-landing-page.md) | 5 | S3 (11/10) | ⬜ | | |
-| C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | ⬜ | | Necessária para M1 |
+| C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | 🟦 | | Publicadas em 17/09 (1.8); falta a revisão do texto do operador (razão social) com o contador |
 | C.6 | Três criativos (imagem + texto principal + headline) — ângulos dor / mecanismo / transformação | [16](../specs/16-roadmap-e-fases.md) | 6 | S5 (25/10) | ⬜ | | Subir como rascunho em 24/10 para revisão antecipada da Meta |
 
 ### 4.6 Fase 4 — Campanha de validação (26/10 – 01/11)
@@ -230,7 +230,7 @@ Escalar se parado há mais de 5 dias.
 | Aprovações externas atrasam (PayPal, WhatsApp, Meta, SES) | Alta | M3/M4 deslizam | Fase 0 disparada na S0; plano B por dependência (seção 6) | 🟦 monitorando |
 | Capacidade real abaixo de 25 h/semana | Média | +1 semana | Cortar primeiro o que não bloqueia a campanha: dashboard (3.3) e admin de clientes (parte de 2.8) → Fase 5 | ⬜ |
 | Conteúdo do PDF não fica pronto até 18/10 | Média | M3 bloqueado | Começar na S1; aceitar v1.0 enxuta (30 p.) | ⬜ |
-| Template da LP consome mais que 10 h | Média | M1 desliza | Componentes prontos (Tailwind), um único template; refinar na Fase 5 | ⬜ |
+| Template da LP consome mais que 10 h | Média | M1 desliza | Componentes prontos (Tailwind), um único template; refinar na Fase 5 | ✅ Não ocorreu: 1.6 entregue em 17/09 |
 | Bugs no webhook descobertos no go-live | Baixa | M3 desliza dias | Plano de testes completo na 3.4; compra real com reembolso na 3.5 | ⬜ |
 | Escopo cresce durante a execução | Alta | Todas as fases | Item novo → Fase 5; revisar a lista "fora do MVP" na sexta | 🟦 monitorando |
 | Configuração de webhooks em dev (túnel HTTPS) consome tempo | Média | 2.2 desliza | Cloudflared/ngrok como serviço do compose desde 1.1 | ⬜ |

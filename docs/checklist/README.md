@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 1.9 (cadastrar e publicar o produto em produção). Da 1.8 ficam o Facebook Business Manager e o teste do email de suporte (com o site no ar). Da 1.6 ficam o Lighthouse em produção e o botão PayPal real (2.1). Da 1.5 fica só confirmar o upload no bucket de produção (junto da 1.9, quando o admin de produção existir). Da 1.4 fica só o polimento visual e os critérios da spec 05 que dependem de 1.6–1.9. Da 1.1 ficam só os critérios da spec 02 que exigem email/jobs (2.6). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → Fase 2, tarefa 2.1 (checkout PayPal). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Pendências manuais da Fase 1 (Meta/email) listadas na 1.9; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -130,7 +130,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Campos de upload no formulário (PDF, capa, mockup, og_image, previews múltiplos com remoção individual) — *seção "Arquivos" em `_form` + partial `_attachment_field`; remoção via `Admin::AttachmentsController#destroy` (forms DELETE fora do form principal, ligados pelo atributo `form`; funciona sem JS). Previews são acrescentados no update (Rails ≥ 7.1 substituiria a coleção); campos vazios são descartados (`""` apagaria o anexo). Arquivo obrigatório de produto publicado não pode ser removido sem despublicar. Imagens atuais servidas pelo proxy do Active Storage (sem mexer no /etc/hosts)*
 - [x] `modules/admin/file_preview.js` — *nome, tamanho, miniatura e aviso local de tipo/tamanho*
 - [x] Upload funcionando no MinIO (dev) — *17/09: og_image + preview via admin → `service_name: s3`, objeto no bucket `launch-os-dev`*
-- [ ] Upload funcionando no bucket real (produção) — *confirmar na 1.9, ao cadastrar o produto real (precisa de `ADMIN_EMAIL`/`ADMIN_PASSWORD` no Railway)*
+- [x] Upload funcionando no bucket real (produção) — *17/09 na 1.9: PDF (290 KB) e capa (1 MB) em `launch-os-prod` via admin, `service_name: s3`, 403 sem assinatura*
 - [x] Variants pré-processados (`preprocessed: true`) — *já definidos na 1.3; o `TransformJob` roda no Sidekiq no upload (antes ainda de publicar); conferido `processed? == true` em dev*
 - [x] Spec: upload em request spec com fixtures; rejeição de tipo/tamanho inválidos — *`spec/requests/admin/product_uploads_spec.rb` (13 exemplos)*
 - [x] Confirmar: objeto no bucket não acessível sem assinatura (403) — *`GET http://localhost:9000/launch-os-dev/<key>` → 403*
@@ -146,7 +146,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `modules/sticky_cta.js` (barra mobile após o hero) — *some enquanto `#hero` ou `#buy` estão visíveis (IntersectionObserver)*
 - [x] Imagens com variants WebP, `loading="lazy"`, width/height — *`lp_image_tag` calcula width/height dos metadados do blob (após o AnalyzeJob); hero é `eager` + `fetchpriority=high`*
 - [x] Rodapé com suporte e links legais — *links `/privacy`, `/terms`, `/refund-policy` (rotas na 1.8)*
-- [ ] Lighthouse mobile ≥ 85 / acessibilidade ≥ 90 — *17/09 em dev (Chrome amd64 emulado + servidor de dev sem gzip): Accessibility **100**, SEO **100**, Performance 68 (TBT/main-thread do emulador; LCP 1,8 s, CLS 0, 73 KB no total, JS próprio 5,6 KB). Medir de novo em produção na 1.9*
+- [x] Lighthouse mobile ≥ 85 / acessibilidade ≥ 90 — *17/09 em produção (Chrome nativo): 100/100/100/100, LCP 1,4 s, CLS 0. Em dev (Chrome amd64 emulado + servidor de dev sem gzip): Accessibility **100**, SEO **100**, Performance 68 (TBT/main-thread do emulador; LCP 1,8 s, CLS 0, 73 KB no total, JS próprio 5,6 KB). o emulador amd64 dava 68–71, número descartado*
 - [x] Specs: `spec/requests/landing_pages_spec.rb` (T14) — *12 exemplos; system spec fica opcional*
 - [ ] ✅ Critérios de aceite da spec 06 — *feitos: blocos/opcionais, 375/1280 px sem overflow (screenshots headless), 404 amigável (Rails), slug reservado. Faltam: botão PayPal em mobile (2.1), Lighthouse em produção e Facebook Debugger (1.9)*
 - Decisões: (1) imagens públicas pelo **proxy** do Active Storage (`resolve_model_to_route = :rails_storage_proxy`): URL estável e cacheável pelo Thruster, sem 302 por imagem, e o navegador em dev não precisa resolver `minio`. (2) `allow_browser versions: :modern` saiu de `ApplicationController` e ficou só no admin — na LP devolveria 406 a compradores com navegador in-app antigo. (3) `config/importmap.rb` restringe `preload` por entry: a LP não pré-carrega trix/actiontext/módulos do admin (antes baixava 526 KB de Trix); layout `landing` carrega só `tailwind` + `application.css`. (4) `@plugin "@tailwindcss/typography"` (embutido no CLI standalone) para o Action Text da LP (`prose`).
@@ -161,12 +161,14 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Textos em inglês cobrindo os itens mínimos da spec (dados coletados, PayPal/Twilio/SES/Meta/GA, cookies, CCPA/LGPD, reembolso com `refund_days`) — *views em `app/views/legal_pages/` com moldura `_page`. **Conferir**: operador escrito como "DevBatista (Rafael Batista), based in Brazil" — ajustar para a razão social/CNPJ se o contador pedir; retenção "typically 5 years" e logs 90 dias são premissas*
 - [x] `last_updated` visível; links no rodapé de todas as páginas públicas — *datas em `LegalPagesController::LAST_UPDATED` (atualizar ao mudar o texto); rodapé `shared/_footer` usa as rotas*
 - [x] Spec: 200 nas três rotas; não capturadas por `/:slug` — *`spec/requests/legal_pages_spec.rb` (8 exemplos)*
-- [ ] Critérios da spec 14 que dependem do site no ar: URL da privacy aceita no Facebook Business Manager; email de suporte recebe/responde teste — *na 1.9*
+- [ ] Critérios da spec 14 que dependem do site no ar: URL da privacy aceita no Facebook Business Manager; email de suporte recebe/responde teste — *itens listados na 1.9*
 
 ### 1.9 Cadastrar e publicar o produto
-- [ ] Produto *21-Day Procrastination Reset* cadastrado em produção com copy provisória, mockup e PDF placeholder
-- [ ] Publicado; `https://www.devbatista.online/21-day-procrastination-reset` responde 200
-- [ ] Facebook Sharing Debugger mostra og:image e description corretos
+- [x] Produto *21-Day Procrastination Reset* cadastrado em produção com copy provisória, mockup e PDF placeholder — *17/09 pelo admin de produção (admin criado via seed com `ADMIN_EMAIL`/`ADMIN_PASSWORD` no Railway; a senha pode sair do Railway depois). Sem depoimentos de propósito: os do seed são fictícios — só entram depoimentos reais*
+- [x] Publicado; `https://www.devbatista.online/21-day-procrastination-reset` responde 200 — *17/09: 200 com ETag e `public, max-age=60`; legais 200; `/nao-existe` 404. Lighthouse mobile em produção (Chrome nativo): **Performance 100, Accessibility 100, Best Practices 100, SEO 100**; LCP 1,4 s, CLS 0, 73 KB. PDF e capa no bucket `launch-os-prod` (S3), 403 sem assinatura*
+- [ ] Facebook Sharing Debugger mostra og:image e description corretos — *colar a URL em https://developers.facebook.com/tools/debug/ (conta do Business); sem `og_image` dedicada a imagem social é a capa (WebP 900×900) — subir uma OG 1200×630 no admin melhora o card*
+- [ ] Facebook Business Manager aceita `https://www.devbatista.online/privacy` como política de privacidade (spec 14)
+- [ ] Email de suporte: enviar um teste para `support@devbatista.online` e responder (spec 14)
 
 **M1 — LP em produção (04/10):** critérios de saída da Fase 1 no cronograma.
 
