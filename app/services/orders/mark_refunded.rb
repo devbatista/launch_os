@@ -1,6 +1,6 @@
 module Orders
   # paid|disputed → refunded (PAYMENT.CAPTURE.REFUNDED/REVERSED ou disputa perdida). Idempotente.
-  # Revogação do download token (2.4) e email de reembolso (2.6) entram aqui quando existirem.
+  # Revoga o download token; o email de reembolso (2.6) entra aqui quando existir.
   class MarkRefunded
     def self.call(order, source: nil) = new.call(order, source:)
 
@@ -10,6 +10,7 @@ module Orders
         raise InvalidTransition, "#{order.status} → refunded (#{source})" unless order.paid? || order.disputed?
 
         order.update!(status: :refunded, refunded_at: Time.current)
+        order.download_token&.revoke!
         Rails.logger.info { "[orders] #{order.id} refunded via #{source}" }
       end
       order

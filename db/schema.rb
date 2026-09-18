@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_18_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,6 +76,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_010000) do
     t.string "whatsapp_opt_in_text"
     t.datetime "whatsapp_opt_out_at"
     t.index "lower((email)::text)", name: "index_clients_on_lower_email", unique: true
+  end
+
+  create_table "download_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "download_count", default: 0, null: false
+    t.datetime "expires_at", null: false
+    t.datetime "last_downloaded_at"
+    t.integer "max_downloads", default: 10, null: false
+    t.uuid "order_id", null: false
+    t.datetime "revoked_at"
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_download_tokens_on_order_id", unique: true
+    t.index ["token"], name: "index_download_tokens_on_token", unique: true
   end
 
   create_table "faqs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -207,6 +221,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_010000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "benefits", "products"
+  add_foreign_key "download_tokens", "orders"
   add_foreign_key "faqs", "products"
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "products"

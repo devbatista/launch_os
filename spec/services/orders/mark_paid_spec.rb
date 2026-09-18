@@ -19,6 +19,22 @@ RSpec.describe Orders::MarkPaid do
     expect(client.first_purchase_at).to be_present
     expect(client.last_purchase_at).to be_present
     expect(client.whatsapp_opt_in).to be(false)
+    expect(result.download_token).to be_active
+    expect(result.download_token.expires_at).to be_within(1.minute).of(7.days.from_now)
+  end
+
+  it "reaproveita o token criado no capture PENDING e regenera o revogado por disputa" do
+    pending = create(:order)
+    token = pending.create_download_token!
+    described_class.call(pending, capture:, payer:, source: :webhook)
+    expect(pending.reload.download_token).to eq(token)
+    expect(token.reload).to be_active
+
+    disputed = create(:order, :disputed)
+    revoked = create(:download_token, :revoked, order: disputed)
+    described_class.call(disputed, capture: { "id" => "CAP-2" }, payer:, source: :dispute_resolved)
+    expect(revoked.reload).to be_active
+    expect(revoked.revoked_at).to be_nil
   end
 
   it "é idempotente: segunda chamada não muda nada (T12)" do

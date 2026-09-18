@@ -1,0 +1,19 @@
+<%# Token inativo (Thank You e download): mensagem por motivo + caminho de recuperação. Locals: reason, product. %>
+<% message = {
+     expired: "This download link has expired.",
+     limit_reached: "This link has reached its download limit.",
+     revoked: "This download link is no longer active.",
+     not_paid: "We haven't received a confirmed payment for this order yet."
+   }.fetch(reason) %>
+<section class="rounded-xl border border-slate-200 bg-slate-50 p-8 text-center">
+  <h1 class="text-2xl font-bold sm:text-3xl"><%= message %></h1>
+  <% if reason == :not_paid %>
+    <p class="mt-4 text-lg text-slate-700">If you just paid, give it a few minutes and reload this page. If the payment failed, you can try again on the product page.</p>
+  <% elsif reason == :revoked %>
+    <p class="mt-4 text-lg text-slate-700">This usually happens after a refund or a payment dispute. If you think this is a mistake, write to us and we'll sort it out.</p>
+  <% else %>
+    <p class="mt-4 text-lg text-slate-700">No worries — enter the email you used at checkout and we'll send you a fresh link for <strong><%= product.name %></strong>.</p>
+    <a href="/access/recover" class="mt-6 inline-flex items-center justify-center rounded-lg bg-emerald-700 px-6 py-3 font-bold text-white hover:bg-emerald-600">Recover access</a>
+  <% end %>
+  <p class="mt-6 text-sm text-slate-500">Support: <a href="mailto:<%= support_email %>" class="underline"><%= support_email %></a></p>
+</section>

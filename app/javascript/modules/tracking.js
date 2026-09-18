@@ -17,4 +17,8 @@ export function purchase(data) {
   emit("Purchase", data);
 }
 
-export function init() {}
+// <section data-module="tracking" data-event="purchase" data-event-id data-value data-currency>
+// A Thank You só renderiza isso na primeira visita (purchase_tracked_at) — dedup no servidor.
+export function init(el) {
+  if (el.dataset.event === "purchase") purchase(el.dataset);
+}

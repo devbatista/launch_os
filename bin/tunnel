@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+# Sobe (ou recria) o quick tunnel do Cloudflare e aponta o webhook do PayPal Sandbox para a URL nova.
+# O quick tunnel é descartável: some sozinho depois de algumas horas ("Tunnel not found" no log),
+# e aí o PayPal deixa de entregar os webhooks. Rode isto antes de testar compra/refund em dev.
+#
+#   bin/tunnel            → recria o túnel e atualiza o webhook (PAYPAL_WEBHOOK_ID do .env)
+#   bin/tunnel --no-patch → só recria o túnel e imprime a URL
+set -e
+cd "$(dirname "$0")/.."
+
+docker compose --profile tunnel up -d --force-recreate tunnel >/dev/null 2>&1
+
+url=""
+for _ in $(seq 1 30); do
+  url=$(docker compose logs tunnel --since 2m 2>&1 | grep -oE "https://[a-z0-9-]+\.trycloudflare\.com" | tail -1)
+  [ -n "$url" ] && break
+  sleep 2
+done
+[ -n "$url" ] || { echo "túnel não subiu; veja: docker compose logs tunnel" >&2; exit 1; }
+
+# Espera o "Registered tunnel connection" — antes disso a URL ainda não responde.
+for _ in $(seq 1 15); do
+  docker compose logs tunnel --since 2m 2>&1 | grep -q "Registered tunnel connection" && break
+  sleep 2
+done
+
+echo "túnel: $url"
+[ "$1" = "--no-patch" ] && exit 0
+
+docker compose exec -T web bin/rails "paypal:webhook_url[$url]"

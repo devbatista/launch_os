@@ -1,0 +1,5 @@
+<% content_for :title, "Download unavailable — #{@order.product.name}" %>
+<% content_for :head do %><meta name="robots" content="noindex,nofollow"><% end %>
+<main class="mx-auto max-w-2xl px-4 py-12 sm:py-16">
+  <%= render "shared/token_unavailable", reason: @reason, product: @order.product %>
+</main>

@@ -54,11 +54,13 @@ module Checkout
         Orders::MarkPaid.call(order, capture:, payer: result["payer"], source: :capture)
         render_paid(order)
       when "PENDING"
-        # Fica pending até o webhook PAYMENT.CAPTURE.COMPLETED (2.2). Motivo típico: conta que recebe em
-        # outra moeda com aceite manual (RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION).
+        # Fica pending até o webhook PAYMENT.CAPTURE.COMPLETED. Motivo típico: conta que recebe em outra
+        # moeda com aceite manual (RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION). O token já nasce aqui
+        # (inativo até o pedido ser pago) para a Thank You mostrar "processing".
         order.update!(paypal_capture_id: capture["id"].presence, pending_reason: capture.dig("status_details", "reason"))
+        order.download_token || order.create_download_token!
         Rails.logger.warn { "[checkout] #{order.id} capture pending: #{order.pending_reason}" }
-        render json: { status: "pending", order_id: order.id }
+        render json: { status: "pending", order_id: order.id, thank_you_url: thank_you_url(order) }
       else
         Orders::MarkFailed.call(order, reason: capture["status"] || "no capture")
         render json: { status: "failed", error: "Payment was not completed." }, status: :unprocessable_content
@@ -66,9 +68,8 @@ module Checkout
     end
 
     private
-      # thank_you_url passa a existir com o DownloadToken e a página de obrigado (tarefa 2.4).
       def render_paid(order)
-        render json: { status: "completed", order_id: order.id, thank_you_url: nil }
+        render json: { status: "completed", order_id: order.id, thank_you_url: thank_you_url(order) }
       end
 
       def rate_limited

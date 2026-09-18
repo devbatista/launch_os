@@ -1,0 +1,14 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Redirect",
+      "check_name": "Redirect",
+      "fingerprint": "86318244422860a2f2706768af5688fff07ce970dbf26cea72a22f965ec243bb",
+      "file": "app/controllers/downloads_controller.rb",
+      "line": 28,
+      "note": "A URL vem do Active Storage (URL assinada do nosso bucket, 5 min); o token do usuário só seleciona o registro. Redirect externo é o desenho da spec 08."
+    }
+  ],
+  "updated": "2026-09-18",
+  "brakeman_version": "7"
+}
