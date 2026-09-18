@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 2.2 (webhook PayPal). Da 2.1 fica só o critério da spec 07 que depende de 2.2–2.6 (webhook, token, email). Da 2.3, MarkPaid/MarkFailed já entraram na 2.1. **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 2.3 é quase toda feita (transições entraram em 2.1/2.2); seguir para 2.4 (DownloadToken, Thank You, download) e voltar à 2.3 só para ligar token/email. Da 2.1/2.2 ficam só os critérios da spec 07 que dependem de token/email. **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -191,18 +191,18 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] ✅ Critérios de aceite da spec 07 (parte de create/capture) — *feitos: amount adulterado ignorado; capture 2× idempotente; tudo com WebMock. Compra completa (token, DeliverOrderJob) depende de 2.4/2.6*
 
 ### 2.2 Webhook PayPal — spec [07](../specs/07-checkout-paypal.md)
-- [ ] Migration `webhook_events` com índice único `(provider, external_id)`
-- [ ] `Webhooks::PaypalController` (`ActionController::API`): verifica assinatura, `find_or_create_by!`, 400 se inválida, enfileira job, 200 rápido
-- [ ] `ProcessPaypalWebhookJob` (fila `webhooks`): roteia por `event_type`, `retry_on`/`discard_on`, marca `processed`/`failed`
-- [ ] `PAYPAL_WEBHOOK_SKIP_VERIFY` só em development (erro no boot se em production)
-- [ ] Túnel HTTPS (cloudflared/ngrok) + webhook cadastrado no PayPal Developer com todos os eventos
-- [ ] Webhook real do Sandbox recebido e gravado em `webhook_events`
-- [ ] Specs: `spec/requests/webhooks/paypal_spec.rb` (T02, T03), `spec/jobs/process_paypal_webhook_job_spec.rb` (T05, T17)
+- [x] Migration `webhook_events` com índice único `(provider, external_id)` — *modelo `WebhookEvent` (enum status, `mark_processed!/ignored!/failed!`); `Order has_many :webhook_events`*
+- [x] `Webhooks::PaypalController` (`ActionController::API`): verifica assinatura, `find_or_create_by!`, 400 se inválida, enfileira job, 200 rápido — *`Providers::Paypal::VerifyWebhookSignature` (sem os 5 headers PAYPAL-* → inválido sem chamar a API); evento inválido gravado como `ignored` com `error: "invalid signature"`; corpo sem id/event_type → 400*
+- [x] `ProcessPaypalWebhookJob` (fila `webhooks`): roteia por `event_type`, `retry_on`/`discard_on`, marca `processed`/`failed` — *COMPLETED → MarkPaid (no-op se já pago pelo front), PENDING grava motivo, DENIED → MarkFailed, REFUNDED/REVERSED → MarkRefunded, DISPUTE.CREATED → MarkDisputed (por `seller_transaction_id`), DISPUTE.RESOLVED → `Orders::ResolveDispute`, APPROVED só correlaciona; `InvalidTransition` → evento `failed` sem derrubar o job. `MarkRefunded`/`MarkDisputed`/`ResolveDispute` adiantados da 2.3 (sem token/email, que entram na 2.4/2.6)*
+- [x] `PAYPAL_WEBHOOK_SKIP_VERIFY` só em development (erro no boot se em production) — *`config/initializers/paypal.rb`*
+- [x] Túnel HTTPS (cloudflared/ngrok) + webhook cadastrado no PayPal Developer com todos os eventos — *serviço `tunnel` no compose (perfil `tunnel`, cloudflared quick tunnel, sem conta); `development.rb` libera `*.trycloudflare.com`; webhook Sandbox `4T3411320U005420J` criado **via API** com os 8 eventos. A URL do quick tunnel muda a cada subida e o túnel cai de tempos em tempos: atualizar com `PATCH /v1/notifications/webhooks/:id`. Lição: `docker compose restart` não relê o `.env` — usar `up -d`*
+- [x] Webhook real do Sandbox recebido e gravado em `webhook_events` — *18/09: reembolso feito pela API → `PAYMENT.CAPTURE.REFUNDED` entregue pelo PayPal via túnel, assinatura verificada, job no Sidekiq, pedido `refunded`. Também cobre o critério "refund no Sandbox" da spec 07 (token/email na 2.4/2.6)*
+- [x] Specs: `spec/requests/webhooks/paypal_spec.rb` (T02, T03), `spec/jobs/process_paypal_webhook_job_spec.rb` (T05, T17) — *+ `services/orders/transitions_spec` (T07, T18, T25), `models/webhook_event_spec`*
 
 ### 2.3 Client e Order — services de transição — spec [07](../specs/07-checkout-paypal.md)
 - [x] `Orders::InvalidTransition` — *na 2.1 (`app/services/orders.rb`)*
 - [ ] `Orders::MarkPaid` (with_lock, idempotente, find_or_create Client, opt-in, token, enfileira `DeliverOrderJob`) — *🟦 na 2.1: with_lock, idempotente, Client com opt-in (texto TCPA do i18n `checkout.whatsapp_opt_in`); faltam token (2.4) e `DeliverOrderJob` (2.6)*
-- [ ] `Orders::MarkFailed` (✅ na 2.1), `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa
+- [ ] `Orders::MarkFailed` (✅ na 2.1), `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa — *🟦 na 2.2: transições prontas (`MarkRefunded`, `MarkDisputed`, `ResolveDispute`); faltam revogar token (2.4) e email de reembolso (2.6)*
 - [ ] Fallback: capture server-side se `CHECKOUT.ORDER.APPROVED` sem capture após 10 min (opcional)
 - [ ] Specs: `spec/services/orders/mark_paid_spec.rb` (T01, T12), `mark_refunded_spec.rb` (T07), `mark_disputed_spec.rb` (T18), `mark_failed_spec.rb`, T25 em cada
 

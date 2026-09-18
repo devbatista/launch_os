@@ -36,6 +36,8 @@ Rails.application.configure do
 
   # Permite acessar o servidor de dev a partir de outros containers (ex.: Lighthouse via host.docker.internal).
   config.hosts << "host.docker.internal"
+  # Túnel do compose (perfil `tunnel`) para webhooks em dev.
+  config.hosts << /.*\.trycloudflare\.com\z/
 
   # Emails ficam em /letter_opener; nenhum envio real em desenvolvimento.
   config.action_mailer.delivery_method = :letter_opener_web

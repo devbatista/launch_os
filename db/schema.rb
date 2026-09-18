@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_17_230002) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_18_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -185,6 +185,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_230002) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "webhook_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.string "event_type", null: false
+    t.string "external_id", null: false
+    t.jsonb "headers", default: {}, null: false
+    t.uuid "order_id"
+    t.jsonb "payload", default: {}, null: false
+    t.datetime "processed_at"
+    t.string "provider", null: false
+    t.boolean "signature_valid", default: false, null: false
+    t.string "status", default: "received", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_webhook_events_on_created_at"
+    t.index ["order_id"], name: "index_webhook_events_on_order_id"
+    t.index ["provider", "external_id"], name: "index_webhook_events_on_provider_and_external_id", unique: true
+    t.index ["status"], name: "index_webhook_events_on_status"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "benefits", "products"
@@ -193,4 +212,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_230002) do
   add_foreign_key "orders", "products"
   add_foreign_key "sessions", "users"
   add_foreign_key "testimonials", "products"
+  add_foreign_key "webhook_events", "orders"
 end
