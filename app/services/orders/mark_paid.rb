@@ -10,9 +10,11 @@ module Orders
         return order if order.paid?
         raise InvalidTransition, "#{order.status} → paid (#{source})" unless order.pending? || order.disputed?
 
-        client = upsert_client(order, payer || {})
-        order.update!(status: :paid, paid_at: Time.current, client:, paypal_capture_id: capture&.dig("id"),
-                      payer_email: client&.email, payer_name: client&.name)
+        # Sem pagador (ex.: disputa resolvida a favor) mantém o Client e o capture id já gravados.
+        client = upsert_client(order, payer || {}) || order.client
+        order.update!(status: :paid, paid_at: order.paid_at || Time.current, client:,
+                      paypal_capture_id: capture&.dig("id").presence || order.paypal_capture_id,
+                      payer_email: client&.email || order.payer_email, payer_name: client&.name || order.payer_name)
         Rails.logger.info { "[orders] #{order.id} paid via #{source}" }
       end
       order

@@ -244,9 +244,18 @@ e configurar Capybara com driver `remote` (`SELENIUM_URL=http://selenium:4444`, 
 
 ## Webhooks em desenvolvimento
 
-PayPal e Twilio precisam de URL HTTPS pública para entregar webhooks. Usar um túnel
-(`cloudflared tunnel --url http://localhost:3100` ou ngrok) como serviço adicional do compose ou
-manualmente, e cadastrar a URL gerada no PayPal Developer / Twilio console.
+PayPal e Twilio precisam de URL HTTPS pública para entregar webhooks. O compose tem o serviço `tunnel`
+(cloudflared, perfil `tunnel`, sem conta):
+
+```bash
+docker compose --profile tunnel up -d tunnel
+docker compose --profile tunnel logs tunnel | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com'
+```
+
+A URL muda a cada subida do túnel. Cadastre `<url>/webhooks/paypal` no PayPal Developer (ou via API
+`POST /v1/notifications/webhooks`, como feito em 18/09) e ponha o id em `PAYPAL_WEBHOOK_ID` no `.env`.
+`development.rb` já libera `*.trycloudflare.com` em `config.hosts`. **Depois de mudar o `.env`, recrie os
+containers (`docker compose up -d web sidekiq`) — `restart` não relê o env_file.**
 
 ## Produção — Railway
 

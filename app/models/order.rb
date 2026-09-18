@@ -6,6 +6,7 @@ class Order < ApplicationRecord
 
   belongs_to :client, optional: true
   belongs_to :product
+  has_many :webhook_events, dependent: :nullify
 
   enum :status, { pending: "pending", paid: "paid", failed: "failed", refunded: "refunded", disputed: "disputed" }, default: :pending
 

@@ -100,6 +100,17 @@ services:
       redis:
         condition: service_healthy
 
+  # Túnel HTTPS público para receber webhooks (PayPal, Twilio) no servidor de dev. Só com o perfil:
+  #   docker compose --profile tunnel up tunnel   → a URL https://*.trycloudflare.com aparece no log
+  # Depois cadastre a URL no provedor (webhook) e ponha o id em .env (PAYPAL_WEBHOOK_ID).
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --url http://web:3000
+    profiles: [tunnel]
+    depends_on:
+      web:
+        condition: service_started
+
   # Recompila o Tailwind ao salvar arquivos
   css:
     <<: *rails

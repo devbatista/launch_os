@@ -40,6 +40,11 @@ Rails.application.routes.draw do
     post "paypal/capture", to: "paypal#capture"
   end
 
+  # Webhooks (spec 07/09): sem sessão nem CSRF; assinatura verificada no controller.
+  namespace :webhooks do
+    post "paypal", to: "paypal#create"
+  end
+
   # Páginas legais (spec 14). `?product=<slug>` na refund policy mostra o prazo daquele produto.
   get "privacy",       to: "legal_pages#privacy", as: :privacy
   get "terms",         to: "legal_pages#terms",   as: :terms
