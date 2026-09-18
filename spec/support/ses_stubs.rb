@@ -1,3 +1,5 @@
+require "aws-sdk-sesv2" # a gem é `require: false`; o client de produção a carrega, mas o stub pode vir antes
+
 # SDK do SES com respostas stubadas (nenhuma chamada real) para Providers::Ses::Client / :ses_api.
 module SesStubs
   # `send_email:` aceita um hash de resposta ({ message_id: }) ou uma classe/instância de erro do SDK.

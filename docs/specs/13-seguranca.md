@@ -28,7 +28,7 @@ Checklist obrigatório. Nenhum item é opcional para ir ao ar.
 - [ ] Token longo e aleatório (`has_secure_token`, ≥ 32 bytes); comparação por lookup indexado.
 - [ ] Token verifica `order.paid?` a cada uso (refund/disputa revogam).
 - [ ] Expiração e limite de downloads aplicados.
-- [ ] Recuperação de acesso com resposta uniforme (não enumera emails) + rate limit + honeypot.
+- [x] Recuperação de acesso com resposta uniforme (não enumera emails) + rate limit + honeypot. *(2.5, 18/09)*
 
 ## Admin
 

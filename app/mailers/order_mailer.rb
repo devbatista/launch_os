@@ -26,7 +26,7 @@ class OrderMailer < ApplicationMailer
       @first_name = @client&.name.to_s.split.first.presence
       @token = @order.download_token
       @download_url = @token && download_url(@token.token)
-      @recover_url = ActionDispatch::Http::URL.full_url_for(default_url_options.merge(path: "/access/recover"))
+      @recover_url = access_recover_url
     end
 
     # Nome do comprador no cabeçalho quando conhecido: "Jane Buyer <jane@…>".

@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 2.5 (recuperação de acesso em `/access/recover`, que já tem o `Delivery::ResendAccess` pronto). 2.6 (email) fechada em 18/09, incluindo o SES em produção (SPF/DKIM/DMARC PASS na caixa de entrada). Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 2.7 (WhatsApp via Twilio, no Sandbox da Twilio) ou 2.8 (admin de pedidos/clientes) — 2.7 depende de conta Twilio configurada (0.3); se ainda não estiver, adiantar a 2.8. Fase 2 até aqui: 2.1–2.6 entregues em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -216,9 +216,9 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Specs: `spec/requests/thank_you_spec.rb` (T21), `spec/requests/downloads_spec.rb` (T06), `spec/models/download_token_spec.rb`
 
 ### 2.5 Recuperação de acesso — spec [08](../specs/08-entrega-download-tokens.md)
-- [ ] `AccessRecoveriesController` new/create; resposta idêntica exista ou não; honeypot; rate limit por IP e por hash de email
-- [ ] `Delivery::ResendAccess` (regenera token se expirado/limite; não se revogado por refund/disputa)
-- [ ] Spec: `spec/requests/access_recoveries_spec.rb` (T19, T26)
+- [x] `AccessRecoveriesController` new/create; resposta idêntica exista ou não; honeypot; rate limit por IP e por hash de email — *18/09: `rate_limit` 5/10 min por IP e 3/h por SHA-256 do email normalizado (`name: "email"`); honeypot `website` + timestamp assinado no form (`MIN_FILL_SECONDS = 2`) — bot recebe a mesma resposta, sem reenvio; email inválido → 422 no próprio form; log só com IP/found/resent (nunca o email). Links `/access/recover` hardcoded (Thank You, token inativo, mailer) trocados por `access_recover_path/url`*
+- [x] `Delivery::ResendAccess` (regenera token se expirado/limite; não se revogado por refund/disputa) — *entregue na 2.6; aqui só ligado ao controller (um call por pedido pago do cliente)*
+- [x] Spec: `spec/requests/access_recoveries_spec.rb` (T19, T26) — *+ honeypot/tempo/token forjado, multi-pedido (reembolsado e revogado ficam de fora), limite por email ignorando caixa/espaços. Smoke em dev: pedido pago com token expirado → form → token regenerado → `access_resend` no `/letter_opener`*
 
 ### 2.6 Jobs, email (SES), MessageLog — spec [09](../specs/09-notificacoes-email-whatsapp.md)
 - [x] Migration `message_logs`; modelo e factory — *enums string (channel/template/status), `mark_sent!`, `register_attempt!`, `mark_failed!`; `Order has_many :message_logs` (destroy), `Client` (nullify)*
