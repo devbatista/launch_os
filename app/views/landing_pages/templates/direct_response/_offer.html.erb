@@ -24,20 +24,22 @@
           <input id="checkout-phone" type="tel" name="phone" placeholder="+1 555 123 4567" autocomplete="tel" inputmode="tel"
                  class="mt-1 block w-full rounded-md border-0 px-3 py-2 text-slate-900 shadow-sm focus:ring-2 focus:ring-emerald-400">
         </div>
+        <%# Texto exato do opt-in (TCPA) vem do i18n e é o mesmo gravado em Client#whatsapp_opt_in_text. %>
         <label class="flex items-start gap-2 text-sm text-slate-200">
           <input type="checkbox" name="whatsapp_opt_in" value="1" class="mt-1 h-4 w-4 rounded">
-          <span>Send my download link on WhatsApp too</span>
+          <span><%= t("checkout.whatsapp_opt_in") %></span>
         </label>
-        <p class="text-xs text-slate-400">Standard messaging rates may apply. Reply STOP to opt out.</p>
       <% end %>
 
-      <div id="paypal-button-container" class="pt-2">
-        <%# Placeholder até a 2.1: o botão real é renderizado pelo SDK do PayPal. %>
+      <%# O SDK do PayPal renderiza os botões aqui (modules/checkout.js); o fallback aparece só sem JS/SDK ou no preview. %>
+      <div id="paypal-button-container" class="pt-2 min-h-[3.5rem]"></div>
+      <div data-checkout-fallback class="pt-2">
         <button type="button" disabled class="w-full cursor-not-allowed rounded-lg bg-emerald-500/60 px-8 py-4 text-lg font-bold text-slate-900">
           <%= product.cta_text %> — <%= money(product.price_cents, product.currency) %>
         </button>
-        <p class="mt-2 text-center text-xs text-slate-400"><%= preview ? "Purchases are disabled in preview." : "Secure checkout with PayPal — opening soon." %></p>
+        <p class="mt-2 text-center text-xs text-slate-400"><%= preview ? "Purchases are disabled in preview." : "Loading secure checkout…" %></p>
       </div>
+      <p data-checkout-message hidden role="alert" class="rounded-md bg-white/10 px-3 py-2 text-center text-sm"></p>
       <noscript><p class="text-sm text-amber-300">Please enable JavaScript to complete your purchase.</p></noscript>
     </form>
     <p class="mt-6 text-sm text-slate-400"><%= product.refund_days %>-day money-back guarantee. Delivered by email right after payment.</p>

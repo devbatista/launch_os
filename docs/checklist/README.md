@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → Fase 2, tarefa 2.1 (checkout PayPal). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 2.2 (webhook PayPal). Da 2.1 fica só o critério da spec 07 que depende de 2.2–2.6 (webhook, token, email). Da 2.3, MarkPaid/MarkFailed já entraram na 2.1. **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -177,18 +177,18 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ## Fase 2 — Pagamento e entrega (S3–S4 · 05/10–18/10)
 
 ### 2.1 Checkout PayPal (create/capture) — spec [07](../specs/07-checkout-paypal.md)
-- [ ] `Providers::Paypal::Client` (Faraday): `access_token` com cache em Redis, `create_order`, `capture_order`, `get_order`, `verify_webhook_signature`; `PayPal-Request-Id`; timeouts; erros → `TransientError`/`PermanentError`
-- [ ] `spec/support/paypal_stubs.rb`
-- [ ] Migration `orders` (todas as colunas da spec, índices únicos em `paypal_order_id`/`paypal_capture_id`) + migration `clients`
-- [ ] `Order` (enum status, `event_id` no `before_create`), `Client` (normalizes email, phonelib)
-- [ ] Factories `orders` (traits por status, `:with_attribution`, `:with_whatsapp_opt_in`) e `clients`
-- [ ] `Checkout::PaypalController#create`: produto publicado, phone E.164, `Order.create!` com preço do backend, `CreateOrder`, retorna `paypal_order_id`; `null_session`; rate limit
-- [ ] `Checkout::PaypalController#capture`: idempotente, trata COMPLETED/PENDING/outros, `ORDER_ALREADY_CAPTURED`
-- [ ] `modules/checkout.js`: IntersectionObserver → carrega SDK → `Buttons` com createOrder/onApprove/onError
-- [ ] `modules/tracking.js` (wrappers no-op por enquanto)
-- [ ] Compra Sandbox pelo navegador chega ao capture COMPLETED
-- [ ] Specs: `spec/requests/checkout/paypal_spec.rb` (T01 parcial, T04, T16, T17, T22), `spec/services/providers/paypal/client_spec.rb`
-- [ ] ✅ Critérios de aceite da spec 07 (parte de create/capture)
+- [x] `Providers::Paypal::Client` (Faraday): `access_token` com cache em Redis, `create_order`, `capture_order`, `get_order`, `verify_webhook_signature`; `PayPal-Request-Id`; timeouts; erros → `TransientError`/`PermanentError` — *`ApiError < PermanentError` com `status`, `error_name`, `details` e `issue?`; cache por `expires_in − 60 s` (em dev o `memory_store` é por processo)*
+- [x] `spec/support/paypal_stubs.rb` — *tag `:paypal` injeta credenciais de teste em ENV*
+- [x] Migration `orders` (todas as colunas da spec, índices únicos em `paypal_order_id`/`paypal_capture_id`) + migration `clients` — *+ `orders.pending_reason` (motivo do capture PENDING)*
+- [x] `Order` (enum status, `event_id` no `before_create`), `Client` (normalizes email, phonelib) — *`Product#deletable?` passa a exigir zero pedidos; `has_many :orders, dependent: :restrict_with_exception`*
+- [x] Factories `orders` (traits por status, `:with_attribution`, `:with_whatsapp_opt_in`) e `clients`
+- [x] `Checkout::PaypalController#create`: produto publicado, phone E.164, `Order.create!` com preço do backend, `CreateOrder`, retorna `paypal_order_id`; rate limit — *`skip_forgery_protection` em vez de `null_session`: sem token válido o `null_session` zera o cookie jar e perde `lo_attr`/`_fbp`/`_fbc` (visto no servidor de dev); spec 07 atualizada*
+- [x] `Checkout::PaypalController#capture`: idempotente, trata COMPLETED/PENDING/outros, `ORDER_ALREADY_CAPTURED` — *COMPLETED → `Orders::MarkPaid`; PENDING grava `paypal_capture_id` + `pending_reason`; outros → `MarkFailed` + 422. `thank_you_url` vem `nil` até a 2.4*
+- [x] `modules/checkout.js`: IntersectionObserver → carrega SDK → `Buttons` com createOrder/onApprove/onError — *mensagens inline (sucesso/pending/erro); placeholder some quando o SDK renderiza*
+- [x] `modules/tracking.js` (wrappers no-op por enquanto)
+- [x] Compra Sandbox pelo navegador chega ao capture COMPLETED — *17/09: `paid`, `paypal_capture_id`, `Client` John Doe (US), líquido USD 14.02. **Achado**: as primeiras compras voltaram `PENDING` com `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION` — a conta business (BRL) estava com aceite manual de outras moedas; resolvido em *Preferências de pagamento → "Sim, aceitar e converter"*. **Fazer o mesmo na conta Live antes do go-live** (registrado na spec 07)*
+- [x] Specs: `spec/requests/checkout/paypal_spec.rb` (T01 parcial, T04, T16, T17, T22), `spec/services/providers/paypal/client_spec.rb` — *+ `create_order_spec`, `orders/mark_paid_spec` (T01, T12, T25), `mark_failed_spec`, `models/order_spec`, `models/client_spec`*
+- [ ] ✅ Critérios de aceite da spec 07 (parte de create/capture) — *feitos: amount adulterado ignorado; capture 2× idempotente; tudo com WebMock. Compra completa (token, DeliverOrderJob) depende de 2.4/2.6*
 
 ### 2.2 Webhook PayPal — spec [07](../specs/07-checkout-paypal.md)
 - [ ] Migration `webhook_events` com índice único `(provider, external_id)`
@@ -200,9 +200,9 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] Specs: `spec/requests/webhooks/paypal_spec.rb` (T02, T03), `spec/jobs/process_paypal_webhook_job_spec.rb` (T05, T17)
 
 ### 2.3 Client e Order — services de transição — spec [07](../specs/07-checkout-paypal.md)
-- [ ] `Orders::InvalidTransition`
-- [ ] `Orders::MarkPaid` (with_lock, idempotente, find_or_create Client, opt-in, token, enfileira `DeliverOrderJob`)
-- [ ] `Orders::MarkFailed`, `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa
+- [x] `Orders::InvalidTransition` — *na 2.1 (`app/services/orders.rb`)*
+- [ ] `Orders::MarkPaid` (with_lock, idempotente, find_or_create Client, opt-in, token, enfileira `DeliverOrderJob`) — *🟦 na 2.1: with_lock, idempotente, Client com opt-in (texto TCPA do i18n `checkout.whatsapp_opt_in`); faltam token (2.4) e `DeliverOrderJob` (2.6)*
+- [ ] `Orders::MarkFailed` (✅ na 2.1), `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa
 - [ ] Fallback: capture server-side se `CHECKOUT.ORDER.APPROVED` sem capture após 10 min (opcional)
 - [ ] Specs: `spec/services/orders/mark_paid_spec.rb` (T01, T12), `mark_refunded_spec.rb` (T07), `mark_disputed_spec.rb` (T18), `mark_failed_spec.rb`, T25 em cada
 

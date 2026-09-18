@@ -16,6 +16,7 @@ class Product < ApplicationRecord
   has_many :benefits, -> { ordered }, dependent: :destroy, inverse_of: :product
   has_many :testimonials, -> { ordered }, dependent: :destroy, inverse_of: :product
   has_many :faqs, -> { ordered }, dependent: :destroy, inverse_of: :product
+  has_many :orders, dependent: :restrict_with_exception
 
   has_rich_text :description
 
@@ -99,8 +100,8 @@ class Product < ApplicationRecord
     end
   end
 
-  # Excluir só rascunho sem pedidos (spec 05). A checagem de `orders` entra na 2.1, quando a tabela existir.
-  def deletable? = draft?
+  # Excluir só rascunho sem pedidos (spec 05); caso contrário, arquivar.
+  def deletable? = draft? && orders.none?
 
   # URL pública da LP (spec 05: "URL pública com botão copiar").
   def public_url
