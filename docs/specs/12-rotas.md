@@ -123,4 +123,4 @@ end
 - [ ] `/privacy`, `/terms`, `/thank-you/x` não são capturados por `landing_pages#show`.
 - [ ] Todas as rotas `/admin/*` (exceto login) redirecionam sem sessão.
 - [ ] Webhooks respondem sem cookie de sessão e sem token CSRF.
-- [ ] `/admin/sidekiq` sem sessão → 404 (constraint não casa); com sessão → painel.
+- [x] `/admin/sidekiq` sem sessão → 404 (constraint não casa); com sessão → painel. *(2.8, 18/09; o Sidekiq Web envia o próprio CSP e serve seus assets)*

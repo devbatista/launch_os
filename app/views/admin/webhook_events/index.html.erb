@@ -1,0 +1,52 @@
+<% content_for :title, "Webhook events — Launch OS" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Webhook events</h1>
+</div>
+
+<%= form_with url: admin_webhook_events_path, method: :get, class: "mb-4 flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-4 text-sm" do |f| %>
+  <div>
+    <%= f.label :provider, "Provedor", class: "block text-xs font-semibold text-gray-500" %>
+    <%= f.select :provider, options_for_select([ [ "Todos", "" ] ] + WebhookEvent::PROVIDERS.map { |p| [ p, p ] }, params[:provider]), {}, class: input_classes %>
+  </div>
+  <div>
+    <%= f.label :status, "Status", class: "block text-xs font-semibold text-gray-500" %>
+    <%= f.select :status, options_for_select([ [ "Todos", "" ] ] + AdminHelper::WEBHOOK_STATUS_BADGES.map { |k, (label, _)| [ label, k ] }, params[:status]), {}, class: input_classes %>
+  </div>
+  <%= f.button "Filtrar", type: :submit, class: button_classes(:primary) %>
+  <%= link_to "Limpar", admin_webhook_events_path, class: button_classes(:secondary) %>
+<% end %>
+
+<% if @events.empty? %>
+  <p class="text-gray-600">Nenhum evento<%= " com esses filtros" if request.query_parameters.except("page").any? %>.</p>
+<% else %>
+  <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <tr>
+          <th class="px-4 py-3">Recebido</th>
+          <th class="px-4 py-3">Provedor</th>
+          <th class="px-4 py-3">Tipo</th>
+          <th class="px-4 py-3">Status</th>
+          <th class="px-4 py-3">Assinatura</th>
+          <th class="px-4 py-3">Pedido</th>
+          <th class="px-4 py-3">Erro</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @events.each do |event| %>
+          <tr class="<%= 'bg-red-50' if event.failed? %>">
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500"><%= datetime_br(event.created_at) %></td>
+            <td class="px-4 py-3 text-gray-900"><%= event.provider %></td>
+            <td class="px-4 py-3 font-mono text-xs"><%= link_to event.event_type, admin_webhook_event_path(event), class: "text-blue-700 hover:underline" %></td>
+            <td class="px-4 py-3"><%= webhook_status_badge(event) %></td>
+            <td class="px-4 py-3"><%= event.signature_valid? ? "✓" : "✗" %></td>
+            <td class="px-4 py-3 font-mono text-xs"><%= event.order ? link_to(short_id(event.order_id), admin_order_path(event.order), class: "text-blue-700 hover:underline") : "—" %></td>
+            <td class="px-4 py-3 text-xs text-gray-600 max-w-xs truncate" title="<%= event.error %>"><%= event.error || "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <%= render "admin/shared/pagination", page: @page %>
+  </div>
+<% end %>
