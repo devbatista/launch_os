@@ -94,6 +94,19 @@ RSpec.describe Providers::Paypal::Client, :paypal do
     end
   end
 
+  describe "#update_webhook_url" do
+    before { stub_paypal_token }
+
+    it "faz PATCH replace em /url no webhook configurado" do
+      stub = stub_request(:patch, "#{PaypalStubs::BASE}/v1/notifications/webhooks/WH-TEST")
+        .with(body: [ { op: "replace", path: "/url", value: "https://x.trycloudflare.com/webhooks/paypal" } ].to_json)
+        .to_return(status: 200, body: { id: "WH-TEST", url: "https://x.trycloudflare.com/webhooks/paypal" }.to_json, headers: json_headers)
+
+      expect(client.update_webhook_url("https://x.trycloudflare.com/webhooks/paypal")["url"]).to end_with("/webhooks/paypal")
+      expect(stub).to have_been_requested
+    end
+  end
+
   it "rejeita PAYPAL_ENV desconhecido" do
     expect { described_class.new(env: "prod") }.to raise_error(ArgumentError, /sandbox or live/)
   end

@@ -134,6 +134,9 @@ RSpec.describe "Checkout PayPal", :paypal do
       expect(order.reload).to be_paid
       expect(order.paypal_capture_id).to eq("3C679366HH908993F")
       expect(order.client.email).to eq("buyer@example.com")
+      expect(order.download_token).to be_active
+      expect(response.parsed_body["thank_you_url"]).to eq("http://www.example.com/thank-you/#{order.id}")
+      expect(response.body).not_to include(order.download_token.token) # o link só vai por email/WhatsApp
     end
 
     it "é idempotente: segunda chamada devolve o mesmo resultado sem chamar o PayPal (T22)" do
@@ -171,6 +174,8 @@ RSpec.describe "Checkout PayPal", :paypal do
       expect(order.reload).to be_pending
       expect(order.paypal_capture_id).to eq("CAP-PEND")
       expect(order.pending_reason).to eq("RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION")
+      expect(order.download_token).not_to be_active # nasce inativo; o webhook o ativa ao confirmar
+      expect(response.parsed_body["thank_you_url"]).to include("/thank-you/#{order.id}")
     end
 
     it "DECLINED → failed com 422" do

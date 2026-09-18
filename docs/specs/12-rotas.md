@@ -11,7 +11,7 @@ Ordem em `config/routes.rb`: rotas fixas primeiro; `GET /:slug` **por último**.
 | GET | `/:slug` | `landing_pages#show` | — | — | — |
 | POST | `/checkout/paypal` | `checkout/paypal#create` | — | `null_session` (página cacheável; sem dependência de sessão) | 20/min/IP |
 | POST | `/checkout/paypal/capture` | `checkout/paypal#capture` | — | `null_session` | 20/min/IP |
-| GET | `/thank-you/:token` | `thank_you#show` | — | — | — |
+| GET | `/thank-you/:id` | `thank_you#show` (id do pedido; sem link de download — decisão 18/09) | — | — | — |
 | GET | `/download/:token` | `downloads#show` | — | — | 30/10min/IP |
 | GET | `/access/recover` | `access_recoveries#new` | — | — | — |
 | POST | `/access/recover` | `access_recoveries#create` | — | token | 5/10min/IP |
@@ -104,7 +104,7 @@ Rails.application.routes.draw do
     post "twilio/inbound", to: "twilio#inbound"
   end
 
-  get "thank-you/:token", to: "thank_you#show",  as: :thank_you
+  get "thank-you/:id",    to: "thank_you#show",  as: :thank_you
   get "download/:token",  to: "downloads#show",  as: :download
   get  "access/recover",  to: "access_recoveries#new",    as: :access_recover
   post "access/recover",  to: "access_recoveries#create"

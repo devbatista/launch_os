@@ -24,19 +24,20 @@ def inactive_reason   # :not_paid | :revoked | :expired | :limit_reached | nil
 
 ## Rotas e controllers
 
-### `GET /thank-you/:token`
+### `GET /thank-you/:id`
 
-- Localiza `DownloadToken` pelo token (404 se inexistente).
-- Se `order.pending?` (capture PENDING): exibe "Your payment is being processed. You'll get an email as soon as it clears." — sem botão de download.
-- Se `active?`: página de sucesso com:
-  - "Thank you, {name}!" + nome do produto + mockup.
-  - Botão **Download Now** → `GET /download/:token`.
-  - Aviso: "We also sent this link to {email}" (+ "and to your WhatsApp" se enviado).
-  - Validade: "Link valid until {expires_at}" e limite de downloads.
-  - Suporte e link para `/access/recover`.
-  - Dispara `Purchase` no Pixel/GA4 **uma única vez** (ver spec 10) — usando `order.event_id`; marca `purchase_tracked_at`.
-- Se inativo: mensagem específica por `inactive_reason` + link para recuperar acesso.
-- `Cache-Control: no-store`.
+**Decisão (18/09):** a Thank You **não libera o download**. O link (por token) chega só por email e,
+com opt-in, WhatsApp — a página é identificada pelo **id do pedido**, nunca pelo token, para que a URL
+da página não dê acesso ao arquivo. Consequência: se o email não chegar, o caminho é `/access/recover`
+ou o suporte.
+
+- Localiza `Order` pelo id (404 se inexistente).
+- Se `pending?` (capture PENDING): "Your payment is being processed. You'll get an email as soon as it clears."
+- Se `paid?`: "Thank you, {name}!" + nome do produto + mockup + "We're sending your download link to {email}"
+  (+ "and to your WhatsApp" se opt-in), validade do link, "Didn't get it? Resend my link" (`/access/recover`) e suporte.
+  Dispara `Purchase` no Pixel/GA4 **uma única vez** (spec 10) usando `order.event_id`; marca `purchase_tracked_at`.
+- Outros status: "This order is no longer active" + suporte.
+- `Cache-Control: no-store`, `noindex`.
 
 ### `GET /download/:token`
 
@@ -91,12 +92,12 @@ Emails e WhatsApp são jobs separados e independentes: falha em um não afeta o 
 
 ## Critérios de aceite
 
-- [ ] Após compra Sandbox, `/thank-you/:token` mostra o botão e `/download/:token` baixa o PDF real.
-- [ ] URL assinada expira: copiar a URL do S3 e reutilizar após 5 min → erro do bucket.
-- [ ] Acesso direto ao objeto no bucket (sem assinatura) → 403.
-- [ ] Token de pedido `pending`/`failed` → download negado.
-- [ ] 11º download → 429 com opção de recuperar; regenerar pelo admin volta a funcionar.
+- [ ] Após compra Sandbox, `/thank-you/:id` confirma o pagamento e o link recebido por email (`/download/:token`) baixa o PDF real. *(download validado em dev na 2.4; email na 2.6)*
+- [x] URL assinada expira: copiar a URL do S3 e reutilizar após 5 min → erro do bucket. *(dev/MinIO: 403 após expirar)*
+- [x] Acesso direto ao objeto no bucket (sem assinatura) → 403.
+- [x] Token de pedido `pending`/`failed` → download negado. *(402)*
+- [x] 11º download → 429 com opção de recuperar; regenerar pelo admin volta a funcionar. *(regenerar via `regenerate!`; botão do admin na 2.8)*
 - [ ] Token expirado → 410; `/access/recover` com o email gera novo token e envia email.
 - [ ] `/access/recover` com email inexistente → mesma mensagem, nenhum email.
-- [ ] Refund → token revogado; `/download/:token` → 410 mesmo dentro do prazo.
-- [ ] Purchase disparado só na primeira visita à Thank You (`purchase_tracked_at` preenchido).
+- [x] Refund → token revogado; `/download/:token` → 410 mesmo dentro do prazo.
+- [x] Purchase disparado só na primeira visita à Thank You (`purchase_tracked_at` preenchido). *(marcação e `data-event`; o Pixel é a 3.1)*

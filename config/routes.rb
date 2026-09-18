@@ -45,6 +45,11 @@ Rails.application.routes.draw do
     post "paypal", to: "paypal#create"
   end
 
+  # Entrega (spec 08): a Thank You é por id do pedido e NÃO libera o arquivo — o link de download
+  # (por token) vai só por email/WhatsApp (decisão 18/09). Recuperação de acesso na 2.5.
+  get "thank-you/:id",   to: "thank_you#show", as: :thank_you
+  get "download/:token", to: "downloads#show", as: :download
+
   # Páginas legais (spec 14). `?product=<slug>` na refund policy mostra o prazo daquele produto.
   get "privacy",       to: "legal_pages#privacy", as: :privacy
   get "terms",         to: "legal_pages#terms",   as: :terms

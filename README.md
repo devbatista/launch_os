@@ -45,9 +45,10 @@ docker compose restart sidekiq                      # após editar um job (o wor
 docker compose logs -f sidekiq
 ```
 
-Webhooks em dev (PayPal/Twilio): `docker compose --profile tunnel up -d tunnel` e pegue a URL `https://*.trycloudflare.com`
-no log; cadastre-a no provedor e ponha o id em `.env` (ver spec 02). Ao mudar o `.env`, `docker compose up -d web sidekiq`
-(`restart` não relê o arquivo).
+Webhooks em dev (PayPal/Twilio): `bin/tunnel` sobe o quick tunnel do Cloudflare e já aponta o webhook do PayPal
+(`PAYPAL_WEBHOOK_ID` do `.env`, ver spec 02) para a URL nova. O quick tunnel some sozinho depois de algumas horas
+(`Tunnel not found` no log) — rode `bin/tunnel` de novo antes de testar compra/refund. Ao mudar o `.env`,
+`docker compose up -d web sidekiq` (`restart` não relê o arquivo).
 
 Após alterar o `Gemfile`: `docker compose run --rm web bundle install` (atualiza o `Gemfile.lock` e o volume de gems).
 

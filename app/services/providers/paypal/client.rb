@@ -76,6 +76,17 @@ module Providers
         result["verification_status"] == "SUCCESS"
       end
 
+      # PATCH /v1/notifications/webhooks/:id — troca a URL de entrega. Só para dev (bin/tunnel): o quick
+      # tunnel do Cloudflare muda de endereço a cada subida; em produção a URL é fixa.
+      def update_webhook_url(url, webhook_id: ENV.fetch("PAYPAL_WEBHOOK_ID"))
+        response = handle_transport do
+          @http.patch("/v1/notifications/webhooks/#{webhook_id}", [ { op: "replace", path: "/url", value: url } ]) do |req|
+            req.headers["Authorization"] = bearer
+          end
+        end
+        ensure_success!(response, "update_webhook_url")
+      end
+
       private
         def build_http
           Faraday.new(url: @base) do |f|

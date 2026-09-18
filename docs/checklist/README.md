@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 2.3 é quase toda feita (transições entraram em 2.1/2.2); seguir para 2.4 (DownloadToken, Thank You, download) e voltar à 2.3 só para ligar token/email. Da 2.1/2.2 ficam só os critérios da spec 07 que dependem de token/email. **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 2.5 (recuperação de acesso) e 2.6 (email via SES), que fecham a 2.3 e os critérios pendentes das specs 07/08. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -201,18 +201,19 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 
 ### 2.3 Client e Order — services de transição — spec [07](../specs/07-checkout-paypal.md)
 - [x] `Orders::InvalidTransition` — *na 2.1 (`app/services/orders.rb`)*
-- [ ] `Orders::MarkPaid` (with_lock, idempotente, find_or_create Client, opt-in, token, enfileira `DeliverOrderJob`) — *🟦 na 2.1: with_lock, idempotente, Client com opt-in (texto TCPA do i18n `checkout.whatsapp_opt_in`); faltam token (2.4) e `DeliverOrderJob` (2.6)*
-- [ ] `Orders::MarkFailed` (✅ na 2.1), `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa — *🟦 na 2.2: transições prontas (`MarkRefunded`, `MarkDisputed`, `ResolveDispute`); faltam revogar token (2.4) e email de reembolso (2.6)*
+- [ ] `Orders::MarkPaid` (with_lock, idempotente, find_or_create Client, opt-in, token, enfileira `DeliverOrderJob`) — *🟦 2.1/2.4: with_lock, idempotente, Client com opt-in (texto TCPA do i18n), token criado/regenerado; falta só `DeliverOrderJob` (2.6)*
+- [ ] `Orders::MarkFailed` (✅ na 2.1), `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa — *🟦 2.2/2.4: transições e revogação/regeneração do token prontas; falta só o email de reembolso (2.6)*
 - [ ] Fallback: capture server-side se `CHECKOUT.ORDER.APPROVED` sem capture após 10 min (opcional)
 - [ ] Specs: `spec/services/orders/mark_paid_spec.rb` (T01, T12), `mark_refunded_spec.rb` (T07), `mark_disputed_spec.rb` (T18), `mark_failed_spec.rb`, T25 em cada
 
 ### 2.4 DownloadToken, Thank You, download — spec [08](../specs/08-entrega-download-tokens.md)
-- [ ] Migration `download_tokens`; modelo com `has_secure_token`, `active?`, `inactive_reason`, `revoke!`, `regenerate!`
-- [ ] Factory com traits `:expired`, `:revoked`, `:limit_reached`
-- [ ] `ThankYouController#show` (pending / ativo / inativo), `no-store`, marca `purchase_tracked_at` na 1ª visita
-- [ ] `DownloadsController#show`: lock + incremento, redirect para URL assinada (5 min), 410/429, rate limit
-- [ ] Download do PDF real funcionando em dev (MinIO) e produção
-- [ ] Specs: `spec/requests/thank_you_spec.rb` (T21), `spec/requests/downloads_spec.rb` (T06), `spec/models/download_token_spec.rb`
+- [x] Migration `download_tokens`; modelo com `has_secure_token`, `active?`, `inactive_reason`, `revoke!`, `regenerate!` — *+ `register_download!` (incremento sob lock), `remaining_downloads`; defaults de `DOWNLOAD_TOKEN_TTL_DAYS`/`DOWNLOAD_MAX_COUNT`. Precedência: revogado antes de não-pago (refund/disputa → 410, não 402). Ligado às transições: `MarkPaid` cria (ou regenera após disputa ganha), `MarkRefunded`/`MarkDisputed` revogam. O capture PENDING já cria o token (inativo) para a Thank You mostrar "processing"*
+- [x] Factory com traits `:expired`, `:revoked`, `:limit_reached` — *+ `:unpaid`*
+- [x] `ThankYouController#show` (pending / pago / inativo), `no-store`, marca `purchase_tracked_at` na 1ª visita — *renderiza `data-module="tracking" data-event="purchase"` só nessa visita (o disparo real é a 3.1); `noindex`. **Decisão 18/09**: a Thank You é por `/thank-you/:order_id` e **não mostra o link de download** — ele vai só por email/WhatsApp (2.6/2.7); a página só confirma o pagamento e diz para onde o link foi. Specs 08 e 12 atualizadas*
+- [x] `DownloadsController#show`: lock + incremento, redirect para URL assinada (5 min), 410/429, rate limit — *402 para não-pago; `include ActiveStorage::SetCurrent` (serviço Disk nos testes); página `downloads/unavailable` com partial `shared/_token_unavailable` reutilizado pela Thank You*
+- [x] Download do PDF real funcionando em dev (MinIO) — *18/09: redirect `X-Amz-Expires=300` + `attachment; filename="<slug>.pdf"`, PDF servido, contador 1; URL assinada de 1 s → 403 após expirar; objeto sem assinatura → 403. Em produção confirmar na primeira compra real (S3 já validado 403 na 1.9)*
+- [ ] Download do PDF real funcionando em produção — *na primeira compra de teste em produção (M2)*
+- [x] Specs: `spec/requests/thank_you_spec.rb` (T21), `spec/requests/downloads_spec.rb` (T06), `spec/models/download_token_spec.rb`
 
 ### 2.5 Recuperação de acesso — spec [08](../specs/08-entrega-download-tokens.md)
 - [ ] `AccessRecoveriesController` new/create; resposta idêntica exista ou não; honeypot; rate limit por IP e por hash de email
