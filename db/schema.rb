@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_17_134203) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_17_230002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_134203) do
     t.index ["product_id", "position"], name: "index_benefits_on_product_id_and_position"
   end
 
+  create_table "clients", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "country", limit: 2
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "first_purchase_at"
+    t.datetime "last_purchase_at"
+    t.string "name"
+    t.string "phone"
+    t.datetime "updated_at", null: false
+    t.boolean "whatsapp_opt_in", default: false, null: false
+    t.datetime "whatsapp_opt_in_at"
+    t.string "whatsapp_opt_in_text"
+    t.datetime "whatsapp_opt_out_at"
+    t.index "lower((email)::text)", name: "index_clients_on_lower_email", unique: true
+  end
+
   create_table "faqs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "answer", null: false
     t.datetime "created_at", null: false
@@ -70,6 +86,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_134203) do
     t.string "question", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id", "position"], name: "index_faqs_on_product_id_and_position"
+  end
+
+  create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "amount_cents", null: false
+    t.uuid "client_id"
+    t.datetime "created_at", null: false
+    t.string "currency", limit: 3, null: false
+    t.datetime "disputed_at"
+    t.string "event_id", null: false
+    t.datetime "failed_at"
+    t.string "fbc"
+    t.string "fbclid"
+    t.string "fbp"
+    t.string "ip_address"
+    t.string "landing_path"
+    t.datetime "paid_at"
+    t.string "payer_email"
+    t.string "payer_name"
+    t.string "paypal_capture_id"
+    t.string "paypal_order_id"
+    t.string "pending_reason"
+    t.string "phone"
+    t.uuid "product_id", null: false
+    t.datetime "purchase_tracked_at"
+    t.string "referrer"
+    t.datetime "refunded_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.string "utm_campaign"
+    t.string "utm_content"
+    t.string "utm_medium"
+    t.string "utm_source"
+    t.string "utm_term"
+    t.boolean "whatsapp_opt_in", default: false, null: false
+    t.index ["client_id"], name: "index_orders_on_client_id"
+    t.index ["created_at"], name: "index_orders_on_created_at"
+    t.index ["paypal_capture_id"], name: "index_orders_on_paypal_capture_id", unique: true
+    t.index ["paypal_order_id"], name: "index_orders_on_paypal_order_id", unique: true
+    t.index ["product_id"], name: "index_orders_on_product_id"
+    t.index ["status"], name: "index_orders_on_status"
   end
 
   create_table "products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -132,6 +189,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_134203) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "benefits", "products"
   add_foreign_key "faqs", "products"
+  add_foreign_key "orders", "clients"
+  add_foreign_key "orders", "products"
   add_foreign_key "sessions", "users"
   add_foreign_key "testimonials", "products"
 end

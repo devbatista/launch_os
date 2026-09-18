@@ -7,6 +7,10 @@ persistido pelo backend). O retorno do navegador à página de sucesso nunca é 
 ## Pré-requisitos (fora do código)
 
 - Conta PayPal Business verificada, apta a receber pagamentos internacionais.
+- **Preferência de moeda da conta que recebe**: em *Preferências de pagamento → pagamentos em moeda diferente
+  da minha* deixar "Sim, aceitar e converter" (ou manter saldo em USD). Com "Perguntar", todo capture volta
+  `PENDING` com `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION` e o comprador fica sem o produto até aceite manual
+  (aconteceu no Sandbox em 17/09). Conferir na conta Live antes do go-live.
 - App em PayPal Developer (Sandbox e Live) → `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`.
 - Webhook cadastrado apontando para `https://www.devbatista.online/webhooks/paypal` com os eventos:
   `CHECKOUT.ORDER.APPROVED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`,
@@ -49,8 +53,10 @@ end
 ### 1. `POST /checkout/paypal` — cria o pedido
 
 Entrada (JSON enviado por `modules/checkout.js` via `fetch`): `product_id`, `phone` (opcional), `whatsapp_opt_in` (bool).
-Controller com `protect_from_forgery with: :null_session` (a LP é cacheável, o token CSRF pode estar
-desatualizado; o endpoint não depende de sessão — segurança vem do preço server-side, rate limit e PayPal).
+Controller com `skip_forgery_protection` (a LP é cacheável, o token CSRF pode estar desatualizado; o endpoint
+não depende de sessão — segurança vem do preço server-side, rate limit e PayPal). **Não** usar `null_session`:
+sem token válido ele troca o cookie jar por um vazio e a atribuição (`lo_attr`, `_fbp`, `_fbc`) se perde
+(constatado em 17/09).
 
 ```
 1. product = Product.published.find(product_id)           # 404 se não publicado
@@ -87,7 +93,7 @@ Entrada: `paypal_order_id`.
 4. capture = resp.dig("purchase_units",0,"payments","captures",0)
 5. case capture["status"]
    when "COMPLETED" → Orders::MarkPaid.call(order, capture:, payer: resp["payer"], source: :capture)
-   when "PENDING"   → order pendente; render { status: "pending" } (Thank You mostra "processing, check your email")
+   when "PENDING"   → order pendente, grava `pending_reason` (status_details.reason); render { status: "pending" } (Thank You mostra "processing, check your email")
    else             → Orders::MarkFailed.call(order); render 422
 6. render json: { status:, thank_you_url: thank_you_url(order.download_token.token) }
 ```

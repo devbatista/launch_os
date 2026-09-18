@@ -115,7 +115,7 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| 2.1 | PayPal Sandbox: `Providers::Paypal::Client`, `POST /checkout/paypal` (create) e `/capture`, `modules/checkout.js` com SDK na LP, preço sempre do backend | [07](../specs/07-checkout-paypal.md), [06](../specs/06-landing-page.md) | 8 | 1.9, 0.1 | ⬜ | | |
+| 2.1 | PayPal Sandbox: `Providers::Paypal::Client`, `POST /checkout/paypal` (create) e `/capture`, `modules/checkout.js` com SDK na LP, preço sempre do backend | [07](../specs/07-checkout-paypal.md), [06](../specs/06-landing-page.md) | 8 | 1.9, 0.1 | 🟦 | | 17/09 (S1!): client PayPal, Order/Client, create/capture, checkout.js; compra Sandbox COMPLETED. Falta só o critério que depende de 2.4/2.6. Achado: preferência de moeda da conta business → PENDING |
 | 2.2 | Webhook PayPal: verificação de assinatura, `WebhookEvent`, idempotência por `(provider, external_id)`, `ProcessPaypalWebhookJob`, logs | [07](../specs/07-checkout-paypal.md) | 6 | 2.1 | ⬜ | | |
 | 2.3 | `Client` (`find_or_create_by` email) e `Order` com estados pending/paid/failed/refunded/disputed; services `Orders::*` com lock | [07](../specs/07-checkout-paypal.md), [03](../specs/03-modelo-de-dados.md) | 6 | 2.2 | ⬜ | | |
 | 2.4 | `DownloadToken`, Thank You, `GET /download/:token` com URL assinada, expiração e contagem | [08](../specs/08-entrega-download-tokens.md) | 6 | 2.3 | ⬜ | | |

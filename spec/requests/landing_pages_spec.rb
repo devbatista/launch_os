@@ -126,7 +126,7 @@ RSpec.describe "Landing pages" do
 
       get "/offer-wa"
 
-      expect(response.body).to include('data-whatsapp-enabled="true"', 'name="phone"', "Reply STOP to opt out")
+      expect(response.body).to include(%(data-whatsapp-enabled="true"), %(name="phone"), I18n.t("checkout.whatsapp_opt_in"))
       expect(response.body).to match(/<input type="checkbox" name="whatsapp_opt_in" value="1"[^>]*>/)
       expect(response.body).not_to match(/name="whatsapp_opt_in"[^>]*checked/)
     end

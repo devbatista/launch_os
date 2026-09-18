@@ -34,6 +34,12 @@ Rails.application.routes.draw do
     end
   end
 
+  # Checkout (spec 07): chamado por modules/checkout.js; null_session, rate limit por IP.
+  namespace :checkout do
+    post "paypal",         to: "paypal#create"
+    post "paypal/capture", to: "paypal#capture"
+  end
+
   # Páginas legais (spec 14). `?product=<slug>` na refund policy mostra o prazo daquele produto.
   get "privacy",       to: "legal_pages#privacy", as: :privacy
   get "terms",         to: "legal_pages#terms",   as: :terms
