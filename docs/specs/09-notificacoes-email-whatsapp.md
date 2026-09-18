@@ -312,8 +312,9 @@ Fila `whatsapp`. Falha final → Sentry + status visível no admin; **não** ree
 ## Critérios de aceite
 
 - [x] Compra Sandbox (dev) → email aparece em `/letter_opener` com link funcional, HTML + texto. *(18/09: `DeliverOrderJob` → `SendOrderEmailJob` no Sidekiq, `MessageLog` `sent`, link `/download/:token` do email → 303 para a URL assinada)*
-- [ ] Produção: SES fora do sandbox; DKIM, SPF (MAIL FROM) e DMARC com status *verified*; email de teste
+- [x] Produção: SES fora do sandbox; DKIM, SPF (MAIL FROM) e DMARC com status *verified*; email de teste
       chega na caixa de entrada do Gmail com "mailed-by: ses.devbatista.online" e "signed-by: devbatista.online".
+      *(18/09: SPF PASS via `ses.devbatista.online`, DKIM PASS `devbatista.online`, DMARC PASS, entregue em 14 s)*
 - [ ] Compra com telefone + opt-in (Twilio Sandbox) → mensagem recebida; `MessageLog` passa por `queued → sent → delivered`.
 - [ ] Compra sem opt-in → nenhum `MessageLog` de WhatsApp.
 - [ ] Twilio indisponível (WebMock 500) → email já enviado, pedido `paid`, `MessageLog` whatsapp `failed`, erro no admin.

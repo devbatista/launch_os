@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 2.5 (recuperação de acesso em `/access/recover`, que já tem o `Delivery::ResendAccess` pronto). 2.6 (email) entregue em 18/09: o link de download chega por email em dev; falta só validar o SES em produção (M2). Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 2.5 (recuperação de acesso em `/access/recover`, que já tem o `Delivery::ResendAccess` pronto). 2.6 (email) fechada em 18/09, incluindo o SES em produção (SPF/DKIM/DMARC PASS na caixa de entrada). Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -229,7 +229,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `DeliverOrderJob` → `SendAccessEmailJob` (+ WhatsApp na 2.7); `SendAccessEmailJob` com `MessageLog` e retry 3× — *o job de email ficou **`SendOrderEmailJob(order_id, template:)`**, único para os 3 templates; retry reaproveita o mesmo log `queued`; esgotado ou erro permanente → `failed` + Sentry*
 - [x] `Delivery::DeliverOrder` e `Delivery::ResendAccess` ligados aos jobs — *`ResendAccess` já pronto para a 2.5: cria/regenera token (nunca se revogado), enfileira `access_resend`*
 - [x] Email chegando em `/letter_opener` após compra Sandbox — *18/09: pedido pago do dia → `DeliverOrderJob` → `SendOrderEmailJob` no Sidekiq (fila `mailers`), `MessageLog` `sent`, link do email → 303 para a URL assinada do MinIO (lembrar `127.0.0.1 minio` no `/etc/hosts` para abrir no navegador). Refund pela API → webhook → email `refund_confirmation` também no `/letter_opener`*
-- [ ] Em produção: SES fora do sandbox; email de teste na caixa de entrada com DKIM/SPF alinhados — *`SES_*`, `MAIL_FROM` e `SUPPORT_EMAIL` já estão no Railway; falta só disparar o email de teste após o deploy e conferir DKIM/SPF/DMARC no Gmail (M2)*
+- [x] Em produção: SES fora do sandbox; email de teste na caixa de entrada com DKIM/SPF alinhados — *18/09: `OrderMailer#delivery` disparado via `railway ssh` com objetos em memória (nada salvo) → entregue em 14 s na caixa de entrada; SPF PASS (envelope `@ses.devbatista.online`, custom MAIL FROM), DKIM PASS (`devbatista.online` + `amazonses.com`), DMARC PASS (`p=QUARANTINE`); `Reply-To` suporte, `Feedback-ID` do configuration set `launch-os`. Dica: o `railway ssh` perde aspas — mandar comandos sem `sh -c "..."`*
 - [x] Specs: `spec/mailers/order_mailer_spec.rb`, `spec/jobs/deliver_order_job_spec.rb` (T09), `spec/jobs/send_access_email_job_spec.rb` — *+ `delivery_methods/ses_api_spec`, `providers/ses/client_spec`, `delivery/resend_access_spec`, `models/message_log_spec`; `mark_paid_spec`/`transitions_spec` cobrem o enfileiramento após commit*
 
 ### 2.7 WhatsApp via Twilio — spec [09](../specs/09-notificacoes-email-whatsapp.md)
