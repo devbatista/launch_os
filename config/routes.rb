@@ -46,9 +46,11 @@ Rails.application.routes.draw do
   end
 
   # Entrega (spec 08): a Thank You é por id do pedido e NÃO libera o arquivo — o link de download
-  # (por token) vai só por email/WhatsApp (decisão 18/09). Recuperação de acesso na 2.5.
+  # (por token) vai só por email/WhatsApp (decisão 18/09). /access/recover reenvia o link por email.
   get "thank-you/:id",   to: "thank_you#show", as: :thank_you
   get "download/:token", to: "downloads#show", as: :download
+  get  "access/recover", to: "access_recoveries#new", as: :access_recover
+  post "access/recover", to: "access_recoveries#create"
 
   # Páginas legais (spec 14). `?product=<slug>` na refund policy mostra o prazo daquele produto.
   get "privacy",       to: "legal_pages#privacy", as: :privacy

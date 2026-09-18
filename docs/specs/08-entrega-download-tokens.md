@@ -67,8 +67,12 @@ ou o suporte.
   ```
 - Resposta **idêntica** exista ou não o pedido (não expor quem comprou).
 - `Delivery::ResendAccess` regenera o token se expirado/limite atingido (não se revogado por refund/disputa).
-- Rate limit: 5 req / 10 min por IP e 3 req / hora por email (chave = hash do email).
-- Honeypot field + tempo mínimo de preenchimento contra bots.
+- Rate limit: 5 req / 10 min por IP e 3 req / hora por email (chave = SHA-256 do email normalizado). Ambos com
+  `rate_limit` nativo (`name: "email"` para o segundo); estourou → 429 em texto puro.
+- Honeypot (`website`, escondido) + tempo mínimo de preenchimento (2 s, timestamp assinado com
+  `message_verifier(:access_recovery)`, validade 1 dia). Bot recebe a mesma resposta neutra, sem reenvio.
+- Email com formato inválido volta ao form com erro (422) — não revela nada porque nem consulta o banco.
+- Log: `[access] recovery ip=… found=… resent=…` — o email nunca vai para o log.
 
 ## `DeliverOrderJob` / `Delivery::DeliverOrder`
 
@@ -100,7 +104,7 @@ Emails e WhatsApp são jobs separados e independentes: falha em um não afeta o 
 - [x] Acesso direto ao objeto no bucket (sem assinatura) → 403.
 - [x] Token de pedido `pending`/`failed` → download negado. *(402)*
 - [x] 11º download → 429 com opção de recuperar; regenerar pelo admin volta a funcionar. *(regenerar via `regenerate!`; botão do admin na 2.8)*
-- [ ] Token expirado → 410; `/access/recover` com o email gera novo token e envia email.
-- [ ] `/access/recover` com email inexistente → mesma mensagem, nenhum email.
+- [x] Token expirado → 410; `/access/recover` com o email gera novo token e envia email. *(18/09: request spec + smoke em dev com `access_resend` no `/letter_opener`)*
+- [x] `/access/recover` com email inexistente → mesma mensagem, nenhum email. *(18/09)*
 - [x] Refund → token revogado; `/download/:token` → 410 mesmo dentro do prazo.
 - [x] Purchase disparado só na primeira visita à Thank You (`purchase_tracked_at` preenchido). *(marcação e `data-event`; o Pixel é a 3.1)*
