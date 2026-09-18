@@ -1,0 +1,9 @@
+Mensagem recebida no WhatsApp
+
+De: <%= @phone %><% if @client %> — <%= @client.name.presence || "sem nome" %> (<%= @client.email %>)<% else %> — número não cadastrado<% end %>
+<% if @opted_out %>Opt-out registrado: o cliente não receberá mais mensagens no WhatsApp.<% end %>
+
+<%= @body %>
+<% if @client %>
+Painel: <%= admin_client_url(@client, **Delivery.url_options) %>
+<% end %>

@@ -35,9 +35,16 @@ RSpec.describe Delivery::ResendAccess do
     expect(described_class.call(create(:order, :refunded))).to be(false)
   end
 
-  it "channels sem :email não enfileira email" do
+  it "channels sem :email não enfileira email; :whatsapp só com Twilio ligado e opt-in" do
     order = create(:order, :paid)
     create(:download_token, order:)
-    expect { described_class.call(order, channels: [ :whatsapp ]) }.not_to have_enqueued_job(SendOrderEmailJob)
+    expect { described_class.call(order, channels: [ :whatsapp ]) }.not_to have_enqueued_job
+  end
+
+  it "com Twilio ligado, :whatsapp enfileira o access_resend no WhatsApp", :twilio do
+    order = create(:order, :paid, client: create(:client, :with_whatsapp_opt_in))
+    create(:download_token, order:)
+    expect { described_class.call(order, channels: [ :email, :whatsapp ]) }
+      .to have_enqueued_job(SendWhatsappMessageJob).with(order.id, template: "access_resend").and have_enqueued_job(SendOrderEmailJob)
   end
 end

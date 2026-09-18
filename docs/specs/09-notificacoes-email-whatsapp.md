@@ -183,8 +183,16 @@ Hi {{1}}! Thanks for your purchase of {{2}}. Your download link is ready: {{3}}.
 The link is valid for {{4}} days. Need help? Reply to this message or email support@devbatista.online.
 ```
 
-Variáveis: `1` = primeiro nome, `2` = nome do produto, `3` = `thank_you_url`, `4` = dias de validade.
+Variáveis: `1` = primeiro nome (ou "there"), `2` = nome do produto, `3` = **`download_url(token)`** (decisão 18/09
+da spec 08: a Thank You não libera o link), `4` = dias de validade.
 O mesmo template serve para reenvio (`access_resend`) — evita segunda aprovação.
+
+**Implementado na 2.7 (18/09):** `Providers::Twilio::Client`, `Whatsapp::SendTemplateMessage`, `SendWhatsappMessageJob`,
+`Webhooks::TwilioController` (status + inbound), `SupportMailer#inbound_whatsapp`, `config/initializers/twilio.rb`
+(com `TWILIO_ENABLED=true` e credencial/template em branco o boot falha). URL pública dos links/callbacks gerados em
+jobs vem de `Delivery.url_options` (`APP_HOST`/`APP_PROTOCOL`) — em dev, para a Twilio alcançar o callback, apontar
+`APP_HOST` para o host do túnel e `APP_PROTOCOL=https`. Teste real no Sandbox da Twilio pendente do Content Template
+(`TWILIO_TEMPLATE_ORDER_DELIVERY_SID`) e do `join <código>`.
 
 ### `Providers::Twilio::Client`
 
@@ -260,7 +268,8 @@ Providers::Twilio::Client.new.send_template_message(
 )
 ```
 
-Retorna o SID → `provider_message_id`, `status: "queued"`.
+Retorna o SID → `provider_message_id`; o `MessageLog` fica `queued` até o status callback trazer `sent`/`delivered`/`read`
+(ou `failed`/`undelivered` com `ErrorCode`). Sem token ativo o service levanta `ArgumentError` (não manda link morto).
 
 ### `SendWhatsappMessageJob`
 
@@ -269,12 +278,14 @@ Retorna o SID → `provider_message_id`, `status: "queued"`.
 2. order = Order.find(id); client = order.client
 3. return unless client.whatsapp_deliverable?             # opt-in, phone, sem opt-out
 4. log = MessageLog.create!(channel: "whatsapp", template:, recipient: client.phone, status: "queued")
-5. sid = Whatsapp::SendTemplateMessage.call(...); log.update!(provider_message_id: sid, sent_at: now)
+5. sid = Whatsapp::SendTemplateMessage.call(order); log.update!(provider_message_id: sid)
 rescue Providers::TransientError => e
-   log.update!(error_message: e.message, attempts: +1); raise                    # retry_on 3×
+   log.register_attempt!(e); raise                  # retry_on 3× no mesmo log; esgotado → failed + Sentry
 rescue Providers::PermanentError => e
-   log.update!(status: "failed", error_message: e.message, attempts: +1); raise  # discard_on; 63xxx cai aqui
+   log.mark_failed!(e, code: e.code)                # sem retry; 63xxx/21xxx caem aqui
 ```
+
+Também exige `download_token.active?` (passo 3) e só aceita `template` em `order_delivery`/`access_resend`.
 
 Fila `whatsapp`. Falha final → Sentry + status visível no admin; **não** reenvia email automaticamente
 (ele já foi enviado).
@@ -283,8 +294,10 @@ Fila `whatsapp`. Falha final → Sentry + status visível no admin; **não** ree
 
 - `ActionController::API`, sem CSRF.
 - Validar `X-Twilio-Signature` com `Providers::Twilio::Client.new.valid_signature?(url:, params:, signature:)`
-  usando a URL pública completa (atenção ao proxy: montar com `APP_HOST` + `https`). Inválida → 403 + log.
-- Registrar `WebhookEvent(provider: "twilio", external_id: "#{MessageSid}-#{MessageStatus}")`.
+  usando `request.original_url` (atrás do proxy o Rails já monta `https`); como segurança extra, se falhar com
+  `http://`, tenta a mesma URL em `https://`. Inválida → 403 + log, nada gravado. Sem `MessageSid` → 400.
+- Registrar `WebhookEvent(provider: "twilio", external_id: "#{MessageSid}-#{MessageStatus}")`; reentrega (mesmo id)
+  → 204 sem reprocessar.
 - Atualizar `MessageLog.find_by(provider_message_id: MessageSid)`: `status` (`sent`, `delivered`, `read`,
   `failed`, `undelivered`), `delivered_at`/`read_at`/`failed_at`, `error_code` (`ErrorCode`).
 - Responder 204.
@@ -296,7 +309,8 @@ Fila `whatsapp`. Falha final → Sentry + status visível no admin; **não** ree
   `Client.find_by(phone: from).update!(whatsapp_opt_in: false, whatsapp_opt_out_at: now)`.
 - Qualquer mensagem: encaminhar por email ao `SUPPORT_EMAIL` (`SupportMailer.inbound_whatsapp`) com número,
   cliente (se localizado) e texto. Sem resposta automática no MVP (apenas TwiML vazio).
-- Registrar em `MessageLog` com `channel: "whatsapp"`, `template: "inbound"`, direção implícita pelo template.
+- Registrar em `MessageLog` com `channel: "whatsapp"`, `template: "inbound"`, direção implícita pelo template — vinculado
+  ao pedido mais recente do cliente (o log exige pedido; número sem cliente fica só no `WebhookEvent` + email).
 
 ### Regras
 
@@ -316,9 +330,9 @@ Fila `whatsapp`. Falha final → Sentry + status visível no admin; **não** ree
       chega na caixa de entrada do Gmail com "mailed-by: ses.devbatista.online" e "signed-by: devbatista.online".
       *(18/09: SPF PASS via `ses.devbatista.online`, DKIM PASS `devbatista.online`, DMARC PASS, entregue em 14 s)*
 - [ ] Compra com telefone + opt-in (Twilio Sandbox) → mensagem recebida; `MessageLog` passa por `queued → sent → delivered`.
-- [ ] Compra sem opt-in → nenhum `MessageLog` de WhatsApp.
-- [ ] Twilio indisponível (WebMock 500) → email já enviado, pedido `paid`, `MessageLog` whatsapp `failed`, erro no admin.
-- [ ] Número inválido (erro 63xxx) → sem retentativa; log `failed`.
-- [ ] Callback com assinatura inválida → 403 e nada atualizado.
-- [ ] Inbound `STOP` → opt-out gravado; reenvio via admin não dispara WhatsApp para esse cliente.
-- [ ] `TWILIO_ENABLED=false` → LP sem campo de telefone; fluxo de compra completo apenas por email.
+- [x] Compra sem opt-in → nenhum `MessageLog` de WhatsApp. *(2.7: `deliver_order_job_spec`, `send_whatsapp_message_job_spec`)*
+- [x] Twilio indisponível (WebMock 500) → email já enviado, pedido `paid`, `MessageLog` whatsapp `failed`, erro no admin. *(2.7: job spec)*
+- [x] Número inválido (erro 63xxx) → sem retentativa; log `failed`. *(2.7: job spec, `error_code` 63016)*
+- [x] Callback com assinatura inválida → 403 e nada atualizado. *(2.7: `webhooks/twilio_spec`)*
+- [x] Inbound `STOP` → opt-out gravado; reenvio via admin não dispara WhatsApp para esse cliente. *(2.7: `webhooks/twilio_spec`)*
+- [x] `TWILIO_ENABLED=false` → LP sem campo de telefone; fluxo de compra completo apenas por email. *(LP spec + job spec T27)*

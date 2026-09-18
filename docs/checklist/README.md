@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 2.7 (WhatsApp via Twilio, no Sandbox da Twilio — depende da conta Twilio, item 0.3) e M2 (compra Sandbox ponta a ponta com download em produção). Fase 2: 2.1–2.6 e 2.8 entregues em 17–18/09; só a 2.7 em aberto. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → M2 (compra Sandbox ponta a ponta: download em produção + teste real do WhatsApp no Sandbox da Twilio, que depende do Content Template `HX…` e do `join`) e depois Fase 3 (3.1 tracking). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -233,16 +233,16 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Specs: `spec/mailers/order_mailer_spec.rb`, `spec/jobs/deliver_order_job_spec.rb` (T09), `spec/jobs/send_access_email_job_spec.rb` — *+ `delivery_methods/ses_api_spec`, `providers/ses/client_spec`, `delivery/resend_access_spec`, `models/message_log_spec`; `mark_paid_spec`/`transitions_spec` cobrem o enfileiramento após commit*
 
 ### 2.7 WhatsApp via Twilio — spec [09](../specs/09-notificacoes-email-whatsapp.md)
-- [ ] `initializers/twilio.rb`; `TWILIO_ENABLED` respeitado em toda a cadeia
-- [ ] `Providers::Twilio::Client` (Faraday, `POST .../Messages.json`, Basic Auth, form-encoded; `valid_signature?` com HMAC-SHA1 + `secure_compare`) — conferir nomes dos parâmetros na doc oficial
-- [ ] `Whatsapp::SendTemplateMessage` (monta variáveis e chama o provider)
-- [ ] `SendWhatsappMessageJob` (fila `whatsapp`, `MessageLog`, retry só em erros transitórios, sem retry em 63xxx)
-- [ ] `Webhooks::TwilioController#status` e `#inbound` com `RequestValidator`; STOP → opt-out; inbound encaminhado por email ao suporte (`SupportMailer`)
-- [ ] Opt-in gravado no `Client` com texto e data/hora
-- [ ] `spec/support/twilio_stubs.rb` (WebMock em `api.twilio.com`)
-- [ ] Teste real no Sandbox da Twilio: mensagem recebida; callback `delivered` gravado; STOP funciona
-- [ ] Specs: `spec/jobs/send_whatsapp_message_job_spec.rb` (T08, T10, T27), `spec/requests/webhooks/twilio_spec.rb` (T08, T11, T20)
-- [ ] ✅ Critérios de aceite da spec 09
+- [x] `initializers/twilio.rb`; `TWILIO_ENABLED` respeitado em toda a cadeia — *18/09: boot falha se ligado sem SID/token/from/template; `Delivery.whatsapp_enabled?`/`whatsapp?(order)` gateiam LP, `DeliverOrder`, `ResendAccess`, job e botão do admin*
+- [x] `Providers::Twilio::Client` (Faraday, `POST .../Messages.json`, Basic Auth, form-encoded; `valid_signature?` com HMAC-SHA1 + `secure_compare`) — conferir nomes dos parâmetros na doc oficial — *`From`/`To` (`whatsapp:+E164`)/`ContentSid`/`ContentVariables` (JSON)/`StatusCallback`; 201 → `sid`; `ApiError` com `code` (21xxx/63xxx permanentes), 20429/20500/20503 e 5xx transitórios*
+- [x] `Whatsapp::SendTemplateMessage` (monta variáveis e chama o provider) — *`{{3}}` é o `/download/:token` (decisão 18/09); callback e link públicos via `Delivery.url_options`; exige token ativo*
+- [x] `SendWhatsappMessageJob` (fila `whatsapp`, `MessageLog`, retry só em erros transitórios, sem retry em 63xxx) — *mesmo desenho do `SendOrderEmailJob`; log fica `queued` até o callback; `error_code` gravado*
+- [x] `Webhooks::TwilioController#status` e `#inbound` com `RequestValidator`; STOP → opt-out; inbound encaminhado por email ao suporte (`SupportMailer`) — *`WebhookEvent` por callback (reentrega → 204), `MessageLog` atualizado com timestamps/`ErrorCode`; STOP/UNSUBSCRIBE/CANCEL/END/QUIT; TwiML vazio; `SupportMailer#inbound_whatsapp` (pt-BR, link do cliente no painel)*
+- [x] Opt-in gravado no `Client` com texto e data/hora — *desde a 2.1 (`MarkPaid`)*
+- [x] `spec/support/twilio_stubs.rb` (WebMock em `api.twilio.com`) — *tag `:twilio` liga o canal com credenciais de teste; `post_twilio_webhook` assina como a Twilio*
+- [ ] Teste real no Sandbox da Twilio: mensagem recebida; callback `delivered` gravado; STOP funciona — *pendente: criar o Content Template no Sandbox (categoria Utility, texto da spec 09) e pôr o `HX…` em `TWILIO_TEMPLATE_ORDER_DELIVERY_SID`; `join <código>` do celular; `APP_HOST`/`APP_PROTOCOL` apontando para o túnel; cadastrar `/webhooks/twilio/status` e `/inbound` no Sandbox; então compra com telefone + opt-in*
+- [x] Specs: `spec/jobs/send_whatsapp_message_job_spec.rb` (T08, T10, T27), `spec/requests/webhooks/twilio_spec.rb` (T08, T11, T20) — *+ `providers/twilio/client_spec` (T29), `whatsapp/send_template_message_spec`, `support_mailer_spec`; 316 exemplos verdes*
+- [ ] ✅ Critérios de aceite da spec 09 — *todos os automatizáveis marcados; falta só o teste real no Sandbox (mensagem recebida, `queued → sent → delivered`)*
 
 ### 2.8 Admin de pedidos, clientes e webhook events — spec [11](../specs/11-admin-pedidos-clientes-dashboard.md)
 - [x] `Admin::OrdersController` index (filtros, busca, Pagy) e show (atribuição, token mascarado, mensagens, eventos) — *18/09: filtros por status/produto/período, busca por email (parcial) ou ids do PayPal (exatos), coluna de canais com o último `MessageLog` por canal, disputa em destaque. **Paginação própria** (`Admin::Paginated`, 25/página) no lugar do Pagy — decisão registrada na spec 11*
