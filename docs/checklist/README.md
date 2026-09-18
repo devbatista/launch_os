@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → M2 (compra Sandbox ponta a ponta: download em produção + teste real do WhatsApp no Sandbox da Twilio, que depende do Content Template `HX…` e do `join`) e depois Fase 3 (3.1 tracking). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → M2 (compra Sandbox ponta a ponta: download em produção + teste real do WhatsApp no Sandbox da Twilio, que depende do Content Template `HX…` e do `join`) e a Fase 3 (3.1, polimento visual do admin — agora que o painel tem as telas reais). Fase 4 (tracking, testes e go-live) vem depois. Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -31,7 +31,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ### 0.1 PayPal — spec [07](../specs/07-checkout-paypal.md)
 - [x] Conta PayPal Business (CNPJ, separada da PF) criada e verificação de identidade enviada em 16/09 — prazo informado 2–4 dias úteis; Live no Developer fica "restricted" até aprovar (seção 6 do cronograma)
 - [x] App no PayPal Developer (Sandbox): `launch_os` (Merchant) criado em 16/09 na conta CNPJ; Client ID + Secret no gerenciador de senhas
-- [ ] App no PayPal Developer (Live): Client ID + Secret — *bloqueado pela verificação da conta; necessário só na 3.5*
+- [ ] App no PayPal Developer (Live): Client ID + Secret — *bloqueado pela verificação da conta; necessário só na 4.5*
 - [x] Contas Sandbox: business (vendedor, `sb-…@business.example.com`) e personal US com saldo (comprador) — email/senha no gerenciador de senhas (16/09)
 - [x] Credenciais Sandbox (Client ID + Secret) guardadas fora do repositório (gerenciador de senhas) (16/09)
 
@@ -39,7 +39,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Meta Business: portfólio `DevBatista` e conta de anúncios `DevBatista` (ID `2425512304918484`, BRL, São Paulo, CNPJ) já existiam; forma de pagamento adicionada em 16/09
 - [x] Conjunto de dados (Pixel) `LaunchOS` criado → `META_PIXEL_ID=2908081392894300` no `.env` e no Railway (16/09)
 - [x] Domínio `devbatista.online` verificado no portfólio DevBatista via TXT `facebook-domain-verification=…` no apex (16/09). *A 1ª tentativa deu "já verificado por outra empresa"; a 2ª passou — mensagem antiga fica na tela, ignorar*
-- [ ] Eventos priorizados (Aggregated Event Measurement) com Purchase no topo — pode ficar para a Fase 3
+- [ ] Eventos priorizados (Aggregated Event Measurement) com Purchase no topo — pode ficar para a Fase 4
 
 ### 0.3 Twilio — spec [09](../specs/09-notificacoes-email-whatsapp.md)
 - [x] Twilio: **subconta `launch_os`** (SID `AC661274f8…`) criada dentro da conta existente para isolar credenciais, números e Sender do outro app; `TWILIO_ACCOUNT_SID`/`TWILIO_AUTH_TOKEN` no `.env` (16/09)
@@ -52,7 +52,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Sentry: org `devbatista`, projeto Rails `launch_os` (plano grátis, só Error Monitoring) → `SENTRY_DSN` no `.env` e no Railway (16/09). Gems + initializer entram na 1.1 (`send_default_pii = false`)
 - [x] UptimeRobot (grátis): monitor HTTP `https://www.devbatista.online/up` a cada 5 min, alerta por email (16/09)
 - [x] Repositório Git `devbatista/launch_os` (privado); `AGENTS.md`, `docs/` commitados; CI do Rails (lint/brakeman) e Dependabot ativos
-- [ ] Conta GA4 → `GA4_MEASUREMENT_ID` (pode ficar para a Fase 3)
+- [ ] Conta GA4 → `GA4_MEASUREMENT_ID` (pode ficar para a Fase 4)
 
 **M0 — Contas prontas (20/09):** todos os itens acima marcados ou com data de solicitação registrada.
 
@@ -123,7 +123,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `modules/admin/nested_list.js` (submit interceptado → fetch form-encoded com token do `<meta>` → troca `innerHTML`; fallback para submit normal se a rede falhar)
 - [x] `modules/admin/confirm.js` (`data-confirm` em forms/links, fase de captura) ativado no `<main>` do layout
 - [x] Specs: `spec/requests/admin/products_spec.rb`; shared example "coleção do produto no admin" usado por `benefits_spec`, `testimonials_spec`, `faqs_spec`; helper `sign_in_admin`
-- [ ] Polir o visual do admin (sidebar, formulários, tabelas, flashes) — o layout da 1.2 é o mínimo funcional; fazer aqui, quando o painel ganha as primeiras telas reais
+- [x] ~~Polir o visual do admin~~ → **movido para a Fase 3 (3.1)**, decisão de 18/09: fazer de uma vez, com todas as telas reais do painel (produtos, pedidos, clientes, webhooks) já existentes
 - [ ] ✅ Critérios de aceite da spec 05 (exceto preview) — *feito: criar draft via admin, publicar sem PDF mantém draft, publish preenche `published_at`, coleções via fetch e sem JS. Faltam: LP 200 em `/:slug` (1.6), preview (1.7), segundo produto (H5, após 1.9)*
 
 ### 1.5 Uploads — spec [05](../specs/05-catalogo-produtos-admin.md)
@@ -209,7 +209,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ### 2.4 DownloadToken, Thank You, download — spec [08](../specs/08-entrega-download-tokens.md)
 - [x] Migration `download_tokens`; modelo com `has_secure_token`, `active?`, `inactive_reason`, `revoke!`, `regenerate!` — *+ `register_download!` (incremento sob lock), `remaining_downloads`; defaults de `DOWNLOAD_TOKEN_TTL_DAYS`/`DOWNLOAD_MAX_COUNT`. Precedência: revogado antes de não-pago (refund/disputa → 410, não 402). Ligado às transições: `MarkPaid` cria (ou regenera após disputa ganha), `MarkRefunded`/`MarkDisputed` revogam. O capture PENDING já cria o token (inativo) para a Thank You mostrar "processing"*
 - [x] Factory com traits `:expired`, `:revoked`, `:limit_reached` — *+ `:unpaid`*
-- [x] `ThankYouController#show` (pending / pago / inativo), `no-store`, marca `purchase_tracked_at` na 1ª visita — *renderiza `data-module="tracking" data-event="purchase"` só nessa visita (o disparo real é a 3.1); `noindex`. **Decisão 18/09**: a Thank You é por `/thank-you/:order_id` e **não mostra o link de download** — ele vai só por email/WhatsApp (2.6/2.7); a página só confirma o pagamento e diz para onde o link foi. Specs 08 e 12 atualizadas*
+- [x] `ThankYouController#show` (pending / pago / inativo), `no-store`, marca `purchase_tracked_at` na 1ª visita — *renderiza `data-module="tracking" data-event="purchase"` só nessa visita (o disparo real é a 4.1); `noindex`. **Decisão 18/09**: a Thank You é por `/thank-you/:order_id` e **não mostra o link de download** — ele vai só por email/WhatsApp (2.6/2.7); a página só confirma o pagamento e diz para onde o link foi. Specs 08 e 12 atualizadas*
 - [x] `DownloadsController#show`: lock + incremento, redirect para URL assinada (5 min), 410/429, rate limit — *402 para não-pago; `include ActiveStorage::SetCurrent` (serviço Disk nos testes); página `downloads/unavailable` com partial `shared/_token_unavailable` reutilizado pela Thank You*
 - [x] Download do PDF real funcionando em dev (MinIO) — *18/09: redirect `X-Amz-Expires=300` + `attachment; filename="<slug>.pdf"`, PDF servido, contador 1; URL assinada de 1 s → 403 após expirar; objeto sem assinatura → 403. Em produção confirmar na primeira compra real (S3 já validado 403 na 1.9)*
 - [ ] Download do PDF real funcionando em produção — *na primeira compra de teste em produção (M2)*
@@ -256,9 +256,27 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 
 ---
 
-## Fase 3 — Tracking, testes e go-live (S5 · 19–25/10)
+## Fase 3 — Polimento do admin (adiantado: a partir de 19/09, ~6 h)
 
-### 3.1 Atribuição, Pixel, PageVisit — spec [10](../specs/10-tracking-e-analytics.md)
+Decisão de 18/09: o polimento visual que estava na 1.4 ("fazer quando o painel ganhar as primeiras telas reais") vira
+uma fase própria, agora que produtos, pedidos, clientes e webhook events existem. Sem spec própria; a referência é a
+spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, server-rendered, ERB + Tailwind, sidebar).
+
+### 3.1 Visual do admin
+- [ ] Sidebar: hierarquia, item ativo, área do usuário, responsivo (colapsa no mobile)
+- [ ] Cabeçalhos de página, breadcrumbs e barras de ação consistentes (produto, pedido, cliente, evento)
+- [ ] Tabelas: densidade, alinhamento numérico, linhas clicáveis, estados vazios com CTA, paginação
+- [ ] Formulários do produto: agrupamento em seções, ajuda inline, erros, campos de arquivo e coleções (benefícios/depoimentos/FAQs)
+- [ ] Flashes (notice/alert) e confirmações (`data-confirm`) com o mesmo padrão visual
+- [ ] Badges e helpers (`button_classes`, `input_classes`, `badge`) como fonte única de estilo — nada de classes soltas repetidas
+- [ ] Login: tela alinhada ao restante do painel
+- [ ] Conferir no mobile (≥ 375 px) e no desktop; sem regressão nos specs de request/views
+
+---
+
+## Fase 4 — Tracking, testes e go-live (S5 · 19–25/10)
+
+### 4.1 Atribuição, Pixel, PageVisit — spec [10](../specs/10-tracking-e-analytics.md)
 - [ ] `modules/attribution.js` (cookie `lo_attr` first-touch, 30 dias) + `lo_vid`
 - [ ] `Tracking::AttributionCapture` lendo cookie/params/`_fbp`/`_fbc` no checkout → `Order`
 - [ ] Migration `page_visits`; `RecordPageVisitJob` (ignora bots, `ip_hash`)
@@ -268,7 +286,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] Meta Test Events: três eventos recebidos com value/currency
 - [ ] Specs: T22 em `checkout/paypal_spec.rb`, T21 em `thank_you_spec.rb`, `spec/jobs/record_page_visit_job_spec.rb`
 
-### 3.2 GA4, Sentry, monitoramento, hardening — spec [13](../specs/13-seguranca.md)
+### 4.2 GA4, Sentry, monitoramento, hardening — spec [13](../specs/13-seguranca.md)
 - [ ] GA4 (`view_item`, `begin_checkout`, `purchase` único)
 - [ ] Sentry recebendo erro de teste; integração Sidekiq (dead jobs)
 - [ ] Uptime monitor ativo; backup diário confirmado e **restauração testada**; versionamento do bucket — *backup: decidir aqui entre upgrade para Railway Pro (backups de volume) ou `pg_dump` agendado para o bucket (ver 0.4)*
@@ -276,21 +294,21 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] `brakeman` e `bundler-audit` limpos; Dependabot ativo
 - [ ] Checklist da spec 13 percorrido item a item
 
-### 3.3 Dashboard — spec [11](../specs/11-admin-pedidos-clientes-dashboard.md)
+### 4.3 Dashboard — spec [11](../specs/11-admin-pedidos-clientes-dashboard.md)
 - [ ] `Admin::DashboardsController#show` com período e filtro por produto
 - [ ] Cards: visitas, únicos, checkouts, vendas, faturamento bruto/líquido estimado, taxas, reembolsos, entregas
 - [ ] Vendas por `utm_campaign`/`utm_content`; últimos pedidos; alertas (webhooks/mensagens falhas, disputas)
 - [ ] Spec: `spec/requests/admin/dashboards_spec.rb` com uma compra refletida
-- [ ] *(Pode ir para a Fase 5 se faltar tempo — registrar no cronograma)*
+- [ ] *(Pode ir para a Fase 6 se faltar tempo — registrar no cronograma)*
 
-### 3.4 Plano de testes — spec [15](../specs/15-plano-de-testes.md)
+### 4.4 Plano de testes — spec [15](../specs/15-plano-de-testes.md)
 - [ ] Matriz T01–T30 conferida: cada caso tem spec e está verde
 - [ ] SimpleCov ≥ 90% em services/jobs/webhooks
 - [ ] `rubocop` + `rubocop-rspec` sem ofensas
 - [ ] Manuais 1–4 executados e registrados em `docs/qa/` (compra Sandbox desktop + mobile, refund Sandbox, Twilio Sandbox + STOP, webhook real via túnel)
 - [ ] Falhas corrigidas
 
-### 3.5 Go-live — spec [00](../specs/00-visao-geral.md), [13](../specs/13-seguranca.md)
+### 4.5 Go-live — spec [00](../specs/00-visao-geral.md), [13](../specs/13-seguranca.md)
 - [ ] Credenciais PayPal Live em produção; webhook Live cadastrado
 - [ ] `TWILIO_ENABLED` conforme aprovação do sender (true só com sender + template aprovados)
 - [ ] Copy final da LP (C.4), PDF final (C.3) e políticas revisadas (C.5) publicados
@@ -313,18 +331,18 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 
 ---
 
-## Fase 4 — Campanha (S6 · 26/10–01/11)
+## Fase 5 — Campanha (S6 · 26/10–01/11)
 
-- [ ] 4.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 18/dia)
-- [ ] 4.1 Três anúncios aprovados pela Meta
-- [ ] 4.2 Planilha diária preenchida (seção 8 do cronograma) — dias 1 a 7
-- [ ] 4.3 Sentry, `MessageLog` e disputas verificados diariamente; suporte respondido em < 24 h
-- [ ] 4.4 Análise final e cenário escolhido (seção 9 do cronograma) — 03/11
+- [ ] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 18/dia)
+- [ ] 5.1 Três anúncios aprovados pela Meta
+- [ ] 5.2 Planilha diária preenchida (seção 8 do cronograma) — dias 1 a 7
+- [ ] 5.3 Sentry, `MessageLog` e disputas verificados diariamente; suporte respondido em < 24 h
+- [ ] 5.4 Análise final e cenário escolhido (seção 9 do cronograma) — 03/11
 
 **M4 (26/10) e M5 (03/11).**
 
 ---
 
-## Fase 5 — Pós-validação (sem datas)
+## Fase 6 — Pós-validação (sem datas)
 
-Ver ordem sugerida no cronograma (seção 4.7). Não iniciar antes de M5.
+Ver ordem sugerida no cronograma (seção 4.8). Não iniciar antes de M5.
