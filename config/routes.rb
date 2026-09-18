@@ -1,8 +1,17 @@
+require "sidekiq/web"
+
 Rails.application.routes.draw do
   # Tabela completa em docs/specs/12-rotas.md. Rotas fixas primeiro; `GET /:slug` sempre por último.
 
   # Health check usado pelo Railway e pelo monitor de uptime.
   get "up" => "rails/health#show", as: :rails_health_check
+
+  # Painel do Sidekiq só com sessão de admin válida (mesmo cookie do painel); sem sessão a rota não
+  # existe (404), para não revelar o painel.
+  admin_authenticated = ->(request) { request.cookie_jar.signed[:session_id].then { |id| id.present? && Session.exists?(id:) } }
+  constraints admin_authenticated do
+    mount Sidekiq::Web => "/admin/sidekiq"
+  end
 
   # Caixa de saída de emails em desenvolvimento.
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
@@ -32,6 +41,20 @@ Rails.application.routes.draw do
         member { patch :move }
       end
     end
+
+    # Pedidos, clientes e auditoria de webhooks (spec 11). Nenhuma ação altera valor ou marca como pago.
+    resources :orders, only: %i[index show] do
+      member do
+        post :resend           # channel=email|whatsapp
+        post :regenerate_token
+        post :revoke_token
+        post :resolve_dispute  # outcome=paid|refunded
+      end
+    end
+    resources :clients, only: %i[index show] do
+      member { post :revoke_whatsapp_opt_in }
+    end
+    resources :webhook_events, only: %i[index show]
   end
 
   # Checkout (spec 07): chamado por modules/checkout.js; null_session, rate limit por IP.

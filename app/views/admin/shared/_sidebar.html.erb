@@ -1,13 +1,19 @@
-<%# Itens da sidebar (spec 11): Dashboard, Products, Orders, Clients, Webhook Events, Sidekiq.
-    Cada link entra quando a rota existir (1.4, 2.8). %>
+<%# Itens da sidebar (spec 11): Dashboard, Produtos, Pedidos, Clientes, Webhook events, Sidekiq. %>
 <aside class="w-56 shrink-0 bg-gray-900 text-gray-200 flex flex-col min-h-screen">
   <div class="px-5 py-4 text-lg font-bold text-white border-b border-gray-800">Launch OS</div>
 
   <nav class="flex-1 px-3 py-4 space-y-1" aria-label="Principal">
-    <% nav_items = [ [ "Dashboard", admin_dashboard_path, controller_name == "dashboards" ], [ "Produtos", admin_products_path, controller_path.start_with?("admin/products", "admin/benefits", "admin/testimonials", "admin/faqs") ] ] %>
+    <% nav_items = [
+         [ "Dashboard", admin_dashboard_path, controller_name == "dashboards" ],
+         [ "Produtos", admin_products_path, controller_path.start_with?("admin/products", "admin/benefits", "admin/testimonials", "admin/faqs") ],
+         [ "Pedidos", admin_orders_path, controller_name == "orders" ],
+         [ "Clientes", admin_clients_path, controller_name == "clients" ],
+         [ "Webhook events", admin_webhook_events_path, controller_name == "webhook_events" ]
+       ] %>
     <% nav_items.each do |label, path, active| %>
       <%= link_to label, path, class: "block rounded-md px-3 py-2 text-sm font-medium #{active ? 'bg-gray-800 text-white' : 'hover:bg-gray-800 hover:text-white'}" %>
     <% end %>
+    <a href="/admin/sidekiq" target="_blank" rel="noopener" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-800 hover:text-white">Sidekiq ↗</a>
   </nav>
 
   <div class="px-5 py-4 border-t border-gray-800 text-sm">

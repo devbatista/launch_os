@@ -59,6 +59,12 @@
 
   <section class="rounded-lg border border-gray-200 bg-white p-5">
     <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Pedidos</h2>
-    <p class="text-sm text-gray-600">Resumo de pedidos pagos, faturamento e último pedido aparece aqui a partir da Fase 2.</p>
+    <% paid = @product.orders.paid %>
+    <dl class="space-y-2 text-sm">
+      <div class="flex gap-2"><dt class="text-gray-500 w-28">Pagos</dt><dd class="text-gray-900"><%= paid.count %> · <%= money(paid.sum(:amount_cents), @product.currency) %></dd></div>
+      <div class="flex gap-2"><dt class="text-gray-500 w-28">Outros</dt><dd class="text-gray-900"><%= @product.orders.pending.count %> pendentes · <%= @product.orders.refunded.count %> reembolsados · <%= @product.orders.disputed.count %> em disputa</dd></div>
+      <div class="flex gap-2"><dt class="text-gray-500 w-28">Último pedido</dt><dd class="text-gray-900"><%= datetime_br(@product.orders.maximum(:created_at)) %></dd></div>
+    </dl>
+    <p class="mt-4"><%= link_to "Ver pedidos deste produto →", admin_orders_path(product_id: @product.id), class: "text-sm text-blue-600 hover:underline" %></p>
   </section>
 </div>

@@ -9,20 +9,26 @@ Layout com sidebar: Dashboard, Products, Orders, Clients, Webhook Events, Sideki
 ### Index
 - Colunas: id, data, produto, cliente (email), valor, status (badge), canais (ícones email/WhatsApp com status), origem (`utm_source/utm_campaign`).
 - Filtros: status, produto, período, busca por email / `paypal_order_id` / `paypal_capture_id`.
-- Paginação (`Pagy` ou paginação simples via `limit/offset`; decisão: **Pagy**, leve).
+- Paginação: **decisão revista (18/09, tarefa 2.8)** — `limit/offset` próprio (`Admin::Paginated`, 25 por página,
+  partial `admin/shared/_pagination`) em vez de Pagy: volume de dezenas de linhas e a API do Pagy muda entre
+  majors; menos uma dependência.
 - Destaque visual para `disputed` (exige tratamento manual).
 
 ### Show
 - Dados do pedido: status, valor, moeda, `paypal_order_id`, `paypal_capture_id`, `paid_at`, IP, user agent.
 - Atribuição: todas as UTMs, `fbclid`, `landing_path`, `referrer`.
 - Cliente: link para `/admin/clients/:id`, telefone, opt-in.
-- Token: valor mascarado (últimos 6), `expires_at`, `download_count/max`, `revoked_at`, `last_downloaded_at`.
+- Token: valor mascarado (últimos 6), `expires_at`, `download_count/max`, `revoked_at`, `last_downloaded_at`, situação
+  (ativo / expirado / limite / revogado / aguardando pagamento).
 - Mensagens: tabela de `MessageLog` (canal, template, status, erro, timestamps).
 - Eventos: `WebhookEvent` relacionados (tipo, status, data) com link para ver payload bruto.
 - Ações (`button_to` gerando `<form method="post">`, com `data-confirm="..."` tratado por `modules/admin/confirm.js`):
-  - **Resend by email**, **Resend by WhatsApp** (este só se `client.whatsapp_deliverable?` e Twilio habilitado).
-  - **Regenerate token**, **Revoke access**.
-  - **Mark as resolved** em disputas (após tratar no PayPal): volta para `paid` ou `refunded` conforme escolha.
+  - **Reenviar por email**, **Reenviar por WhatsApp** (este só se `client.whatsapp_deliverable?` e Twilio habilitado).
+    Passa por `Delivery::ResendAccess`: token expirado/limite é regenerado; revogado é recusado (regenerar antes).
+  - **Regenerar token** (só pedido pago; cria se não existir), **Revogar acesso** (download → 410).
+  - **Disputa: ganhamos / perdemos** (após tratar no PayPal): `Orders::ResolveDispute` com `outcome=paid|refunded`
+    → volta a `paid` (token regenerado) ou `refunded` (email de reembolso).
+  - Todas via `button_to` + `data-confirm`; respostas com `303` e flash.
 
 Nenhuma ação permite alterar valor ou marcar como pago manualmente (isso só via PayPal).
 
@@ -36,7 +42,7 @@ Nenhuma ação permite alterar valor ou marcar como pago manualmente (isso só v
 - Dados, opt-in (`whatsapp_opt_in_at`, texto aceito, `opt_out_at`).
 - Histórico de pedidos com status e links.
 - Mensagens enviadas (todos os canais).
-- Ação: **Revoke WhatsApp opt-in** (pedido ao suporte).
+- Ação: **Revogar opt-in de WhatsApp** (pedido ao suporte) → `Client#opt_out_whatsapp!`.
 - Exportação CSV de clientes (apenas admin autenticado) — PODE ficar para depois.
 
 ## Dashboard (`/admin/dashboard`)
@@ -70,9 +76,9 @@ existentes; período padrão 7 dias.
 
 ## Critérios de aceite
 
-- [ ] Pedido pago aparece no index com cliente, UTMs e status dos canais.
-- [ ] "Resend by email" gera novo `MessageLog` e email em `/letter_opener`.
-- [ ] "Revoke access" → download retorna 410; "Regenerate token" → novo token ativo.
+- [x] Pedido pago aparece no index com cliente, UTMs e status dos canais. *(2.8, 18/09)*
+- [x] "Resend by email" gera novo `MessageLog` e email em `/letter_opener`. *(2.8: request spec + smoke em dev)*
+- [x] "Revoke access" → download retorna 410; "Regenerate token" → novo token ativo. *(2.8: request spec)*
 - [ ] Dashboard reflete uma compra de teste: +1 checkout, +1 venda, faturamento correto.
 - [ ] Filtro por produto e período funciona; taxa de conversão calculada corretamente.
-- [ ] Nenhum dado de cliente visível sem autenticação.
+- [x] Nenhum dado de cliente visível sem autenticação. *(2.8: todas as rotas redirecionam ao login; `/admin/sidekiq` sem sessão → 404)*

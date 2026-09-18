@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 2.7 (WhatsApp via Twilio, no Sandbox da Twilio) ou 2.8 (admin de pedidos/clientes) — 2.7 depende de conta Twilio configurada (0.3); se ainda não estiver, adiantar a 2.8. Fase 2 até aqui: 2.1–2.6 entregues em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 2.7 (WhatsApp via Twilio, no Sandbox da Twilio — depende da conta Twilio, item 0.3) e M2 (compra Sandbox ponta a ponta com download em produção). Fase 2: 2.1–2.6 e 2.8 entregues em 17–18/09; só a 2.7 em aberto. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -245,12 +245,12 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] ✅ Critérios de aceite da spec 09
 
 ### 2.8 Admin de pedidos, clientes e webhook events — spec [11](../specs/11-admin-pedidos-clientes-dashboard.md)
-- [ ] `Admin::OrdersController` index (filtros, busca, Pagy) e show (atribuição, token mascarado, mensagens, eventos)
-- [ ] Ações: `resend` (email/whatsapp), `regenerate_token`, `revoke_token`, `resolve_dispute`
-- [ ] `Admin::ClientsController` index/show, `revoke_whatsapp_opt_in`, telefone mascarado
-- [ ] `Admin::WebhookEventsController` index/show (payload bruto)
-- [ ] Sidekiq Web em `/admin/sidekiq` com constraint de sessão
-- [ ] Specs: `spec/requests/admin/orders_spec.rb`, `spec/requests/admin/clients_spec.rb`, acesso sem sessão → redirect
+- [x] `Admin::OrdersController` index (filtros, busca, Pagy) e show (atribuição, token mascarado, mensagens, eventos) — *18/09: filtros por status/produto/período, busca por email (parcial) ou ids do PayPal (exatos), coluna de canais com o último `MessageLog` por canal, disputa em destaque. **Paginação própria** (`Admin::Paginated`, 25/página) no lugar do Pagy — decisão registrada na spec 11*
+- [x] Ações: `resend` (email/whatsapp), `regenerate_token`, `revoke_token`, `resolve_dispute` — *`resend` via `Delivery::ResendAccess` (recusa revogado; WhatsApp só com opt-in + `TWILIO_ENABLED`); `resolve_dispute` via `Orders::ResolveDispute` (`outcome=paid|refunded`); tudo com `data-confirm` e 303*
+- [x] `Admin::ClientsController` index/show, `revoke_whatsapp_opt_in`, telefone mascarado — *`+1 ••• ••• 2671` via Phonelib; contagem de pedidos pagos por subquery; busca por email/nome; filtro de opt-in*
+- [x] `Admin::WebhookEventsController` index/show (payload bruto) — *filtros por provedor/status; payload e headers em JSON formatado*
+- [x] Sidekiq Web em `/admin/sidekiq` com constraint de sessão — *sem cookie válido → 404; link na sidebar; produto → resumo de pedidos no show*
+- [x] Specs: `spec/requests/admin/orders_spec.rb`, `spec/requests/admin/clients_spec.rb`, acesso sem sessão → redirect — *+ `webhook_events_spec`, `sidekiq_web_spec`; 295 exemplos verdes*
 
 **M2 — Compra Sandbox ponta a ponta (18/10):** critérios de saída da Fase 2 no cronograma.
 
