@@ -19,24 +19,26 @@ e as specs em [docs/specs/](../specs/README.md).
 - **Sexta-feira**: revisão semanal (seção 10) — recalcular horas restantes e confirmar o marco da fase.
 - **Terça-feira**: checkpoint de aprovações externas (seção 6).
 - Qualquer mudança de escopo, prazo ou stack vai para o **Registro de decisões** (seção 11), com data.
-- Item novo que não está no MVP vai para a Fase 5, nunca para as fases 1–4.
+- Item novo que não está no MVP vai para a Fase 6, nunca para as fases 1–5.
 
-Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · ⏸ bloqueado (dizer por quê) · ⏭ adiado para Fase 5 · ❌ cancelado
+Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · ⏸ bloqueado (dizer por quê) · ⏭ adiado para Fase 6 · ❌ cancelado
 
 ## 1. Painel
 
 | Fase | Período | Semanas | Horas plan. | Horas reais | Progresso | Status |
 |---|---|---|---|---|---|---|
 | Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 3/5 (0.2, 0.4, 0.5 ✅; 0.1 aguarda verificação PayPal; 0.3 Sender adiado) | 🟦 |
-| Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 2/9 (1.2, 1.3 ✅; 1.1 só com critérios dependentes de fases seguintes) | 🟦 |
-| Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 0/8 | ⬜ |
-| Fase 3 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
+| Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 9/9 — concluída em 17/09 (M1) | ✅ |
+| Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 7/8 código entregue em 17–18/09; 2.7 aguarda teste real no Sandbox da Twilio; M2 pendente | 🟦 |
+| Fase 3 — Polimento do admin | a partir de 19/09 (adiantado) | S1 | 6 | | 0/1 | ⬜ |
+| Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
 | Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
-| Fase 4 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
+| Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
 | Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
-| Fase 5 — Pós-validação | a definir | — | — | | — | ⬜ |
+| Fase 6 — Pós-validação | a definir | — | — | | — | ⬜ |
 
-Total de desenvolvimento (Fases 0–3): **128 h** em 6 semanas. Folga de ~15% já embutida.
+Total de desenvolvimento (Fases 0–4): **134 h** em 6 semanas. Folga de ~15% já embutida.
+**Decisão 18/09:** o polimento visual do admin (antes um item da 1.4) virou a Fase 3; as fases seguintes foram renumeradas (tracking/testes/go-live = Fase 4, campanha = Fase 5, pós-validação = Fase 6). Datas e marcos M1–M5 não mudaram.
 Feriados considerados: 12/10 (S4) e 02/11 (S7).
 
 > **Se a capacidade cair para 20 h/semana:** tudo desliza ~1 semana (Fase 2 → 25/10, go-live → 01/11,
@@ -70,13 +72,14 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | PayPal Sandbox, webhook, Client, Order (2.1–2.3) | | | | █ | | | | |
 | Token, Thank You, recuperação, email (2.4–2.6) | | | | █ | █ | | | |
 | WhatsApp, admin pedidos/clientes (2.7–2.8) | | | | | █ | | | |
-| Pixel, UTMs, GA4, Sentry, dashboard (3.1–3.3) | | | | | | █ | | |
-| Plano de testes, PayPal Live, compra real (3.4–3.5) | | | | | | █ | | |
+| Polimento do admin (3.1) — adiantado | | █ | | | | | | |
+| Pixel, UTMs, GA4, Sentry, dashboard (4.1–4.3) | | | | | | █ | | |
+| Plano de testes, PayPal Live, compra real (4.4–4.5) | | | | | | █ | | |
 | Escrever e revisar PDF + tracker (C.1–C.3) | | ▓ | ▓ | ▓ | ▓ | | | |
 | Copy da LP, mockup, políticas (C.4–C.5) | | | ▓ | ▓ | | | | |
 | Três criativos (C.6) | | | | | ▓ | ▓ | | |
-| Campanha no ar (4.1–4.3) | | | | | | | ░ | |
-| Análise e decisão (4.4) | | | | | | | | ░ |
+| Campanha no ar (5.1–5.3) | | | | | | | ░ | |
+| Análise e decisão (5.4) | | | | | | | | ░ |
 
 ## 4. Tarefas
 
@@ -126,19 +129,30 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 
 **Total: 48 h (≈ 24 h/semana; S4 tem o feriado de 12/10)**
 
-### 4.4 Fase 3 — Tracking, testes e go-live (19/10 – 25/10)
+### 4.4 Fase 3 — Polimento do admin (a partir de 19/09, adiantado)
+
+Decisão de 18/09: o item "polir o visual do admin" da 1.4 vira fase própria, agora que o painel tem todas as telas
+reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referência de estilo na spec 11.
 
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| 3.1 | Meta Pixel, captura de UTMs/fbclid em cookie first-party e gravação no `Order`; ViewContent, InitiateCheckout, Purchase com `event_id`; `PageVisit` | [10](../specs/10-tracking-e-analytics.md) | 6 | 2.3 | ⬜ | | |
-| 3.2 | GA4, Sentry, monitor de uptime, backup diário do banco, versionamento do bucket, CSP, `config.hosts` | [10](../specs/10-tracking-e-analytics.md), [13](../specs/13-seguranca.md) | 3 | 0.5 | ⬜ | | |
-| 3.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 3.1 | ⬜ | | Pode ir para Fase 5 se faltar tempo |
-| 3.4 | Executar o plano de testes (T01–T27 automatizados + manuais 1–4) em Sandbox e corrigir falhas | [15](../specs/15-plano-de-testes.md) | 6 | 2.8, 3.1 | ⬜ | | |
-| 3.5 | Go-live: credenciais PayPal Live, SES fora do sandbox, compra real com valor controlado + reembolso, validação no Events Manager, checklist de segurança e definição de pronto | [13](../specs/13-seguranca.md), [00](../specs/00-visao-geral.md) | 4 | 3.4 | ⬜ | | |
+| 3.1 | Visual do admin: sidebar (responsiva, item ativo), cabeçalhos/breadcrumbs/barras de ação, tabelas (densidade, estados vazios, paginação), formulários do produto (seções, erros, arquivos, coleções), flashes e confirmações, login; helpers como fonte única de estilo; conferir no mobile | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 6 | 2.8 | ⬜ | | Sem mudança de comportamento; specs de request/views continuam verdes |
+
+**Total: 6 h**
+
+### 4.5 Fase 4 — Tracking, testes e go-live (19/10 – 25/10)
+
+| ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
+|---|---|---|---|---|---|---|---|
+| 4.1 | Meta Pixel, captura de UTMs/fbclid em cookie first-party e gravação no `Order`; ViewContent, InitiateCheckout, Purchase com `event_id`; `PageVisit` | [10](../specs/10-tracking-e-analytics.md) | 6 | 2.3 | ⬜ | | |
+| 4.2 | GA4, Sentry, monitor de uptime, backup diário do banco, versionamento do bucket, CSP, `config.hosts` | [10](../specs/10-tracking-e-analytics.md), [13](../specs/13-seguranca.md) | 3 | 0.5 | ⬜ | | |
+| 4.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 4.1 | ⬜ | | Pode ir para Fase 6 se faltar tempo |
+| 4.4 | Executar o plano de testes (T01–T27 automatizados + manuais 1–4) em Sandbox e corrigir falhas | [15](../specs/15-plano-de-testes.md) | 6 | 2.8, 4.1 | ⬜ | | |
+| 4.5 | Go-live: credenciais PayPal Live, SES fora do sandbox, compra real com valor controlado + reembolso, validação no Events Manager, checklist de segurança e definição de pronto | [13](../specs/13-seguranca.md), [00](../specs/00-visao-geral.md) | 4 | 4.4 | ⬜ | | |
 
 **Total: 23 h**
 
-### 4.5 Trilha de conteúdo (paralela, 21/09 – 25/10) · fora das horas de dev
+### 4.6 Trilha de conteúdo (paralela, 21/09 – 25/10) · fora das horas de dev
 
 | ID | Tarefa | Spec | Horas | Prazo | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
@@ -149,18 +163,18 @@ ao PDF original estão marcados com ⚙️ (ver seção 11).
 | C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | 🟦 | | Publicadas em 17/09 (1.8); falta a revisão do texto do operador (razão social) com o contador |
 | C.6 | Três criativos (imagem + texto principal + headline) — ângulos dor / mecanismo / transformação | [16](../specs/16-roadmap-e-fases.md) | 6 | S5 (25/10) | ⬜ | | Subir como rascunho em 24/10 para revisão antecipada da Meta |
 
-### 4.6 Fase 4 — Campanha de validação (26/10 – 01/11)
+### 4.7 Fase 5 — Campanha de validação (26/10 – 01/11)
 
 | ID | Tarefa | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|
-| 4.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 18/dia | 2 | 3.5, C.6 | ⬜ | | |
-| 4.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 4.1 | ⬜ | | |
-| 4.3 | Suporte a compradores e monitoramento de erros (Sentry, MessageLog, disputas) | 2 | 4.1 | ⬜ | | |
-| 4.4 | Análise final (02–03/11): comparar com referências e escolher o cenário de decisão | 4 | 4.2 | ⬜ | | |
+| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 18/dia | 2 | 4.5, C.6 | ⬜ | | |
+| 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | ⬜ | | |
+| 5.3 | Suporte a compradores e monitoramento de erros (Sentry, MessageLog, disputas) | 2 | 5.1 | ⬜ | | |
+| 5.4 | Análise final (02–03/11): comparar com referências e escolher o cenário de decisão | 4 | 5.2 | ⬜ | | |
 
-### 4.7 Fase 5 — Pós-validação (sem datas)
+### 4.8 Fase 6 — Pós-validação (sem datas)
 
-Só se a análise (4.4) apontar continuidade. Ordem por impacto no próximo teste:
+Só se a análise (5.4) apontar continuidade. Ordem por impacto no próximo teste:
 
 | Ordem | Item | Spec | Estimativa | Status |
 |---|---|---|---|---|
@@ -171,10 +185,10 @@ Só se a análise (4.4) apontar continuidade. Ordem por impacto no próximo test
 | 5 | Marketing API — V1 (campanha, ad set, ads em PAUSED, ativar/pausar, IDs no banco) | [16](../specs/16-roadmap-e-fases.md#meta-marketing-api-fase-2-da-plataforma) | 3 semanas + App Review | ⬜ |
 | 6 | Marketing API — V2 (Insights, CAC/ROAS no dashboard, pausa automática) | idem | 1–2 semanas | ⬜ |
 | 7 | Order bump, upsell, follow-up por WhatsApp com consentimento de marketing | — | 2 semanas | ⬜ |
-| — | Itens cortados das fases 1–3 (dashboard 3.3, admin de clientes) | | | ⬜ |
+| — | Itens cortados das fases 1–4 (dashboard 4.3) | | | ⬜ |
 | — | Railway *Infrastructure as Code* (`.railway/railway.ts` + `railway config apply`) para versionar healthcheck/start command hoje definidos no dashboard | [02](../specs/02-docker-e-ambiente.md) | 1 dia | ⬜ |
 
-O App Review da Marketing API pode ser aberto ao final da Fase 4, em paralelo aos itens 1–4.
+O App Review da Marketing API pode ser aberto ao final da Fase 5, em paralelo aos itens 1–4.
 
 ## 5. Critérios de saída por fase
 
@@ -196,6 +210,9 @@ Uma fase só fecha quando todos os itens forem verificados **em produção** (ou
 - [ ] Webhook duplicado não duplica pedido nem email.
 
 ### Fase 3
+- [ ] Painel consistente em todas as telas (sidebar, tabelas, formulários, flashes, login), usável no mobile; helpers como fonte única de estilo; suite verde.
+
+### Fase 4
 - [ ] Todos os casos T01–T27 automatizados e verdes; testes manuais 1–8 registrados em `docs/qa/`.
 - [ ] ViewContent, InitiateCheckout e Purchase visíveis no Events Manager com o mesmo `event_id` do backend.
 - [ ] Compra real de valor controlado paga, entregue e reembolsada com sucesso.
@@ -204,7 +221,7 @@ Uma fase só fecha quando todos os itens forem verificados **em produção** (ou
 - [ ] Checklist de [13-seguranca](../specs/13-seguranca.md) 100% marcado.
 - [ ] Definição de pronto de [00-visao-geral](../specs/00-visao-geral.md) 100% marcada.
 
-### Fase 4
+### Fase 5
 - [ ] Sete dias completos de veiculação sem interrupção por saldo ou reprovação.
 - [ ] Planilha diária preenchida (seção 8).
 - [ ] Decisão registrada conforme os cenários da seção 9.
@@ -228,14 +245,14 @@ Escalar se parado há mais de 5 dias.
 | Risco | Prob. | Impacto | Mitigação | Status |
 |---|---|---|---|---|
 | Aprovações externas atrasam (PayPal, WhatsApp, Meta, SES) | Alta | M3/M4 deslizam | Fase 0 disparada na S0; plano B por dependência (seção 6) | 🟦 monitorando |
-| Capacidade real abaixo de 25 h/semana | Média | +1 semana | Cortar primeiro o que não bloqueia a campanha: dashboard (3.3) e admin de clientes (parte de 2.8) → Fase 5 | ⬜ |
+| Capacidade real abaixo de 25 h/semana | Média | +1 semana | Cortar primeiro o que não bloqueia a campanha: dashboard (4.3) e polimento do admin (3.1) → Fase 6 | ⬜ |
 | Conteúdo do PDF não fica pronto até 18/10 | Média | M3 bloqueado | Começar na S1; aceitar v1.0 enxuta (30 p.) | ⬜ |
-| Template da LP consome mais que 10 h | Média | M1 desliza | Componentes prontos (Tailwind), um único template; refinar na Fase 5 | ✅ Não ocorreu: 1.6 entregue em 17/09 |
-| Bugs no webhook descobertos no go-live | Baixa | M3 desliza dias | Plano de testes completo na 3.4; compra real com reembolso na 3.5 | ⬜ |
-| Escopo cresce durante a execução | Alta | Todas as fases | Item novo → Fase 5; revisar a lista "fora do MVP" na sexta | 🟦 monitorando |
+| Template da LP consome mais que 10 h | Média | M1 desliza | Componentes prontos (Tailwind), um único template; refinar na Fase 6 | ✅ Não ocorreu: 1.6 entregue em 17/09 |
+| Bugs no webhook descobertos no go-live | Baixa | M3 desliza dias | Plano de testes completo na 4.4; compra real com reembolso na 4.5 | ⬜ |
+| Escopo cresce durante a execução | Alta | Todas as fases | Item novo → Fase 6; revisar a lista "fora do MVP" na sexta | 🟦 monitorando |
 | Configuração de webhooks em dev (túnel HTTPS) consome tempo | Média | 2.2 desliza | Cloudflared/ngrok como serviço do compose desde 1.1 | ⬜ |
 
-## 8. Campanha — acompanhamento diário (Fase 4)
+## 8. Campanha — acompanhamento diário (Fase 5)
 
 Referências: CTR > 1% · CPC < US$ 1.50 · LP Views/cliques > 70% · InitiateCheckout/LP Views > 3% · Purchase ≥ 1.
 
