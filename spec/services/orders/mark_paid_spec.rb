@@ -37,6 +37,14 @@ RSpec.describe Orders::MarkPaid do
     expect(revoked.revoked_at).to be_nil
   end
 
+  it "enfileira o DeliverOrderJob uma única vez, depois do commit (T09)" do
+    order = create(:order)
+
+    expect { described_class.call(order, capture:, payer:, source: :capture) }
+      .to have_enqueued_job(DeliverOrderJob).with(order.id).once
+    expect { described_class.call(order, capture:, payer:, source: :webhook) }.not_to have_enqueued_job(DeliverOrderJob)
+  end
+
   it "é idempotente: segunda chamada não muda nada (T12)" do
     order = create(:order)
     described_class.call(order, capture:, payer:, source: :capture)

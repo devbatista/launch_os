@@ -1,0 +1,11 @@
+<%# Bloco comum de delivery/access_resend: botão de download, validade e como recuperar o acesso. %>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+  <tr>
+    <td style="border-radius:8px;background-color:#047857;">
+      <a href="<%= @download_url %>" style="display:inline-block;padding:14px 28px;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;">Download <%= @product.name %></a>
+    </td>
+  </tr>
+</table>
+<p style="margin:0 0 12px;font-size:14px;color:#475569;">If the button doesn't work, copy this link into your browser:<br><a href="<%= @download_url %>" style="color:#047857;word-break:break-all;"><%= @download_url %></a></p>
+<p style="margin:0 0 12px;font-size:14px;color:#475569;">This link is valid until <strong><%= @token.expires_at.strftime("%B %-d, %Y") %></strong> (<%= @token.max_downloads %> downloads max). Save the PDF to your device once you open it.</p>
+<p style="margin:0;font-size:14px;color:#475569;">Link expired or not working? Recover access anytime at <a href="<%= @recover_url %>" style="color:#047857;"><%= @recover_url %></a>.</p>

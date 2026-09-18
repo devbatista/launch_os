@@ -1,13 +1,15 @@
 module Orders
   # pending|disputed → paid. Cria/atualiza o Client com o pagador do PayPal e grava o opt-in de WhatsApp
   # (texto e data) como evidência; garante um DownloadToken ativo (novo, ou regenerado após disputa).
-  # Idempotente: se já está paid, devolve o pedido sem efeitos. O DeliverOrderJob (2.6) é enfileirado aqui.
+  # Idempotente: se já está paid, devolve o pedido sem efeitos. O DeliverOrderJob (email/WhatsApp) é
+  # enfileirado só depois do commit, para o job nunca ler o pedido ainda pendente.
   class MarkPaid
     def self.call(order, capture:, payer:, source:) = new.call(order, capture:, payer:, source:)
 
     def call(order, capture:, payer:, source:)
+      transitioned = false
       order.with_lock do
-        return order if order.paid?
+        next if order.paid?
         raise InvalidTransition, "#{order.status} → paid (#{source})" unless order.pending? || order.disputed?
 
         # Sem pagador (ex.: disputa resolvida a favor) mantém o Client e o capture id já gravados.
@@ -17,7 +19,9 @@ module Orders
                       payer_email: client&.email || order.payer_email, payer_name: client&.name || order.payer_name)
         ensure_download_token(order)
         Rails.logger.info { "[orders] #{order.id} paid via #{source}" }
+        transitioned = true
       end
+      DeliverOrderJob.perform_later(order.id) if transitioned
       order
     end
 

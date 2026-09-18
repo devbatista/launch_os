@@ -1,0 +1,7 @@
+Here's your download link<%= ", #{@first_name}" if @first_name %>
+
+You asked for a new link to <%= @product.name %>. Here it is — any previous link is no longer valid.
+
+<%= render "access_link" %>
+
+Didn't request this? You can ignore this email — nobody can download without it.

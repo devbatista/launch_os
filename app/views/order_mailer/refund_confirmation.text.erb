@@ -1,0 +1,7 @@
+Your refund has been processed<%= ", #{@first_name}" if @first_name %>
+
+We've refunded <%= money(@order.amount_cents, @order.currency) %> for <%= @product.name %> to your PayPal account. Depending on your bank, it can take 3–5 business days to show up.
+
+Your download link has been deactivated as part of the refund.
+
+Sorry it didn't work out — if there's anything we could have done better, we'd genuinely like to know.

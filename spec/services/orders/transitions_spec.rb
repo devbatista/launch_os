@@ -5,10 +5,11 @@ RSpec.describe "Orders transitions" do # rubocop:disable RSpec/DescribeClass
     it "paid|disputed → refunded revogando o token, idempotente; pending não (T07, T25)" do
       paid = create(:order, :paid)
       token = create(:download_token, order: paid)
-      expect(described_class.call(paid, source: :webhook)).to be_refunded
+      expect { expect(described_class.call(paid, source: :webhook)).to be_refunded }
+        .to have_enqueued_job(SendOrderEmailJob).with(paid.id, template: "refund_confirmation").once
       expect(paid.refunded_at).to be_present
       expect(token.reload.revoked_at).to be_present
-      expect(described_class.call(paid)).to be_refunded
+      expect { expect(described_class.call(paid)).to be_refunded }.not_to have_enqueued_job(SendOrderEmailJob)
 
       disputed = create(:order, :disputed)
       expect(described_class.call(disputed)).to be_refunded

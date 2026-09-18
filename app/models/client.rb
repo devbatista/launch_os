@@ -2,6 +2,7 @@
 # pagador devolvido pelo PayPal; o opt-in de WhatsApp guarda o texto exato aceito e a data (TCPA).
 class Client < ApplicationRecord
   has_many :orders, dependent: :nullify
+  has_many :message_logs, dependent: :nullify
 
   normalizes :email, with: ->(e) { e.to_s.strip.downcase }
   normalizes :phone, with: ->(p) { p.presence }
