@@ -65,7 +65,9 @@ Rails.application.routes.draw do
 
   # Webhooks (spec 07/09): sem sessão nem CSRF; assinatura verificada no controller.
   namespace :webhooks do
-    post "paypal", to: "paypal#create"
+    post "paypal",         to: "paypal#create"
+    post "twilio/status",  to: "twilio#status"
+    post "twilio/inbound", to: "twilio#inbound"
   end
 
   # Entrega (spec 08): a Thank You é por id do pedido e NÃO libera o arquivo — o link de download

@@ -8,7 +8,7 @@ Checklist obrigatório. Nenhum item é opcional para ir ao ar.
 - [ ] Segredos (PayPal, Twilio, SES, S3, Sentry, master key) somente em ENV / credentials; `.env` gitignored.
 - [ ] Usuário IAM do SES restrito a `ses:SendEmail`/`ses:SendRawEmail` com o `From` fixo; usuário IAM do S3 restrito ao bucket. Nunca credenciais root.
 - [ ] Nenhuma chamada a API externa fora de `app/services/providers/` (`grep -rn "Faraday\|Aws::SESV2\|api.twilio.com\|paypal.com" app | grep -v app/services/providers` retorna vazio).
-- [ ] Assinatura da Twilio validada com `secure_compare` (sem comparação `==`).
+- [x] Assinatura da Twilio validada com `secure_compare` (sem comparação `==`). *(2.7, 18/09)*
 - [ ] `/letter_opener` montado apenas em `development` (gem no grupo `:development`).
 - [ ] `PAYPAL_WEBHOOK_SKIP_VERIFY` e similares levantam exceção no boot se definidos em `production`.
 - [ ] Nunca logar payloads com telefone/email em texto plano em logs públicos; filtrar via

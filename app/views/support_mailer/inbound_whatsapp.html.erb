@@ -1,0 +1,9 @@
+<h1 style="margin:0 0 16px;font-size:20px;">Mensagem recebida no WhatsApp</h1>
+<p style="margin:0 0 8px;"><strong>De:</strong> <%= @phone %><% if @client %> — <%= @client.name.presence || "sem nome" %> (<%= @client.email %>)<% else %> — número não cadastrado<% end %></p>
+<% if @opted_out %>
+  <p style="margin:0 0 8px;color:#b91c1c;"><strong>Opt-out registrado:</strong> o cliente não receberá mais mensagens no WhatsApp.</p>
+<% end %>
+<blockquote style="margin:16px 0;padding:12px 16px;border-left:4px solid #e2e8f0;color:#334155;white-space:pre-wrap;"><%= @body %></blockquote>
+<% if @client %>
+  <p style="margin:0;"><a href="<%= admin_client_url(@client, **Delivery.url_options) %>" style="color:#047857;">Abrir o cliente no painel</a></p>
+<% end %>

@@ -13,7 +13,7 @@ module Delivery
 
       token.regenerate! unless token.active?
       SendOrderEmailJob.perform_later(order.id, template: "access_resend") if channels.include?(:email)
-      # 2.7: SendWhatsappMessageJob.perform_later(order.id, template: "access_resend") if channels.include?(:whatsapp) && ...
+      SendWhatsappMessageJob.perform_later(order.id, template: "access_resend") if channels.include?(:whatsapp) && Delivery.whatsapp?(order)
       true
     end
   end
