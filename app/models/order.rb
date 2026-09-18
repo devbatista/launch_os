@@ -8,6 +8,7 @@ class Order < ApplicationRecord
   belongs_to :product
   has_many :webhook_events, dependent: :nullify
   has_one :download_token, dependent: :destroy
+  has_many :message_logs, dependent: :destroy
 
   enum :status, { pending: "pending", paid: "paid", failed: "failed", refunded: "refunded", disputed: "disputed" }, default: :pending
 

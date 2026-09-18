@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 2.5 (recuperação de acesso) e 2.6 (email via SES), que fecham a 2.3 e os critérios pendentes das specs 07/08. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 2.5 (recuperação de acesso em `/access/recover`, que já tem o `Delivery::ResendAccess` pronto). 2.6 (email) entregue em 18/09: o link de download chega por email em dev; falta só validar o SES em produção (M2). Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; polimento visual do admin (1.4) segue em aberto. Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -188,7 +188,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `modules/tracking.js` (wrappers no-op por enquanto)
 - [x] Compra Sandbox pelo navegador chega ao capture COMPLETED — *17/09: `paid`, `paypal_capture_id`, `Client` John Doe (US), líquido USD 14.02. **Achado**: as primeiras compras voltaram `PENDING` com `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION` — a conta business (BRL) estava com aceite manual de outras moedas; resolvido em *Preferências de pagamento → "Sim, aceitar e converter"*. **Fazer o mesmo na conta Live antes do go-live** (registrado na spec 07)*
 - [x] Specs: `spec/requests/checkout/paypal_spec.rb` (T01 parcial, T04, T16, T17, T22), `spec/services/providers/paypal/client_spec.rb` — *+ `create_order_spec`, `orders/mark_paid_spec` (T01, T12, T25), `mark_failed_spec`, `models/order_spec`, `models/client_spec`*
-- [ ] ✅ Critérios de aceite da spec 07 (parte de create/capture) — *feitos: amount adulterado ignorado; capture 2× idempotente; tudo com WebMock. Compra completa (token, DeliverOrderJob) depende de 2.4/2.6*
+- [x] ✅ Critérios de aceite da spec 07 (parte de create/capture) — *feitos: amount adulterado ignorado; capture 2× idempotente; tudo com WebMock; compra completa (token + `DeliverOrderJob` → email) fechada na 2.4/2.6*
 
 ### 2.2 Webhook PayPal — spec [07](../specs/07-checkout-paypal.md)
 - [x] Migration `webhook_events` com índice único `(provider, external_id)` — *modelo `WebhookEvent` (enum status, `mark_processed!/ignored!/failed!`); `Order has_many :webhook_events`*
@@ -201,8 +201,8 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 
 ### 2.3 Client e Order — services de transição — spec [07](../specs/07-checkout-paypal.md)
 - [x] `Orders::InvalidTransition` — *na 2.1 (`app/services/orders.rb`)*
-- [ ] `Orders::MarkPaid` (with_lock, idempotente, find_or_create Client, opt-in, token, enfileira `DeliverOrderJob`) — *🟦 2.1/2.4: with_lock, idempotente, Client com opt-in (texto TCPA do i18n), token criado/regenerado; falta só `DeliverOrderJob` (2.6)*
-- [ ] `Orders::MarkFailed` (✅ na 2.1), `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa — *🟦 2.2/2.4: transições e revogação/regeneração do token prontas; falta só o email de reembolso (2.6)*
+- [x] `Orders::MarkPaid` (with_lock, idempotente, find_or_create Client, opt-in, token, enfileira `DeliverOrderJob`) — *2.1/2.4/2.6: with_lock, idempotente, Client com opt-in (texto TCPA do i18n), token criado/regenerado; `DeliverOrderJob` enfileirado **depois do commit** e só na transição (idempotência cobre o job)*
+- [x] `Orders::MarkFailed` (✅ na 2.1), `Orders::MarkRefunded` (revoga token, email), `Orders::MarkDisputed`, resolução de disputa — *2.2/2.4/2.6: transições, revogação/regeneração do token e email `refund_confirmation` enfileirado após o commit*
 - [ ] Fallback: capture server-side se `CHECKOUT.ORDER.APPROVED` sem capture após 10 min (opcional)
 - [ ] Specs: `spec/services/orders/mark_paid_spec.rb` (T01, T12), `mark_refunded_spec.rb` (T07), `mark_disputed_spec.rb` (T18), `mark_failed_spec.rb`, T25 em cada
 
@@ -221,16 +221,16 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [ ] Spec: `spec/requests/access_recoveries_spec.rb` (T19, T26)
 
 ### 2.6 Jobs, email (SES), MessageLog — spec [09](../specs/09-notificacoes-email-whatsapp.md)
-- [ ] Migration `message_logs`; modelo e factory
-- [ ] `Providers::Ses::Client#send_raw_email` (`aws-sdk-sesv2`, `configuration_set_name`, erros mapeados) + `spec/support/ses_stubs.rb`
-- [ ] `DeliveryMethods::SesApi` registrado como `:ses_api` (`initializers/action_mailer.rb`); ativo só em production
-- [ ] `OrderMailer#delivery`, `#access_resend`, `#refund_confirmation` (HTML + texto, reply_to suporte)
-- [ ] Previews em `spec/mailers/previews/`
-- [ ] `DeliverOrderJob` → `SendAccessEmailJob` (+ WhatsApp na 2.7); `SendAccessEmailJob` com `MessageLog` e retry 3×
-- [ ] `Delivery::DeliverOrder` e `Delivery::ResendAccess` ligados aos jobs
-- [ ] Email chegando em `/letter_opener` após compra Sandbox
-- [ ] Em produção: SES fora do sandbox; email de teste na caixa de entrada com DKIM/SPF alinhados
-- [ ] Specs: `spec/mailers/order_mailer_spec.rb`, `spec/jobs/deliver_order_job_spec.rb` (T09), `spec/jobs/send_access_email_job_spec.rb`
+- [x] Migration `message_logs`; modelo e factory — *enums string (channel/template/status), `mark_sent!`, `register_attempt!`, `mark_failed!`; `Order has_many :message_logs` (destroy), `Client` (nullify)*
+- [x] `Providers::Ses::Client#send_raw_email` (`aws-sdk-sesv2`, `configuration_set_name`, erros mapeados) + `spec/support/ses_stubs.rb` — *SDK com `stub_responses` e `retry_limit: 0` nos specs; classes de erro conferidas no SDK (não existe `ServiceUnavailable` no SESv2) e registradas na spec 09*
+- [x] `DeliveryMethods::SesApi` registrado como `:ses_api` (`initializers/action_mailer.rb`); ativo só em production — *registro em `to_prepare` (classe recarregável); grava o Message-ID do SES no `mail.message_id`*
+- [x] `OrderMailer#delivery`, `#access_resend`, `#refund_confirmation` (HTML + texto, reply_to suporte) — *parametrizado (`with(order:)`); destinatário `"Nome <email>"`; botão vai para `/download/:token` (decisão 18/09 da spec 08); `ApplicationMailer` lê `MAIL_FROM`/`SUPPORT_EMAIL`*
+- [x] Previews em `spec/mailers/previews/` — *`/rails/mailers/order_mailer` com o último pedido pago do banco de dev (`preview_paths` em development.rb)*
+- [x] `DeliverOrderJob` → `SendAccessEmailJob` (+ WhatsApp na 2.7); `SendAccessEmailJob` com `MessageLog` e retry 3× — *o job de email ficou **`SendOrderEmailJob(order_id, template:)`**, único para os 3 templates; retry reaproveita o mesmo log `queued`; esgotado ou erro permanente → `failed` + Sentry*
+- [x] `Delivery::DeliverOrder` e `Delivery::ResendAccess` ligados aos jobs — *`ResendAccess` já pronto para a 2.5: cria/regenera token (nunca se revogado), enfileira `access_resend`*
+- [x] Email chegando em `/letter_opener` após compra Sandbox — *18/09: pedido pago do dia → `DeliverOrderJob` → `SendOrderEmailJob` no Sidekiq (fila `mailers`), `MessageLog` `sent`, link do email → 303 para a URL assinada do MinIO (lembrar `127.0.0.1 minio` no `/etc/hosts` para abrir no navegador). Refund pela API → webhook → email `refund_confirmation` também no `/letter_opener`*
+- [ ] Em produção: SES fora do sandbox; email de teste na caixa de entrada com DKIM/SPF alinhados — *`SES_*`, `MAIL_FROM` e `SUPPORT_EMAIL` já estão no Railway; falta só disparar o email de teste após o deploy e conferir DKIM/SPF/DMARC no Gmail (M2)*
+- [x] Specs: `spec/mailers/order_mailer_spec.rb`, `spec/jobs/deliver_order_job_spec.rb` (T09), `spec/jobs/send_access_email_job_spec.rb` — *+ `delivery_methods/ses_api_spec`, `providers/ses/client_spec`, `delivery/resend_access_spec`, `models/message_log_spec`; `mark_paid_spec`/`transitions_spec` cobrem o enfileiramento após commit*
 
 ### 2.7 WhatsApp via Twilio — spec [09](../specs/09-notificacoes-email-whatsapp.md)
 - [ ] `initializers/twilio.rb`; `TWILIO_ENABLED` respeitado em toda a cadeia

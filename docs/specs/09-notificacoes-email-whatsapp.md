@@ -13,6 +13,11 @@ explícito, e sua falha nunca afeta o pedido nem o email. Todas as mensagens em 
 
 Cada envio gera um `MessageLog` (`channel`, `template`, `recipient`, `status`, `provider_message_id`).
 
+**Implementado na 2.6 (18/09):** email completo — `Providers::Ses::Client`, `DeliveryMethods::SesApi`, `OrderMailer`,
+`Delivery::DeliverOrder`/`ResendAccess`, `DeliverOrderJob` e **`SendOrderEmailJob`** (um só job para os três
+templates, no lugar do `SendAccessEmailJob` descrito abaixo — o fluxo é idêntico, só muda o nome e o parâmetro
+`template:`). Detalhes nas seções marcadas.
+
 ## Email
 
 ### Configuração — Amazon SES via API (produção)
@@ -27,11 +32,11 @@ conteúdo raw), encapsulada em `Providers::Ses::Client`. Sem SMTP.
 module Providers
   module Ses
     class Client
-      def initialize(region: ENV.fetch("SES_REGION"),
-                     credentials: Aws::Credentials.new(ENV.fetch("SES_ACCESS_KEY_ID"), ENV.fetch("SES_SECRET_ACCESS_KEY")),
-                     configuration_set: ENV["SES_CONFIGURATION_SET"],
-                     sdk: nil)
-        @sdk = sdk || Aws::SESV2::Client.new(region:, credentials:, http_open_timeout: 5, http_read_timeout: 10)
+      def initialize(region: ENV.fetch("SES_REGION", "us-east-1"), access_key_id: ENV.fetch("SES_ACCESS_KEY_ID"),
+                     secret_access_key: ENV.fetch("SES_SECRET_ACCESS_KEY"),
+                     configuration_set: ENV["SES_CONFIGURATION_SET"].presence, sdk: nil)
+        @sdk = sdk || Aws::SESV2::Client.new(region:, credentials: Aws::Credentials.new(access_key_id, secret_access_key),
+                                             http_open_timeout: 5, http_read_timeout: 10)
         @configuration_set = configuration_set
       end
 
@@ -45,16 +50,22 @@ module Providers
           configuration_set_name: @configuration_set
         )
         resp.message_id
-      rescue Aws::SESV2::Errors::TooManyRequestsException, Aws::SESV2::Errors::ServiceUnavailable,
-             Seahorse::Client::NetworkingError => e
-        raise Providers::TransientError, e.message
-      rescue Aws::SESV2::Errors::ServiceError => e   # MessageRejected, MailFromDomainNotVerified, AccountSuspended…
-        raise Providers::PermanentError, "#{e.class.name.demodulize}: #{e.message}"
+      rescue Aws::SESV2::Errors::TooManyRequestsException, Aws::SESV2::Errors::LimitExceededException,
+             Aws::SESV2::Errors::InternalServiceErrorException, Seahorse::Client::NetworkingError => e
+        raise Providers::TransientError, "SES #{e.class.name.demodulize}: #{e.message}"
+      rescue Aws::SESV2::Errors::ServiceError => e   # MessageRejected, MailFromDomainNotVerified, AccountSuspended, SendingPaused…
+        raise Providers::PermanentError, "SES #{e.class.name.demodulize}: #{e.message}"
       end
     end
   end
 end
 ```
+
+Os erros que o `SendEmail` v2 pode devolver (conferido no SDK): `TooManyRequests`, `LimitExceeded`,
+`AccountSuspended`, `SendingPaused`, `MessageRejected`, `MailFromDomainNotVerified`, `NotFound`, `BadRequest`
+(não existe `ServiceUnavailable` no SESv2). `SendingPaused`/`AccountSuspended` são permanentes: exigem ação no
+console, repetir em minutos não resolve. Nos specs o SDK é instanciado com `stub_responses` e `retry_limit: 0`
+(`spec/support/ses_stubs.rb`) — sem isso o próprio SDK repete erros de rede com backoff e o teste leva minutos.
 
 #### Delivery method `:ses_api`
 
@@ -73,8 +84,10 @@ module DeliveryMethods
   end
 end
 
-# config/initializers/action_mailer.rb
-ActiveSupport.on_load(:action_mailer) { add_delivery_method :ses_api, DeliveryMethods::SesApi }
+# config/initializers/action_mailer.rb — em `to_prepare` porque a classe é recarregável (app/)
+Rails.application.config.to_prepare do
+  ActiveSupport.on_load(:action_mailer) { add_delivery_method :ses_api, DeliveryMethods::SesApi }
+end
 ```
 
 `config.action_mailer.delivery_method = :ses_api` só em production. Dev usa `:letter_opener_web`, test usa `:test`
@@ -115,31 +128,41 @@ class OrderMailer < ApplicationMailer
 end
 ```
 
+Os mailers são parametrizados: `OrderMailer.with(order:).delivery`. Destinatário `"Nome <email>"` do `Client`
+(ou `payer_email` se o pedido ficou sem Client); sem email nenhum → `ArgumentError` (o job não chega a enviar).
+
 Conteúdo de `delivery` / `access_resend`:
-- Saudação com nome; agradecimento.
-- Botão "Download {product.name}" → `thank_you_url(token)` (não o `/download` direto: a página Thank You
-  explica validade e dá suporte).
+- Saudação com primeiro nome; agradecimento.
+- Botão "Download {product.name}" → **`download_url(token)`** (`/download/:token`). *Decisão 18/09 (spec 08):
+  a Thank You não libera o download, então o email leva o link do arquivo diretamente; validade e suporte
+  ficam no próprio email.*
 - "This link is valid until {date} ({n} downloads max)."
-- "Didn't get it or link expired? Recover access at {access_recover_url}."
-- Suporte: `SUPPORT_EMAIL`. Rodapé com nome do negócio.
-- Versão HTML + texto (multipart). Sem anexar o PDF.
+- "Link expired or not working? Recover access at {access_recover_url}." (`/access/recover`, 2.5).
+- `access_resend` avisa que o link anterior deixou de valer (o token é regenerado quando expirado/limite).
+- Suporte: `SUPPORT_EMAIL`. Rodapé com nome do negócio e aviso de email transacional.
+- Versão HTML + texto (multipart), estilos inline. Sem anexar o PDF.
+- Previews em `spec/mailers/previews/order_mailer_preview.rb` → `/rails/mailers/order_mailer` (usa o último pedido pago do banco de dev).
 
 Conteúdo de `refund_confirmation`: confirmação do reembolso, valor, informação de que o acesso foi encerrado, suporte.
 
-### `SendAccessEmailJob`
+### `SendOrderEmailJob(order_id, template:)` *(nome final do `SendAccessEmailJob`)*
 
 ```
-1. order = Order.find(id); log = MessageLog.create!(order:, client:, channel: "email", template:, recipient: client.email, status: "queued")
-2. mail = OrderMailer.public_send(template, order).deliver_now     # entrega via :ses_api → Providers::Ses::Client
-3. log.update!(status: "sent", sent_at: now, provider_message_id: mail.message_id)   # MessageId do SES
+1. order = Order.find(id); return (warn) se não há email do destinatário
+   log = MessageLog queued já existente para (order, email, template)   # retry reaproveita o mesmo log
+         || MessageLog.create!(order:, client:, channel: "email", template:, recipient:, status: "queued")
+2. mail = OrderMailer.with(order:).public_send(action).deliver_now     # entrega via :ses_api → Providers::Ses::Client
+3. log.mark_sent!(mail.message_id)                                     # MessageId do SES
 rescue Providers::TransientError => e
-   log.update!(error_message: e.message, attempts: +1); raise          # retry_on 3×
+   log.register_attempt!(e); raise                     # retry_on 3×; esgotado → log failed + Sentry
 rescue Providers::PermanentError => e
-   log.update!(status: "failed", error_message: e.message, attempts: +1); raise   # discard_on + Sentry
+   log.mark_failed!(e)                                 # sem retry; Sentry
 ```
 
-Fila `mailers`. `retry_on Providers::TransientError, wait: :polynomially_longer, attempts: 3`;
-`discard_on Providers::PermanentError` (após registrar no log e no Sentry).
+Fila `mailers`. `retry_on Providers::TransientError, wait: :polynomially_longer, attempts: 3` com bloco de
+esgotamento que marca o log `failed`. Templates: `order_delivery` → `#delivery`, `access_resend`,
+`refund_confirmation` (enfileirado por `Orders::MarkRefunded`). Os services `Orders::MarkPaid`/`MarkRefunded`
+enfileiram **depois do commit** do `with_lock`, para o job nunca ler o pedido no estado antigo.
 Webhooks de bounce do provedor ficam para depois; o admin vê `sent`/`failed`.
 
 ## WhatsApp (Twilio)
@@ -288,7 +311,7 @@ Fila `whatsapp`. Falha final → Sentry + status visível no admin; **não** ree
 
 ## Critérios de aceite
 
-- [ ] Compra Sandbox (dev) → email aparece em `/letter_opener` com link funcional, HTML + texto.
+- [x] Compra Sandbox (dev) → email aparece em `/letter_opener` com link funcional, HTML + texto. *(18/09: `DeliverOrderJob` → `SendOrderEmailJob` no Sidekiq, `MessageLog` `sent`, link `/download/:token` do email → 303 para a URL assinada)*
 - [ ] Produção: SES fora do sandbox; DKIM, SPF (MAIL FROM) e DMARC com status *verified*; email de teste
       chega na caixa de entrada do Gmail com "mailed-by: ses.devbatista.online" e "signed-by: devbatista.online".
 - [ ] Compra com telefone + opt-in (Twilio Sandbox) → mensagem recebida; `MessageLog` passa por `queued → sent → delivered`.

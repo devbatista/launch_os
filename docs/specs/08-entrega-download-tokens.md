@@ -76,9 +76,12 @@ Executado após `Orders::MarkPaid`.
 
 ```
 1. order = Order.paid.find(id); return unless order.download_token&.active?
-2. SendAccessEmailJob.perform_later(order.id)                 # sempre
+2. SendOrderEmailJob.perform_later(order.id, template: "order_delivery")   # sempre
 3. SendWhatsappMessageJob.perform_later(order.id, template: "order_delivery") if order.client.whatsapp_deliverable? && twilio_enabled?
 ```
+
+`Delivery::ResendAccess.call(order, channels:)`: só pedido pago; cria o token se não existir, regenera se
+expirado/limite, **não** reenvia se revogado; enfileira `SendOrderEmailJob(template: "access_resend")`.
 
 Emails e WhatsApp são jobs separados e independentes: falha em um não afeta o outro
 (requisito de resiliência). Detalhes de cada canal em [09-notificacoes-email-whatsapp.md](09-notificacoes-email-whatsapp.md).
@@ -92,7 +95,7 @@ Emails e WhatsApp são jobs separados e independentes: falha em um não afeta o 
 
 ## Critérios de aceite
 
-- [ ] Após compra Sandbox, `/thank-you/:id` confirma o pagamento e o link recebido por email (`/download/:token`) baixa o PDF real. *(download validado em dev na 2.4; email na 2.6)*
+- [x] Após compra Sandbox, `/thank-you/:id` confirma o pagamento e o link recebido por email (`/download/:token`) baixa o PDF real. *(18/09: email no `/letter_opener`, link → 303 para a URL assinada do MinIO; download em produção fica para M2)*
 - [x] URL assinada expira: copiar a URL do S3 e reutilizar após 5 min → erro do bucket. *(dev/MinIO: 403 após expirar)*
 - [x] Acesso direto ao objeto no bucket (sem assinatura) → 403.
 - [x] Token de pedido `pending`/`failed` → download negado. *(402)*

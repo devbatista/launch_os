@@ -203,11 +203,11 @@ Taxa PayPal internacional + spread cambial entram no cálculo de receita líquid
 
 ## Critérios de aceite
 
-- [ ] Compra Sandbox completa: `Order.paid`, `paypal_capture_id` preenchido, `Client` criado, token gerado, `DeliverOrderJob` enfileirado uma única vez.
+- [x] Compra Sandbox completa: `Order.paid`, `paypal_capture_id` preenchido, `Client` criado, token gerado, `DeliverOrderJob` enfileirado uma única vez. *(18/09: enfileirado após o commit e só na transição — a reentrega do webhook sobre pedido já pago não enfileira; `mark_paid_spec` cobre)*
 - [x] Mesmo webhook enviado 2× → um único `WebhookEvent`, nenhum email duplicado. *(spec de request; email na 2.6)*
 - [x] Webhook com assinatura inválida → 400, `signature_valid: false`, nada liberado.
 - [x] Body do `POST /checkout/paypal` com `amount` adulterado → PayPal recebe o preço do `Product`.
 - [ ] Navegador fechado após aprovação (sem chamar capture): webhook `PAYMENT.CAPTURE.COMPLETED` (ou fallback de capture) processa e envia email.
-- [ ] Refund no Sandbox → `refunded`, token revogado, email enviado.
+- [x] Refund no Sandbox → `refunded`, token revogado, email enviado. *(18/09: refund pela API → webhook via túnel → `MarkRefunded` → `refund_confirmation` no `/letter_opener`, `MessageLog` `sent`)*
 - [x] Capture chamado 2× para o mesmo pedido → segunda resposta retorna o mesmo `thank_you_url` sem efeitos colaterais.
 - [x] Todos os testes rodam com WebMock (nenhuma chamada real ao PayPal).

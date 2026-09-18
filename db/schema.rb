@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_18_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_120000) do
     t.string "question", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id", "position"], name: "index_faqs_on_product_id_and_position"
+  end
+
+  create_table "message_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "attempts", default: 0, null: false
+    t.string "channel", null: false
+    t.uuid "client_id"
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.string "error_code"
+    t.text "error_message"
+    t.datetime "failed_at"
+    t.uuid "order_id", null: false
+    t.string "provider_message_id"
+    t.datetime "read_at"
+    t.string "recipient", null: false
+    t.datetime "sent_at"
+    t.string "status", default: "queued", null: false
+    t.string "template", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_message_logs_on_client_id"
+    t.index ["created_at"], name: "index_message_logs_on_created_at"
+    t.index ["order_id", "created_at"], name: "index_message_logs_on_order_id_and_created_at"
+    t.index ["provider_message_id"], name: "index_message_logs_on_provider_message_id"
+    t.index ["status"], name: "index_message_logs_on_status"
   end
 
   create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -223,6 +247,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_120000) do
   add_foreign_key "benefits", "products"
   add_foreign_key "download_tokens", "orders"
   add_foreign_key "faqs", "products"
+  add_foreign_key "message_logs", "clients"
+  add_foreign_key "message_logs", "orders"
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "products"
   add_foreign_key "sessions", "users"

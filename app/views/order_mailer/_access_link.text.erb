@@ -1,0 +1,6 @@
+Download <%= @product.name %>:
+<%= @download_url %>
+
+This link is valid until <%= @token.expires_at.strftime("%B %-d, %Y") %> (<%= @token.max_downloads %> downloads max). Save the PDF to your device once you open it.
+
+Link expired or not working? Recover access anytime at <%= @recover_url %>
