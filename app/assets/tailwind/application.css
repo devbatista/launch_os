@@ -2,3 +2,224 @@
 
 /* Bloco "What's inside" da LP: HTML do Action Text estilizado como texto corrido (plugin embutido no CLI standalone). */
 @plugin "@tailwindcss/typography";
+
+/* ---------------------------------------------------------------------------------------------
+   Tema do admin (tarefa 3.1). Referência visual: template "Conca" (Aqlova) — só os tokens e a
+   linguagem (sidebar branca com sombra, canvas cinza, cards, violeta como primária, Inter).
+   Nada do CSS/JS dele é copiado; tudo é Tailwind. A LP não usa estes tokens (fonte só via .font-admin).
+   --------------------------------------------------------------------------------------------- */
+@theme {
+  --font-admin: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --color-canvas: #f4f4f7;   /* fundo da área de conteúdo */
+  --color-surface: #ffffff;  /* sidebar, header, cards */
+  --color-line: #efefef;     /* bordas */
+  --color-hover: #f6f6f9;    /* hover de linhas e itens de menu */
+
+  --color-ink-900: #191822;  /* títulos */
+  --color-ink-700: #3d3c46;
+  --color-ink-600: #57575a;  /* texto */
+  --color-ink-400: #8c8b93;  /* texto secundário */
+  --color-ink-300: #bdbdc1;  /* placeholders, ícones inativos */
+
+  --color-primary-50: #f1efff;
+  --color-primary-100: #e4e0ff;
+  --color-primary-500: #5f4afe;
+  --color-primary-600: #4f3be6;
+  --color-primary-700: #3f2fc0;
+
+  --color-success-50: #e9f5ee;
+  --color-success-600: #219653;
+  --color-success-700: #1a7a43;
+  --color-warning-50: #fef3e2;
+  --color-warning-600: #f79009;
+  --color-warning-700: #b45f06;
+  --color-danger-50: #fdecec;
+  --color-danger-600: #d50100;
+  --color-danger-700: #a80000;
+  --color-info-50: #e7f6fd;
+  --color-info-600: #0ba5ec;
+  --color-info-700: #0777ab;
+
+  --color-code-bg: #191822;  /* blocos de código (payload) */
+
+  --shadow-card: 0 1px 3px 0 rgba(25, 24, 34, 0.08), 0 0 1px 0 rgba(25, 24, 34, 0.12);
+  --shadow-header: 0 1px 2px 0 rgba(25, 24, 34, 0.12);
+  --shadow-sidebar: 0 1px 3px 0 rgba(25, 24, 34, 0.18);
+  --shadow-active: 0 1px 2px 0 rgba(36, 17, 184, 0.25), 0 0 1px 0 rgba(43, 24, 190, 0.25);
+
+  --radius-md: 0.375rem;
+}
+
+/* Tema escuro do admin: os mesmos tokens com outros valores (referência: paleta dark do Conca — canvas #161618,
+   superfícies #1F1F21, hover #29292B). Ativo por escolha do usuário (html[data-theme="dark"], modules/admin/theme.js,
+   localStorage) ou pela preferência do sistema quando não há escolha. Os componentes não mudam. */
+@layer base {
+  html[data-theme="dark"] {
+    --color-canvas: #161618;
+    --color-surface: #1f1f21;
+    --color-line: #2d2d31;
+    --color-hover: #29292b;
+    --color-ink-900: #ececf1;
+    --color-ink-700: #d4d4da;
+    --color-ink-600: #bdbdc1;
+    --color-ink-400: #8c8b93;
+    --color-ink-300: #5e5d66;
+    --color-primary-50: #26215a;
+    --color-primary-100: #332c78;
+    --color-primary-700: #b4a9ff;
+    --color-success-50: #163826;
+    --color-success-700: #6fd39a;
+    --color-warning-50: #43300f;
+    --color-warning-700: #fbbf5e;
+    --color-danger-50: #451717;
+    --color-danger-700: #f58b8b;
+    --color-info-50: #12344a;
+    --color-info-700: #6fcdf8;
+    --color-code-bg: #0f0f11;
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 0 1px 0 rgba(255, 255, 255, 0.08);
+    --shadow-header: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-sidebar: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      --color-canvas: #161618;
+      --color-surface: #1f1f21;
+      --color-line: #2d2d31;
+      --color-hover: #29292b;
+      --color-ink-900: #ececf1;
+      --color-ink-700: #d4d4da;
+      --color-ink-600: #bdbdc1;
+      --color-ink-400: #8c8b93;
+      --color-ink-300: #5e5d66;
+      --color-primary-50: #26215a;
+      --color-primary-100: #332c78;
+      --color-primary-700: #b4a9ff;
+      --color-success-50: #163826;
+      --color-success-700: #6fd39a;
+      --color-warning-50: #43300f;
+      --color-warning-700: #fbbf5e;
+      --color-danger-50: #451717;
+      --color-danger-700: #f58b8b;
+      --color-info-50: #12344a;
+      --color-info-700: #6fcdf8;
+      --color-code-bg: #0f0f11;
+      --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 0 1px 0 rgba(255, 255, 255, 0.08);
+      --shadow-header: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+      --shadow-sidebar: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+      color-scheme: dark;
+    }
+  }
+}
+
+/* Componentes do painel. Os helpers de AdminHelper (button_classes, input_classes, badge…) devolvem
+   estas classes — fonte única de estilo; as views não repetem utilitários soltos. */
+@layer components {
+  /* Estrutura */
+  .adm-sidebar { @apply fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-surface shadow-sidebar transition-transform duration-200 lg:translate-x-0; }
+  .adm-sidebar-open .adm-sidebar { @apply translate-x-0; }
+  .adm-sidebar-backdrop { @apply fixed inset-0 z-30 hidden bg-ink-900/40 lg:hidden; }
+  .adm-sidebar-open .adm-sidebar-backdrop { @apply block; }
+  .adm-header { @apply sticky top-0 z-20 flex h-15 items-center gap-3 bg-surface px-4 shadow-header lg:px-8; }
+  .adm-main { @apply min-h-screen bg-canvas lg:pl-64; }
+  .adm-content { @apply mx-auto max-w-7xl p-4 sm:p-6 lg:p-8; }
+
+  .adm-nav-heading { @apply mt-5 mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-300 first:mt-0; }
+  .adm-nav-link { @apply flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-ink-600 hover:bg-hover hover:text-ink-900; }
+  .adm-nav-link svg { @apply size-5 shrink-0 text-ink-300; }
+  .adm-nav-link-active { @apply bg-primary-500 text-white shadow-active hover:bg-primary-600 hover:text-white; }
+  .adm-nav-link-active svg { @apply text-white; }
+
+  /* Página */
+  .adm-page-header { @apply mb-6 flex flex-wrap items-start justify-between gap-4; }
+  .adm-breadcrumb { @apply mb-1 flex flex-wrap items-center gap-1.5 text-xs text-ink-400; }
+  .adm-breadcrumb a { @apply hover:text-primary-600 hover:underline; }
+  .adm-title { @apply flex flex-wrap items-center gap-3 text-2xl font-bold tracking-tight text-ink-900; }
+  .adm-subtitle { @apply mt-1 text-sm text-ink-400; }
+  .adm-actions { @apply flex flex-wrap items-center gap-2; }
+
+  /* Cards e listas de definição */
+  .adm-card { @apply rounded-lg bg-surface p-5 shadow-card; }
+  .adm-card-title { @apply mb-4 text-xs font-semibold uppercase tracking-wider text-ink-400; }
+  .adm-card-title:not(:first-child) { @apply mt-7; }
+  .adm-dl { @apply space-y-2.5 text-sm; }
+  .adm-dl-row { @apply flex gap-3; }
+  .adm-dl-row dt { @apply w-36 shrink-0 text-ink-400; }
+  .adm-dl-row dd { @apply min-w-0 text-ink-900; }
+  .adm-hint { @apply text-xs text-ink-400; }
+  .adm-empty { @apply rounded-lg border border-dashed border-line bg-surface px-6 py-12 text-center text-sm text-ink-400; }
+
+  /* Tabelas */
+  .adm-table-wrap { @apply overflow-x-auto rounded-lg bg-surface shadow-card; }
+  .adm-table { @apply min-w-full divide-y divide-line text-sm; }
+  .adm-table thead { @apply bg-hover text-left text-[11px] font-semibold uppercase tracking-wider text-ink-400; }
+  .adm-table th { @apply px-4 py-3 whitespace-nowrap; }
+  .adm-table tbody { @apply divide-y divide-line; }
+  .adm-table td { @apply px-4 py-3 align-middle text-ink-600; }
+  .adm-table tbody tr:hover { @apply bg-hover; }
+  .adm-table-inline { @apply min-w-full text-sm; }
+  .adm-table-inline thead { @apply text-left text-[11px] font-semibold uppercase tracking-wider text-ink-400; }
+  .adm-table-inline th { @apply py-2 pr-3; }
+  .adm-table-inline tbody { @apply divide-y divide-line; }
+  .adm-table-inline td { @apply py-2 pr-3 align-middle text-ink-600; }
+  .adm-num { @apply tabular-nums whitespace-nowrap; }
+  .adm-mono { @apply font-mono text-xs; }
+  .adm-link { @apply font-medium text-primary-600 hover:underline; }
+  .adm-row-danger { @apply bg-danger-50; }
+  .adm-row-danger:hover { @apply bg-danger-50; }
+
+  /* Botões */
+  .adm-btn { @apply inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
+  .adm-btn-primary { @apply bg-primary-500 text-white shadow-active hover:bg-primary-600; }
+  .adm-btn-secondary { @apply border border-line bg-surface text-ink-700 hover:bg-hover; }
+  .adm-btn-danger { @apply border border-danger-600/30 bg-surface text-danger-600 hover:bg-danger-50; }
+  .adm-btn-sm { @apply px-2.5 py-1 text-xs; }
+
+  /* Formulários */
+  .adm-label { @apply mb-1 block text-sm font-medium text-ink-700; }
+  .adm-input { @apply block w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink-900 placeholder:text-ink-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100; }
+  .adm-input-error { @apply border-danger-600 focus:border-danger-600 focus:ring-danger-50; }
+  .adm-field-error { @apply mt-1 text-xs text-danger-600; }
+  .adm-checkbox { @apply size-4 rounded border-line text-primary-500 focus:ring-primary-100; }
+  .adm-filters { @apply mb-4 flex flex-wrap items-end gap-3 rounded-lg bg-surface p-4 text-sm shadow-card; }
+  .adm-filters .adm-label { @apply text-xs text-ink-400; }
+
+  /* Badges */
+  .adm-badge { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+  .adm-badge-neutral { @apply bg-hover text-ink-600; }
+  .adm-badge-primary { @apply bg-primary-50 text-primary-700; }
+  .adm-badge-success { @apply bg-success-50 text-success-700; }
+  .adm-badge-warning { @apply bg-warning-50 text-warning-700; }
+  .adm-badge-danger { @apply bg-danger-50 text-danger-700; }
+  .adm-badge-info { @apply bg-info-50 text-info-700; }
+
+  /* Avisos e flashes */
+  .adm-alert { @apply mb-6 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm; }
+  .adm-alert-success { @apply border-success-600/20 bg-success-50 text-success-700; }
+  .adm-alert-danger { @apply border-danger-600/20 bg-danger-50 text-danger-700; }
+  .adm-alert-warning { @apply border-warning-600/20 bg-warning-50 text-warning-700; }
+  .adm-alert-info { @apply border-info-600/20 bg-info-50 text-info-700; }
+  .adm-alert code { @apply rounded px-1 py-0.5 font-mono text-xs; }
+
+  /* Trix (descrição do produto): a barra de ferramentas usa ícones pretos em background-image; no escuro
+     mantém o grupo de botões claro para eles continuarem visíveis. */
+  html[data-theme="dark"] trix-toolbar .trix-button-group { @apply border-line bg-ink-900; }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) trix-toolbar .trix-button-group { @apply border-line bg-ink-900; }
+  }
+
+  /* Blocos de código (payload de webhook) */
+  .adm-code { @apply overflow-x-auto rounded-md bg-code-bg p-4 font-mono text-xs leading-relaxed text-gray-100; }
+  .adm-alert code { @apply bg-surface/60; }
+
+  /* Ícones do botão de tema: mostra o que a página NÃO é (sol no escuro, lua no claro). */
+  .adm-theme-toggle [data-theme-icon="moon"] { @apply block; }
+  .adm-theme-toggle [data-theme-icon="sun"] { @apply hidden; }
+  html[data-theme="dark"] .adm-theme-toggle [data-theme-icon="moon"] { @apply hidden; }
+  html[data-theme="dark"] .adm-theme-toggle [data-theme-icon="sun"] { @apply block; }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .adm-theme-toggle [data-theme-icon="moon"] { @apply hidden; }
+    html:not([data-theme="light"]) .adm-theme-toggle [data-theme-icon="sun"] { @apply block; }
+  }
+}

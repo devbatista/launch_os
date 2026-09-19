@@ -1,29 +1,27 @@
 <% content_for :title, "#{@event.event_type} — Launch OS" %>
 
-<div class="mb-6">
-  <p class="text-sm text-gray-500"><%= link_to "Webhook events", admin_webhook_events_path, class: "hover:underline" %> / </p>
-  <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3"><span class="font-mono text-lg"><%= @event.event_type %></span> <%= webhook_status_badge(@event) %></h1>
-  <p class="mt-1 text-gray-600"><%= @event.provider %> · <%= datetime_br(@event.created_at) %> · assinatura <%= @event.signature_valid? ? "válida" : "inválida" %>
-    <% if @event.order %> · pedido <%= link_to short_id(@event.order_id), admin_order_path(@event.order), class: "font-mono text-blue-700 hover:underline" %><% end %>
-  </p>
-</div>
+<%= render "admin/shared/page_header", title: @event.event_type, badges: webhook_status_badge(@event),
+           subtitle: "#{@event.provider} · #{datetime_br(@event.created_at)} · assinatura #{@event.signature_valid? ? 'válida' : 'inválida'}",
+           breadcrumb: [ [ "Webhook events", admin_webhook_events_path ], [ @event.event_type, nil ] ] do %>
+  <% if @event.order %><%= link_to "Pedido #{short_id(@event.order_id)}", admin_order_path(@event.order), class: button_classes(:secondary) %><% end %>
+<% end %>
 
 <div class="grid gap-6">
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <dl class="space-y-2 text-sm">
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Id externo</dt><dd class="font-mono text-xs text-gray-900"><%= @event.external_id %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Processado em</dt><dd class="text-gray-900"><%= datetime_br(@event.processed_at) %></dd></div>
-      <% if @event.error.present? %><div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Erro / motivo</dt><dd class="text-red-700"><%= @event.error %></dd></div><% end %>
+  <section class="adm-card">
+    <dl class="adm-dl">
+      <%= dl_row("Id externo") { tag.span(@event.external_id, class: "adm-mono") } %>
+      <%= dl_row "Processado em", datetime_br(@event.processed_at) %>
+      <% if @event.error.present? %><%= dl_row("Erro / motivo") { tag.span(@event.error, class: "text-danger-600") } %><% end %>
     </dl>
   </section>
 
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Payload</h2>
-    <pre class="overflow-x-auto rounded bg-gray-900 p-4 text-xs text-gray-100"><%= JSON.pretty_generate(@event.payload) %></pre>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Payload</h2>
+    <pre class="adm-code"><%= JSON.pretty_generate(@event.payload) %></pre>
   </section>
 
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Headers</h2>
-    <pre class="overflow-x-auto rounded bg-gray-900 p-4 text-xs text-gray-100"><%= JSON.pretty_generate(@event.headers) %></pre>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Headers</h2>
+    <pre class="adm-code"><%= JSON.pretty_generate(@event.headers) %></pre>
   </section>
 </div>

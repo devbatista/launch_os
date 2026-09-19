@@ -1,70 +1,62 @@
 <% content_for :title, "#{@product.name} — Launch OS" %>
 
-<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-  <div>
-    <p class="text-sm text-gray-500"><%= link_to "Produtos", admin_products_path, class: "hover:underline" %> / </p>
-    <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3"><%= @product.name %> <%= status_badge(@product) %></h1>
-    <p class="mt-1 text-gray-600"><%= @product.headline %></p>
-  </div>
-  <div class="flex flex-wrap gap-2">
-    <%= link_to "Editar", edit_admin_product_path(@product), class: button_classes(:secondary) %>
-    <%= link_to "Preview", preview_admin_product_path(@product), target: "_blank", rel: "noopener", class: button_classes(:secondary) %>
-    <% if @product.published? %>
-      <%= link_to "Ver ao vivo ↗", @product.public_url, target: "_blank", rel: "noopener", class: button_classes(:secondary) %>
-    <% end %>
-    <% if @product.published? %>
-      <%= button_to "Despublicar", unpublish_admin_product_path(@product), method: :patch, class: button_classes(:secondary),
-            form: { data: { confirm: "Despublicar? A landing page passa a responder 404." } } %>
-    <% else %>
-      <%= button_to "Publicar", publish_admin_product_path(@product), method: :patch, class: button_classes(:primary),
-            disabled: !@product.publishable?, title: (@product.publishable? ? nil : "Falta: #{@product.missing_for_publish.join(', ')}") %>
-    <% end %>
-    <% unless @product.archived? %>
-      <%= button_to "Arquivar", archive_admin_product_path(@product), method: :patch, class: button_classes(:secondary),
-            form: { data: { confirm: "Arquivar? A landing page passa a responder 404; pedidos existentes continuam com acesso." } } %>
-    <% end %>
-    <% if @product.deletable? %>
-      <%= button_to "Excluir", admin_product_path(@product), method: :delete, class: button_classes(:danger),
-            form: { data: { confirm: "Excluir este rascunho? Não dá para desfazer." } } %>
-    <% end %>
-  </div>
-</div>
+<%= render "admin/shared/page_header", title: @product.name, badges: status_badge(@product), subtitle: @product.headline,
+           breadcrumb: [ [ "Produtos", admin_products_path ], [ @product.name, nil ] ] do %>
+  <%= link_to "Editar", edit_admin_product_path(@product), class: button_classes(:secondary) %>
+  <%= link_to "Preview", preview_admin_product_path(@product), target: "_blank", rel: "noopener", class: button_classes(:secondary) %>
+  <% if @product.published? %>
+    <%= link_to @product.public_url, target: "_blank", rel: "noopener", class: button_classes(:secondary) do %>Ver ao vivo <%= icon(:external, class: "size-4!") %><% end %>
+    <%= button_to "Despublicar", unpublish_admin_product_path(@product), method: :patch, class: button_classes(:secondary),
+          form: { data: { confirm: "Despublicar? A landing page passa a responder 404." } } %>
+  <% else %>
+    <%= button_to "Publicar", publish_admin_product_path(@product), method: :patch, class: button_classes(:primary),
+          disabled: !@product.publishable?, title: (@product.publishable? ? nil : "Falta: #{@product.missing_for_publish.join(', ')}") %>
+  <% end %>
+  <% unless @product.archived? %>
+    <%= button_to "Arquivar", archive_admin_product_path(@product), method: :patch, class: button_classes(:secondary),
+          form: { data: { confirm: "Arquivar? A landing page passa a responder 404; pedidos existentes continuam com acesso." } } %>
+  <% end %>
+  <% if @product.deletable? %>
+    <%= button_to "Excluir", admin_product_path(@product), method: :delete, class: button_classes(:danger),
+          form: { data: { confirm: "Excluir este rascunho? Não dá para desfazer." } } %>
+  <% end %>
+<% end %>
 
 <% unless @product.publishable? %>
-  <div class="mb-6 rounded-md bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-    Para publicar falta: <strong><%= @product.missing_for_publish.join(", ") %></strong>.
-  </div>
+  <div class="adm-alert adm-alert-warning"><%= icon(:alert, class: "mt-0.5 shrink-0") %><p>Para publicar falta: <strong><%= @product.missing_for_publish.join(", ") %></strong>.</p></div>
 <% end %>
 
 <div class="grid gap-6 md:grid-cols-2">
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Landing page</h2>
-    <dl class="space-y-2 text-sm">
-      <div class="flex items-center gap-2">
-        <dt class="text-gray-500 w-28">URL pública</dt>
-        <dd class="flex items-center gap-2 min-w-0">
-          <code class="truncate text-gray-900"><%= @product.public_url %></code>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Landing page</h2>
+    <dl class="adm-dl">
+      <%= dl_row "URL pública" do %>
+        <span class="flex items-center gap-2">
+          <code class="adm-mono truncate"><%= @product.public_url %></code>
           <button type="button" class="<%= button_classes(:small) %>" data-module="admin/copy" data-copy-text="<%= @product.public_url %>">Copiar</button>
-        </dd>
-      </div>
-      <div class="flex gap-2"><dt class="text-gray-500 w-28">Preço</dt><dd class="text-gray-900"><%= money(@product.price_cents, @product.currency) %><% if @product.compare_at_price_cents %> <span class="text-gray-400 line-through"><%= money(@product.compare_at_price_cents, @product.currency) %></span><% end %></dd></div>
-      <div class="flex gap-2"><dt class="text-gray-500 w-28">Publicado em</dt><dd class="text-gray-900"><%= datetime_br(@product.published_at) %></dd></div>
-      <div class="flex gap-2"><dt class="text-gray-500 w-28">Blocos</dt><dd class="text-gray-900"><%= @product.benefits.size %> benefícios · <%= @product.testimonials.size %> depoimentos · <%= @product.faqs.size %> FAQs</dd></div>
-      <div class="flex gap-2"><dt class="text-gray-500 w-28">Arquivos</dt><dd class="text-gray-900">
+        </span>
+      <% end %>
+      <%= dl_row "Preço" do %>
+        <span class="adm-num"><%= money(@product.price_cents, @product.currency) %></span>
+        <% if @product.compare_at_price_cents %> <span class="text-ink-300 line-through"><%= money(@product.compare_at_price_cents, @product.currency) %></span><% end %>
+      <% end %>
+      <%= dl_row "Publicado em", datetime_br(@product.published_at) %>
+      <%= dl_row "Blocos", "#{@product.benefits.size} benefícios · #{@product.testimonials.size} depoimentos · #{@product.faqs.size} FAQs" %>
+      <%= dl_row "Arquivos" do %>
         PDF <%= @product.pdf_file.attached? ? "✓" : "—" %> · capa <%= @product.cover_image.attached? ? "✓" : "—" %> · mockup <%= @product.mockup_image.attached? ? "✓" : "—" %> · OG <%= @product.og_image.attached? ? "✓" : "—" %> · previews <%= @product.preview_images.count %>
-      </dd></div>
+      <% end %>
     </dl>
-    <p class="mt-4 text-xs text-gray-500">O preview mostra a LP em qualquer status, com banner e compra desabilitada; "Ver ao vivo" abre a URL pública (só publicado).</p>
+    <p class="adm-hint mt-4">O preview mostra a LP em qualquer status, com banner e compra desabilitada; "Ver ao vivo" abre a URL pública (só publicado).</p>
   </section>
 
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Pedidos</h2>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Pedidos</h2>
     <% paid = @product.orders.paid %>
-    <dl class="space-y-2 text-sm">
-      <div class="flex gap-2"><dt class="text-gray-500 w-28">Pagos</dt><dd class="text-gray-900"><%= paid.count %> · <%= money(paid.sum(:amount_cents), @product.currency) %></dd></div>
-      <div class="flex gap-2"><dt class="text-gray-500 w-28">Outros</dt><dd class="text-gray-900"><%= @product.orders.pending.count %> pendentes · <%= @product.orders.refunded.count %> reembolsados · <%= @product.orders.disputed.count %> em disputa</dd></div>
-      <div class="flex gap-2"><dt class="text-gray-500 w-28">Último pedido</dt><dd class="text-gray-900"><%= datetime_br(@product.orders.maximum(:created_at)) %></dd></div>
+    <dl class="adm-dl">
+      <%= dl_row "Pagos" do %><span class="adm-num"><%= paid.count %> · <%= money(paid.sum(:amount_cents), @product.currency) %></span><% end %>
+      <%= dl_row "Outros", "#{@product.orders.pending.count} pendentes · #{@product.orders.refunded.count} reembolsados · #{@product.orders.disputed.count} em disputa" %>
+      <%= dl_row "Último pedido", datetime_br(@product.orders.maximum(:created_at)) %>
     </dl>
-    <p class="mt-4"><%= link_to "Ver pedidos deste produto →", admin_orders_path(product_id: @product.id), class: "text-sm text-blue-600 hover:underline" %></p>
+    <p class="mt-4"><%= link_to "Ver pedidos deste produto →", admin_orders_path(product_id: @product.id), class: "adm-link text-sm" %></p>
   </section>
 </div>

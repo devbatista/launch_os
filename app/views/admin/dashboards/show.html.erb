@@ -1,4 +1,17 @@
 <% content_for :title, "Dashboard — Launch OS" %>
 
-<h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-<p class="mt-2 text-gray-600">Bem-vindo, <%= Current.user.name %>. As métricas de visitas, vendas e entregas aparecem aqui a partir da Fase 3.</p>
+<%= render "admin/shared/page_header", title: "Dashboard", subtitle: "Bem-vindo, #{Current.user.name}." %>
+
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <% [ [ "Pedidos pagos", Order.paid.count ], [ "Faturamento", money(Order.paid.sum(:amount_cents)) ], [ "Clientes", Client.count ], [ "Pendentes / disputas", "#{Order.pending.count} / #{Order.disputed.count}" ] ].each do |label, value| %>
+    <div class="adm-card">
+      <p class="text-xs font-semibold uppercase tracking-wider text-ink-400"><%= label %></p>
+      <p class="adm-num mt-2 text-2xl font-bold text-ink-900"><%= value %></p>
+    </div>
+  <% end %>
+</div>
+
+<div class="adm-card mt-6">
+  <h2 class="adm-card-title">Métricas</h2>
+  <p class="text-sm text-ink-600">Visitas, conversão por etapa, vendas por campanha e alertas entram na tarefa 4.3 (spec 11). Os totais acima já refletem os pedidos reais.</p>
+</div>

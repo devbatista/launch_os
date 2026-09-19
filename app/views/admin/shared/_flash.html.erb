@@ -1,6 +1,7 @@
-<% if flash[:alert].present? %>
-  <p id="alert" role="alert" class="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700"><%= flash[:alert] %></p>
-<% end %>
-<% if flash[:notice].present? %>
-  <p id="notice" role="status" class="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm font-medium text-green-700"><%= flash[:notice] %></p>
+<% { alert: [ :danger, :alert ], notice: [ :success, :check ] }.each do |key, (tone, icon_name)| %>
+  <% next if flash[key].blank? %>
+  <div id="<%= key %>" role="<%= key == :alert ? 'alert' : 'status' %>" class="adm-alert adm-alert-<%= tone %>">
+    <%= icon(icon_name, class: "mt-0.5 shrink-0") %>
+    <p class="font-medium"><%= flash[key] %></p>
+  </div>
 <% end %>

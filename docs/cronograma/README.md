@@ -30,7 +30,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 3/5 (0.2, 0.4, 0.5 ✅; 0.1 aguarda verificação PayPal; 0.3 Sender adiado) | 🟦 |
 | Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 9/9 — concluída em 17/09 (M1) | ✅ |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 7/8 código entregue em 17–18/09; 2.7 aguarda teste real no Sandbox da Twilio; M2 pendente | 🟦 |
-| Fase 3 — Polimento do admin | a partir de 19/09 (adiantado) | S1 | 6 | | 0/1 | ⬜ |
+| Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
 | Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
 | Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
@@ -136,7 +136,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| 3.1 | Visual do admin: sidebar (responsiva, item ativo), cabeçalhos/breadcrumbs/barras de ação, tabelas (densidade, estados vazios, paginação), formulários do produto (seções, erros, arquivos, coleções), flashes e confirmações, login; helpers como fonte única de estilo; conferir no mobile | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 6 | 2.8 | ⬜ | | Sem mudança de comportamento; specs de request/views continuam verdes |
+| 3.1 | Visual do admin: sidebar (responsiva, item ativo), cabeçalhos/breadcrumbs/barras de ação, tabelas (densidade, estados vazios, paginação), formulários do produto (seções, erros, arquivos, coleções), flashes e confirmações, login; helpers como fonte única de estilo; conferir no mobile | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 6 | 2.8 | ✅ | 19/09 | Referência visual Conca reimplementada em Tailwind (`adm-*`); tema claro/escuro; screenshots nos dois temas e no mobile; sem mudança de comportamento |
 
 **Total: 6 h**
 
@@ -210,7 +210,7 @@ Uma fase só fecha quando todos os itens forem verificados **em produção** (ou
 - [ ] Webhook duplicado não duplica pedido nem email.
 
 ### Fase 3
-- [ ] Painel consistente em todas as telas (sidebar, tabelas, formulários, flashes, login), usável no mobile; helpers como fonte única de estilo; suite verde.
+- [x] Painel consistente em todas as telas (sidebar, tabelas, formulários, flashes, login), usável no mobile; helpers como fonte única de estilo; suite verde. *(19/09; + tema escuro)*
 
 ### Fase 4
 - [ ] Todos os casos T01–T27 automatizados e verdes; testes manuais 1–8 registrados em `docs/qa/`.

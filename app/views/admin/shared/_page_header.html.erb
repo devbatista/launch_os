@@ -1,0 +1,17 @@
+<%# Cabeçalho de página: breadcrumb (array de [label, path] — o último sem path), título com badges e barra de ações
+    (bloco). Locals: title, breadcrumb: [], subtitle: nil, badges: nil. %>
+<div class="adm-page-header">
+  <div class="min-w-0">
+    <% if local_assigns[:breadcrumb].present? %>
+      <nav class="adm-breadcrumb" aria-label="Breadcrumb">
+        <% breadcrumb.each_with_index do |(label, path), i| %>
+          <% if i.positive? %><span aria-hidden="true">/</span><% end %>
+          <% if path %><%= link_to label, path %><% else %><span class="text-ink-600"><%= label %></span><% end %>
+        <% end %>
+      </nav>
+    <% end %>
+    <h1 class="adm-title"><%= title %><%= badges if local_assigns[:badges] %></h1>
+    <% if local_assigns[:subtitle].present? %><p class="adm-subtitle"><%= subtitle %></p><% end %>
+  </div>
+  <% if block_given? %><div class="adm-actions"><%= yield %></div><% end %>
+</div>

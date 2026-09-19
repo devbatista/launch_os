@@ -1,0 +1,14 @@
+<%# Barra superior: menu (mobile), título curto da página (content_for :page_title) e atalhos. %>
+<header class="adm-header">
+  <button type="button" class="rounded-md p-1.5 text-ink-600 hover:bg-hover lg:hidden" data-sidebar-open aria-label="Abrir menu"><%= icon(:menu) %></button>
+  <p class="truncate text-sm font-semibold text-ink-900"><%= content_for(:page_title) || content_for(:title).to_s.sub(/\s*—\s*Launch OS\z/, "") %></p>
+  <div class="ml-auto flex items-center gap-2">
+    <button type="button" class="adm-theme-toggle rounded-md p-1.5 text-ink-400 hover:bg-hover hover:text-ink-900" data-theme-toggle aria-label="Alternar tema claro/escuro" title="Tema claro/escuro">
+      <%= icon(:moon, "data-theme-icon": "moon") %><%= icon(:sun, "data-theme-icon": "sun") %>
+    </button>
+    <% if (live = Product.published.first) %>
+      <%# URL pela rota (slug validado em [a-z0-9-]), não pelo atributo — evita o aviso LinkToHref do Brakeman. %>
+      <%= link_to landing_page_url(live.slug, **Delivery.url_options), target: "_blank", rel: "noopener", class: "adm-btn adm-btn-secondary adm-btn-sm hidden sm:inline-flex" do %>Ver site <%= icon(:external, class: "size-3.5!") %><% end %>
+    <% end %>
+  </div>
+</header>

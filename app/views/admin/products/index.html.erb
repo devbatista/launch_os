@@ -1,34 +1,33 @@
 <% content_for :title, "Produtos — Launch OS" %>
 
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-2xl font-bold text-gray-900">Produtos</h1>
+<%= render "admin/shared/page_header", title: "Produtos", subtitle: "Catálogo e landing pages." do %>
   <%= link_to "Novo produto", new_admin_product_path, class: button_classes(:primary) %>
-</div>
+<% end %>
 
 <% if @products.empty? %>
-  <p class="text-gray-600">Nenhum produto ainda. <%= link_to "Cadastre o primeiro", new_admin_product_path, class: "text-blue-600 underline" %>.</p>
+  <div class="adm-empty">Nenhum produto ainda. <%= link_to "Cadastre o primeiro", new_admin_product_path, class: "adm-link" %>.</div>
 <% else %>
-  <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-    <table class="min-w-full divide-y divide-gray-200 text-sm">
-      <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+  <div class="adm-table-wrap">
+    <table class="adm-table">
+      <thead>
         <tr>
-          <th class="px-4 py-3">Nome</th>
-          <th class="px-4 py-3">Slug</th>
-          <th class="px-4 py-3">Preço</th>
-          <th class="px-4 py-3">Status</th>
-          <th class="px-4 py-3">Atualizado</th>
-          <th class="px-4 py-3"></th>
+          <th>Nome</th>
+          <th>Slug</th>
+          <th>Preço</th>
+          <th>Status</th>
+          <th>Atualizado</th>
+          <th></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-100">
+      <tbody>
         <% @products.each do |product| %>
           <tr>
-            <td class="px-4 py-3 font-medium text-gray-900"><%= link_to product.name, admin_product_path(product), class: "hover:underline" %></td>
-            <td class="px-4 py-3 text-gray-600 font-mono text-xs">/<%= product.slug %></td>
-            <td class="px-4 py-3 text-gray-900"><%= money(product.price_cents, product.currency) %></td>
-            <td class="px-4 py-3"><%= status_badge(product) %></td>
-            <td class="px-4 py-3 text-gray-500"><%= datetime_br(product.updated_at) %></td>
-            <td class="px-4 py-3 text-right"><%= link_to "Editar", edit_admin_product_path(product), class: button_classes(:small) %></td>
+            <td class="font-medium text-ink-900"><%= link_to product.name, admin_product_path(product), class: "hover:underline" %></td>
+            <td class="adm-mono">/<%= product.slug %></td>
+            <td class="adm-num text-ink-900"><%= money(product.price_cents, product.currency) %></td>
+            <td><%= status_badge(product) %></td>
+            <td class="adm-num text-ink-400"><%= datetime_br(product.updated_at) %></td>
+            <td class="text-right"><%= link_to "Editar", edit_admin_product_path(product), class: button_classes(:small) %></td>
           </tr>
         <% end %>
       </tbody>

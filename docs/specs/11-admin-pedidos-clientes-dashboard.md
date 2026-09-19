@@ -4,6 +4,41 @@ Painel simples, server-rendered (ERB + Tailwind, navegação full-page, JS puro 
 sem gem de admin (ActiveAdmin/Administrate) para manter controle total e dependências mínimas.
 Layout com sidebar: Dashboard, Products, Orders, Clients, Webhook Events, Sidekiq.
 
+## Visual e tema
+
+**Decisão (19/09, tarefa 3.1):** o visual do painel toma como referência o template
+[Conca](https://html.aqlova.com/conca-demo/conca/) (Aqlova, ThemeForest). Ele é Bootstrap + jQuery e comercial, então
+**nada dele é copiado** — só a linguagem visual e os tokens, reimplementados em Tailwind v4 (`@theme` +
+`@layer components`, classes `adm-*` em `app/assets/tailwind/application.css`). Os helpers de `AdminHelper`
+(`button_classes`, `input_classes`, `label_classes`, `badge`, `dl_row`, `icon`) devolvem essas classes — são a
+fonte única de estilo; as views não repetem utilitários soltos.
+
+| Token | Claro | Escuro |
+|---|---|---|
+| Fonte | Inter (Google Fonts, só no admin) | idem |
+| Canvas / superfície | `#F4F4F7` / `#FFFFFF` | `#161618` / `#1F1F21` |
+| Borda / hover | `#EFEFEF` / `#F6F6F9` | `#2D2D31` / `#29292B` |
+| Títulos / texto / secundário | `#191822` / `#57575A` / `#8C8B93` | `#ECECF1` / `#BDBDC1` / `#8C8B93` |
+| Primária | `#5F4AFE` (hover `#4F3BE6`) | idem |
+| Sucesso / aviso / erro / info | `#219653` / `#F79009` / `#D50100` / `#0BA5EC` | idem, com fundos escuros e textos claros nos badges |
+| Raio / sombras | 6 px; card, header, sidebar suaves | sombras mais fortes |
+
+Estrutura: sidebar fixa de 256 px (branca, seções "Loja" e "Sistema", item ativo em violeta, usuário no rodapé),
+header de 60 px (menu no mobile, título da página, tema, "Ver site"), conteúdo em cards sobre o canvas. No mobile
+a sidebar vira drawer com backdrop (`modules/admin/sidebar.js`). Componentes: `adm-card`, `adm-card-title`,
+`adm-dl`/`dl_row`, `adm-table` (+ `-inline`), `adm-btn-*`, `adm-input`/`adm-label`, `adm-badge-*`, `adm-alert-*`,
+`adm-filters`, `adm-empty`, `adm-code`, `admin/shared/_page_header` (breadcrumb, título com badges, ações).
+
+**Login** segue o layout "cover" do Conca (`auth-login-cover`): card de duas colunas sobre o canvas tingido de
+violeta — painel esquerdo violeta com boas-vindas e o mockup do produto publicado (fallback decorativo), formulário
+à direita com logo, e-mail e senha com botão "olho" (`modules/admin/password_toggle.js`). Sem login social,
+"esqueci a senha" ou cadastro (não existem no projeto).
+
+**Tema escuro:** os mesmos tokens com outros valores em `html[data-theme="dark"]`; sem escolha explícita vale
+`prefers-color-scheme`. O botão do header (`modules/admin/theme.js`) alterna e guarda em `localStorage`
+(`adm-theme` = `light`|`dark`). Ícones são Heroicons (MIT) inline via `icon(:nome)`. Fora do MVP: sidebar
+colapsada (só ícones) e busca global.
+
 ## Pedidos (`/admin/orders`)
 
 ### Index
