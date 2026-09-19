@@ -31,20 +31,30 @@ Meta leva dias) e criar a conta de anúncios com antecedência (revisão de cont
 | 2.8 | Admin: pedidos (index/show, reenvio, regenerar/revogar token, disputa), clientes, webhook events | 11 |
 | 2.9 | Compra Sandbox ponta a ponta via túnel HTTPS | 15 |
 
-## Fase 3 — Tracking, testes e go-live (3–5 dias)
+## Fase 3 — Polimento do admin (~6 h, adiantada para 19/09)
+
+Decisão de 18/09: o item "polir o visual do admin" da tarefa 1.4 vira fase própria, executada assim que o painel tem
+todas as telas reais (produtos, pedidos, clientes, webhook events — Fase 2). As fases seguintes foram renumeradas;
+datas e marcos M1–M5 não mudaram.
 
 | # | Tarefa | Spec |
 |---|---|---|
-| 3.1 | Captura de atribuição (cookie + Order), `PageVisit` assíncrono | 10 |
-| 3.2 | Meta Pixel (PageView, ViewContent, InitiateCheckout, Purchase com `event_id`), GA4, banner de cookies | 10 |
-| 3.3 | Dashboard admin | 11 |
-| 3.4 | Sentry, uptime monitor, backups, CSP, `config.hosts`, checklist de segurança | 13 |
-| 3.5 | Suite de testes T01–T27 verde; testes manuais 1–8 | 15 |
-| 3.6 | Deploy produção (Railway), CNAME `www` na HostGator + redirect do apex, HTTPS, credenciais Live | 02 |
-| 3.7 | Compra real de US$ 14.90 + reembolso; validar Events Manager | 15 |
-| 3.8 | Publicar produto; **Definição de pronto** 100% marcada | 00 |
+| 3.1 | Visual do admin: sidebar responsiva, cabeçalhos/breadcrumbs/ações, tabelas e estados vazios, formulários do produto, flashes/confirmações, login; helpers de estilo como fonte única; conferência no mobile | 11 |
 
-## Fase 4 — Campanha de validação (1 semana + 2 dias de análise)
+## Fase 4 — Tracking, testes e go-live (3–5 dias)
+
+| # | Tarefa | Spec |
+|---|---|---|
+| 4.1 | Captura de atribuição (cookie + Order), `PageVisit` assíncrono | 10 |
+| 4.2 | Meta Pixel (PageView, ViewContent, InitiateCheckout, Purchase com `event_id`), GA4, banner de cookies | 10 |
+| 4.3 | Dashboard admin | 11 |
+| 4.4 | Sentry, uptime monitor, backups, CSP, `config.hosts`, checklist de segurança | 13 |
+| 4.5 | Suite de testes T01–T27 verde; testes manuais 1–8 | 15 |
+| 4.6 | Deploy produção (Railway), CNAME `www` na HostGator + redirect do apex, HTTPS, credenciais Live | 02 |
+| 4.7 | Compra real de US$ 14.90 + reembolso; validar Events Manager | 15 |
+| 4.8 | Publicar produto; **Definição de pronto** 100% marcada | 00 |
+
+## Fase 5 — Campanha de validação (1 semana + 2 dias de análise)
 
 - 1 campanha de vendas (otimizada para Purchase), 1 conjunto amplo (Advantage+), 3 criativos
   (ângulos: dor / mecanismo / transformação), EUA, inglês, ~R$ 18/dia × 7 dias.
@@ -90,4 +100,4 @@ Regra inegociável: **todo objeto criado via API nasce `PAUSED`**; ativação é
 ## Critérios de aceite do roadmap
 
 - [ ] Cada tarefa das fases 1–3 vira uma issue/ticket com link para a spec correspondente.
-- [ ] Nenhum item de "Pós-validação" é iniciado antes da Fase 4 terminar.
+- [ ] Nenhum item de "Pós-validação" é iniciado antes da Fase 5 terminar.

@@ -263,7 +263,7 @@ Hospedagem decidida: **Railway**, deploy por `Dockerfile` (projeto gerado com `-
 é detectado pela presença do `Dockerfile`; as demais configurações de cada serviço ficam **no dashboard**
 (decisão de 17/09, seção 11 do cronograma): o *Config as Code* (`railway.json`) foi descontinuado pelo Railway —
 arquivos existentes valem só até 01/12/2026 e serviços criados após 28/08/2026 não podem usá-lo. O substituto
-(*Infrastructure as Code*, `.railway/railway.ts` + `railway config apply`) fica para a Fase 5.
+(*Infrastructure as Code*, `.railway/railway.ts` + `railway config apply`) fica para a Fase 6 (pós-validação).
 
 Serviços no projeto Railway (todos a partir do mesmo repositório, branch `main`):
 
