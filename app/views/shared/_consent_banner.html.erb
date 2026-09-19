@@ -1,0 +1,7 @@
+<%# Aviso de cookies (spec 10): só informa; "OK" grava lo_consent (modules/consent.js). Escondido até o JS decidir. %>
+<div data-module="consent" hidden class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-4 text-sm text-slate-700 shadow-lg backdrop-blur sm:p-5">
+  <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3">
+    <p>We use cookies and pixels to measure our ads and improve this site. See our <%= link_to "Privacy Policy", privacy_path, class: "underline" %>.</p>
+    <button type="button" data-consent-accept class="rounded-lg bg-slate-900 px-5 py-2 font-semibold text-white hover:bg-slate-700">OK</button>
+  </div>
+</div>

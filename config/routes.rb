@@ -70,6 +70,9 @@ Rails.application.routes.draw do
     post "twilio/inbound", to: "twilio#inbound"
   end
 
+  # Beacon de visita da LP (spec 10): modules/attribution.js → RecordPageVisitJob. Sem CSRF, rate limit por IP.
+  post "visits", to: "visits#create"
+
   # Entrega (spec 08): a Thank You é por id do pedido e NÃO libera o arquivo — o link de download
   # (por token) vai só por email/WhatsApp (decisão 18/09). /access/recover reenvia o link por email.
   get "thank-you/:id",   to: "thank_you#show", as: :thank_you

@@ -13,7 +13,7 @@
     </section>
 
   <% elsif @order.paid? %>
-    <section class="text-center" <% if @track_purchase %>data-module="tracking" data-event="purchase" data-event-id="<%= @order.event_id %>" data-value="<%= @order.amount %>" data-currency="<%= @order.currency %>" data-product-id="<%= @product.id %>"<% end %>>
+    <section class="text-center" <% if @track_purchase %>data-module="tracking" data-event="purchase" data-event-id="<%= @order.event_id %>" data-order-id="<%= @order.id %>" data-value="<%= @order.amount %>" data-currency="<%= @order.currency %>" data-product-id="<%= @product.id %>" data-product-name="<%= @product.name %>"<% end %>>
       <p class="text-sm font-semibold uppercase tracking-wide text-emerald-700">Payment confirmed</p>
       <h1 class="mt-2 text-3xl font-extrabold sm:text-4xl">Thank you<%= ", #{@order.client&.name.to_s.split.first}" if @order.client&.name.present? %>!</h1>
       <p class="mt-3 text-lg text-slate-600">Your copy of <strong><%= @product.name %></strong> is on its way.</p>

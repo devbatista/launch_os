@@ -23,9 +23,15 @@ A atribuição sobrevive ao redirecionamento ao PayPal porque já está no `Orde
 
 ## PageVisit (analytics interno)
 
-Na LP, `RecordPageVisitJob.perform_later(product_id, attrs)` — não bloqueia a resposta. Registra
-`path`, UTMs, `fbclid`, `referrer`, `user_agent`, `visitor_id`, `ip_hash`. Ignorar bots conhecidos
-(user agent com `bot|crawler|spider|facebookexternalhit`).
+**Decisão (19/09, tarefa 4.1):** a visita é contada por um **beacon** — `modules/attribution.js` faz
+`navigator.sendBeacon("/visits", JSON)` ao carregar a LP — e não pelo `LandingPagesController`: a LP é
+`Cache-Control: public` e o Thruster serve a maioria dos acessos do cache, sem passar pelo Rails.
+`VisitsController#create` (sem CSRF, rate limit 60/min por IP, 204 sempre) descarta bots, calcula o
+`ip_hash` e chama `RecordPageVisitJob.perform_later(attrs)`. Registra `path`, UTMs, `fbclid`, `referrer`,
+`user_agent`, `visitor_id` (cookie `lo_vid`), `ip_hash` (SHA-256 de `secret_key_base:data:ip` — muda por
+dia, nunca guarda o IP). Bots: user agent com `bot|crawler|spider|facebookexternalhit|headless|lighthouse`
+(checado no controller e no job). Efeito colateral bom: quem não roda JS (a maioria dos bots) não conta.
+Cada visita leva os parâmetros da URL atual (o first-touch fica no cookie `lo_attr` e vai para o `Order`).
 
 Alimenta o dashboard (visitas, visitantes únicos, conversão). Não substitui GA4/Meta.
 
@@ -48,8 +54,15 @@ Desde já: guardar `fbp`, `fbc`, `ip_address`, `user_agent` no `Order` (dados ne
 
 `modules/tracking.js` é um wrapper fino: `viewContent(data)`, `initiateCheckout(data)`, `purchase(data)`
 chamam `window.fbq` e `window.gtag` **se existirem** (no-op quando Pixel/GA4 não estão carregados ou em preview).
-Os snippets base do Pixel e do GA4 são inline no `<head>` com nonce da CSP, renderizados apenas quando
-os IDs estão configurados e `@preview` é falso.
+
+**Decisão (19/09):** o Pixel **não** usa snippet inline — o layout `landing` declara
+`<body data-module="tracking" data-pixel-id="…">` (só com `META_PIXEL_ID` e fora do preview) e o próprio
+`tracking.js` cria o stub `fbq` (fila até o `fbevents.js` carregar), injeta o script, faz `init` + `PageView`.
+Zero inline = nada a liberar na CSP além de `connect.facebook.net` (4.2). Dados dos eventos vão em `data-*`:
+a LP tem `<main data-module="attribution tracking" data-event="view_content" data-product-id data-product-name
+data-value data-currency>`, o `#buy` os mesmos `data-*` (o `checkout.js` os passa ao `initiateCheckout` no
+`onClick` do SDK) e a Thank You `data-event="purchase" data-event-id data-order-id …`. O GA4 (`gtag`) segue o
+mesmo caminho na 4.2.
 
 ## GA4
 
@@ -61,7 +74,8 @@ Mesma regra de disparo único para `purchase`.
 
 Banner simples ("We use cookies and pixels to measure our ads. [OK] [Privacy Policy]"). Não bloqueia
 o Pixel para tráfego dos EUA no MVP (não há exigência tipo GDPR), mas o banner e a Privacy Policy
-DEVEM informar o uso. Preferência gravada em cookie `lo_consent`.
+DEVEM informar o uso. Preferência gravada em cookie `lo_consent` (1 ano). *(4.1: `shared/_consent_banner`
++ `modules/consent.js`; fora do preview.)*
 
 ## Validação
 
@@ -71,9 +85,9 @@ DEVEM informar o uso. Preferência gravada em cookie `lo_consent`.
 
 ## Critérios de aceite
 
-- [ ] Visita `/:slug?utm_source=ig&utm_campaign=test&fbclid=abc` → após compra, `Order` tem esses campos preenchidos.
-- [ ] Segunda visita sem UTMs no mesmo navegador mantém a atribuição original (first-touch).
+- [x] Visita `/:slug?utm_source=ig&utm_campaign=test&fbclid=abc` → após compra, `Order` tem esses campos preenchidos. *(T22 no checkout desde a 2.1; cookie `lo_attr` verificado em navegador real na 4.1)*
+- [x] Segunda visita sem UTMs no mesmo navegador mantém a atribuição original (first-touch). *(4.1: verificado com Chromium — `lo_attr` intacto; a `PageVisit` da 2ª visita vem sem UTMs, como deve)*
 - [ ] `ViewContent`, `InitiateCheckout` e `Purchase` aparecem no Test Events da Meta com `value`/`currency` corretos.
-- [ ] Recarregar a Thank You não dispara um segundo `Purchase`.
-- [ ] Preview do admin não carrega Pixel nem GA4.
-- [ ] `PageVisit` gravado de forma assíncrona; LP responde sem esperar o job.
+- [x] Recarregar a Thank You não dispara um segundo `Purchase`. *(T21 desde a 2.4)*
+- [x] Preview do admin não carrega Pixel nem GA4. *(4.1: request spec — sem `data-pixel-id`, atribuição nem aviso no preview)*
+- [x] `PageVisit` gravado de forma assíncrona; LP responde sem esperar o job. *(4.1: beacon → job; LP nem vê a requisição)*

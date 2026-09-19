@@ -21,7 +21,7 @@ RSpec.describe "Thank you page" do
 
     get thank_you_path(order)
     expect(order.reload.purchase_tracked_at).to be_present
-    expect(response.body).to include('data-event="purchase"', %(data-event-id="#{order.event_id}"), 'data-currency="USD"')
+    expect(response.body).to include('data-event="purchase"', %(data-event-id="#{order.event_id}"), %(data-order-id="#{order.id}"), %(data-product-name="#{order.product.name}"), 'data-currency="USD"')
     tracked_at = order.purchase_tracked_at
 
     get thank_you_path(order)

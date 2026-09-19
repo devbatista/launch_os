@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → M2 (compra Sandbox ponta a ponta: download em produção + teste real do WhatsApp no Sandbox da Twilio, que depende do Content Template `HX…` e do `join`) e depois a Fase 4 (4.1 tracking). Fase 3 (visual do admin, claro e escuro) entregue em 19/09. Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 4.2 (GA4, Sentry, monitoramento, CSP, hardening) e o teste manual do Pixel no Events Manager (4.1). Em paralelo: M2 (download em produção + WhatsApp no Sandbox da Twilio, que depende do Content Template `HX…` e do `join`). Fases 1–3 entregues; 4.1 em 19/09. Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -280,14 +280,14 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 ## Fase 4 — Tracking, testes e go-live (S5 · 19–25/10)
 
 ### 4.1 Atribuição, Pixel, PageVisit — spec [10](../specs/10-tracking-e-analytics.md)
-- [ ] `modules/attribution.js` (cookie `lo_attr` first-touch, 30 dias) + `lo_vid`
-- [ ] `Tracking::AttributionCapture` lendo cookie/params/`_fbp`/`_fbc` no checkout → `Order`
-- [ ] Migration `page_visits`; `RecordPageVisitJob` (ignora bots, `ip_hash`)
-- [ ] Snippet do Pixel com nonce (só com `META_PIXEL_ID` e sem preview): PageView, ViewContent
-- [ ] `InitiateCheckout` no `onClick` do botão; `Purchase` na Thank You com `eventID = order.event_id`, uma vez
-- [ ] Banner de cookies simples (`lo_consent`)
-- [ ] Meta Test Events: três eventos recebidos com value/currency
-- [ ] Specs: T22 em `checkout/paypal_spec.rb`, T21 em `thank_you_spec.rb`, `spec/jobs/record_page_visit_job_spec.rb`
+- [x] `modules/attribution.js` (cookie `lo_attr` first-touch, 30 dias) + `lo_vid` — *19/09: first-touch com UTMs/fbclid/referrer externo/landing_path; `lo_vid` UUID 1 ano; dispara o beacon `POST /visits`*
+- [x] `Tracking::AttributionCapture` lendo cookie/params/`_fbp`/`_fbc` no checkout → `Order` — *já existia no `Checkout::PaypalController#attribution` desde a 2.1 (T22); mantido lá em vez de um service*
+- [x] Migration `page_visits`; `RecordPageVisitJob` (ignora bots, `ip_hash`) — *`PageVisit` (bot?, `ip_hash` com sal diário, scope `humans`), `VisitsController` (beacon, sem CSRF, 60/min por IP). **Decisão:** contar por beacon, não no controller da LP — o Thruster cacheia a LP (spec 10)*
+- [x] Snippet do Pixel com nonce (só com `META_PIXEL_ID` e sem preview): PageView, ViewContent — *sem inline: `<body data-module="tracking" data-pixel-id>` e o `tracking.js` cria o stub `fbq`, carrega `fbevents.js`, `init` + `PageView`; `ViewContent` pelo `<main data-event="view_content">` com `content_ids/value/currency`*
+- [x] `InitiateCheckout` no `onClick` do botão; `Purchase` na Thank You com `eventID = order.event_id`, uma vez — *`#buy` ganhou `data-product-name/value/currency`; Thank You manda `eventID` + `transaction_id` (GA4) — o disparo único já era garantido pelo servidor (T21)*
+- [x] Banner de cookies simples (`lo_consent`) — *`shared/_consent_banner` + `modules/consent.js`, fora do preview*
+- [ ] Meta Test Events: três eventos recebidos com value/currency — *manual, em produção após o deploy: Events Manager → Test Events → abrir a LP, clicar no PayPal e concluir uma compra Sandbox… (o Pixel de produção usa o `META_PIXEL_ID` do Railway; ver instruções no PR)*
+- [x] Specs: T22 em `checkout/paypal_spec.rb`, T21 em `thank_you_spec.rb`, `spec/jobs/record_page_visit_job_spec.rb` — *+ `requests/visits_spec` (beacon, bot, rate limit), `models/page_visit_spec`, LP spec (Pixel com/sem id, preview, consent). Navegador real (Chromium via Selenium): cookies `lo_attr`/`lo_vid`/`_fbp`/`_fbc`, `fbevents.js` carregado e fila vazia, first-touch mantido na 2ª visita, 2 `PageVisit` gravadas, consent gravado*
 
 ### 4.2 GA4, Sentry, monitoramento, hardening — spec [13](../specs/13-seguranca.md)
 - [ ] GA4 (`view_item`, `begin_checkout`, `purchase` único)

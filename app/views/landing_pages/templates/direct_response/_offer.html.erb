@@ -5,6 +5,9 @@
 <section id="buy" class="bg-slate-900 text-white"
          <% unless preview %>data-module="checkout"<% end %>
          data-product-id="<%= product.id %>"
+         data-product-name="<%= product.name %>"
+         data-value="<%= product.price %>"
+         data-currency="<%= product.currency %>"
          data-paypal-client-id="<%= paypal_client_id %>"
          data-create-url="/checkout/paypal"
          data-capture-url="/checkout/paypal/capture"

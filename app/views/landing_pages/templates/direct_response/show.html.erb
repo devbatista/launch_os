@@ -26,7 +26,8 @@
   <%= render "landing_pages/templates/direct_response/preview_banner", product: product %>
 <% end %>
 
-<main>
+<%# Fora do preview: atribuição first-touch + beacon de visita e ViewContent (spec 10). %>
+<main <% unless @preview %>data-module="attribution tracking" data-event="view_content" data-product="<%= product.slug %>" data-product-id="<%= product.id %>" data-product-name="<%= product.name %>" data-value="<%= product.price %>" data-currency="<%= product.currency %>"<% end %>>
   <%= render "landing_pages/templates/direct_response/hero", product: product %>
   <%= render "landing_pages/templates/direct_response/problem", product: product if product.problem_text.present? %>
   <%= render "landing_pages/templates/direct_response/benefits", product: product %>
