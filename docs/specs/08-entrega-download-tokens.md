@@ -99,7 +99,7 @@ Emails e WhatsApp são jobs separados e independentes: falha em um não afeta o 
 
 ## Critérios de aceite
 
-- [x] Após compra Sandbox, `/thank-you/:id` confirma o pagamento e o link recebido por email (`/download/:token`) baixa o PDF real. *(18/09: email no `/letter_opener`, link → 303 para a URL assinada do MinIO; download em produção fica para M2)*
+- [x] Após compra Sandbox, `/thank-you/:id` confirma o pagamento e o link recebido por email (`/download/:token`) baixa o PDF real. *(18/09: email no `/letter_opener`, link → 303 para a URL assinada do MinIO. 19/09: em produção, compra Sandbox → email pelo SES e `/download/:token` → S3 `launch-os-prod` → PDF real)*
 - [x] URL assinada expira: copiar a URL do S3 e reutilizar após 5 min → erro do bucket. *(dev/MinIO: 403 após expirar)*
 - [x] Acesso direto ao objeto no bucket (sem assinatura) → 403.
 - [x] Token de pedido `pending`/`failed` → download negado. *(402)*
