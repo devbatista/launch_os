@@ -19,10 +19,12 @@
     <%= javascript_importmap_tags "landing" %>
   </head>
 
-  <body class="h-full text-slate-900 antialiased">
+  <%# Pixel só com META_PIXEL_ID e fora do preview do admin (spec 10); carregado por modules/tracking.js, sem inline. %>
+  <body class="h-full text-slate-900 antialiased"<% if meta_pixel_id %> data-module="tracking" data-pixel-id="<%= meta_pixel_id %>"<% end %>>
     <%= yield %>
 
     <%= render "shared/footer" %>
+    <%= render "shared/consent_banner" unless @preview %>
     <%= yield :after_footer %>
   </body>
 </html>

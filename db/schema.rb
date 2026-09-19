@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -167,6 +167,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_150000) do
     t.index ["status"], name: "index_orders_on_status"
   end
 
+  create_table "page_visits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "fbclid"
+    t.string "ip_hash"
+    t.string "path", null: false
+    t.uuid "product_id"
+    t.string "referrer"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.string "utm_campaign"
+    t.string "utm_content"
+    t.string "utm_medium"
+    t.string "utm_source"
+    t.string "utm_term"
+    t.string "visitor_id"
+    t.index ["created_at"], name: "index_page_visits_on_created_at"
+    t.index ["product_id", "created_at"], name: "index_page_visits_on_product_id_and_created_at"
+    t.index ["visitor_id"], name: "index_page_visits_on_visitor_id"
+  end
+
   create_table "products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "compare_at_price_cents"
     t.datetime "created_at", null: false
@@ -251,6 +271,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_150000) do
   add_foreign_key "message_logs", "orders"
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "products"
+  add_foreign_key "page_visits", "products"
   add_foreign_key "sessions", "users"
   add_foreign_key "testimonials", "products"
   add_foreign_key "webhook_events", "orders"

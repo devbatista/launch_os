@@ -131,4 +131,32 @@ RSpec.describe "Landing pages" do
       expect(response.body).not_to match(/name="whatsapp_opt_in"[^>]*checked/)
     end
   end
+
+  describe "tracking (spec 10)" do
+    it "com META_PIXEL_ID carrega o Pixel pelo módulo (sem inline), ativa atribuição + ViewContent e mostra o aviso de cookies" do
+      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => "123456"))
+      product = create(:product, :published, slug: "tracked")
+
+      get "/tracked"
+
+      expect(response.body).to include(%(<body class="h-full text-slate-900 antialiased" data-module="tracking" data-pixel-id="123456">))
+      expect(response.body).to include(%(data-module="attribution tracking" data-event="view_content" data-product="tracked" data-product-id="#{product.id}"), %(data-value="#{product.price}"), 'data-currency="USD"')
+      expect(response.body).to include('data-module="consent"', "We use cookies and pixels")
+      expect(response.body).not_to include("connect.facebook.net", "fbq(") # nada inline
+      expect(response.body).to include(%(data-product-name="#{product.name}"), %(data-value="#{product.price}")) # #buy para InitiateCheckout
+    end
+
+    it "sem META_PIXEL_ID não declara o Pixel; no preview do admin não há Pixel, atribuição nem aviso" do
+      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => nil))
+      product = create(:product, :published, slug: "plain")
+      get "/plain"
+      expect(response.body).not_to include("data-pixel-id")
+      expect(response.body).to include('data-module="attribution tracking"')
+
+      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => "123456"))
+      sign_in_admin
+      get preview_admin_product_path(product)
+      expect(response.body).not_to include("data-pixel-id", 'data-module="attribution tracking"', 'data-module="consent"')
+    end
+  end
 end

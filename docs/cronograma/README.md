@@ -144,7 +144,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| 4.1 | Meta Pixel, captura de UTMs/fbclid em cookie first-party e gravação no `Order`; ViewContent, InitiateCheckout, Purchase com `event_id`; `PageVisit` | [10](../specs/10-tracking-e-analytics.md) | 6 | 2.3 | ⬜ | | |
+| 4.1 | Meta Pixel, captura de UTMs/fbclid em cookie first-party e gravação no `Order`; ViewContent, InitiateCheckout, Purchase com `event_id`; `PageVisit` | [10](../specs/10-tracking-e-analytics.md) | 6 | 2.3 | 🟦 | | 19/09: attribution.js, Pixel via módulo (sem inline), PageVisit por beacon (LP é cacheada), consent; verificado em navegador real. Falta só o Test Events da Meta em produção |
 | 4.2 | GA4, Sentry, monitor de uptime, backup diário do banco, versionamento do bucket, CSP, `config.hosts` | [10](../specs/10-tracking-e-analytics.md), [13](../specs/13-seguranca.md) | 3 | 0.5 | ⬜ | | |
 | 4.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 4.1 | ⬜ | | Pode ir para Fase 6 se faltar tempo |
 | 4.4 | Executar o plano de testes (T01–T27 automatizados + manuais 1–4) em Sandbox e corrigir falhas | [15](../specs/15-plano-de-testes.md) | 6 | 2.8, 4.1 | ⬜ | | |
