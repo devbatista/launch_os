@@ -55,6 +55,20 @@ Após alterar o `Gemfile`: `docker compose run --rm web bundle install` (atualiz
 Links assinados do Active Storage em dev apontam para `http://minio:9000`. Para abri-los no navegador do host,
 adicione `127.0.0.1 minio` ao `/etc/hosts`.
 
+### Visual do admin
+
+O painel segue um mini design system em Tailwind (`app/assets/tailwind/application.css`, classes `adm-*`) com
+**referência visual no template [Conca](https://html.aqlova.com/conca-demo/conca/)** (Aqlova) — só a linguagem e os
+tokens (Inter, canvas `#F4F4F7`, superfícies brancas com sombra, violeta `#5F4AFE` como primária); nenhum
+CSS/JS/HTML dele entra no projeto (é Bootstrap + jQuery e comercial). Tem **tema claro e escuro**: o botão
+no header fixa a escolha em `localStorage` (`adm-theme`); sem escolha, vale a preferência do sistema. Detalhes
+e tokens na [spec 11](docs/specs/11-admin-pedidos-clientes-dashboard.md#visual-e-tema).
+
+Para tirar screenshots do painel (validação visual, sem Chrome local): suba um Chromium na rede do compose
+(`docker run -d --rm --name lo-selenium --network launch_os_default --shm-size=1g seleniarm/standalone-chromium`),
+e use `selenium-webdriver` de dentro do `web` apontando para `http://lo-selenium:4444` e `http://web:3000`
+(`config.hosts` já libera `web` em dev).
+
 ## Produção (Railway)
 
 Deploy por `Dockerfile`; a configuração de cada serviço fica no dashboard do Railway (o *Config as Code* foi

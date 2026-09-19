@@ -1,23 +1,45 @@
-<%# Itens da sidebar (spec 11): Dashboard, Produtos, Pedidos, Clientes, Webhook events, Sidekiq. %>
-<aside class="w-56 shrink-0 bg-gray-900 text-gray-200 flex flex-col min-h-screen">
-  <div class="px-5 py-4 text-lg font-bold text-white border-b border-gray-800">Launch OS</div>
-
-  <nav class="flex-1 px-3 py-4 space-y-1" aria-label="Principal">
-    <% nav_items = [
-         [ "Dashboard", admin_dashboard_path, controller_name == "dashboards" ],
-         [ "Produtos", admin_products_path, controller_path.start_with?("admin/products", "admin/benefits", "admin/testimonials", "admin/faqs") ],
-         [ "Pedidos", admin_orders_path, controller_name == "orders" ],
-         [ "Clientes", admin_clients_path, controller_name == "clients" ],
-         [ "Webhook events", admin_webhook_events_path, controller_name == "webhook_events" ]
-       ] %>
-    <% nav_items.each do |label, path, active| %>
-      <%= link_to label, path, class: "block rounded-md px-3 py-2 text-sm font-medium #{active ? 'bg-gray-800 text-white' : 'hover:bg-gray-800 hover:text-white'}" %>
+<%# Sidebar (spec 11, visual da 3.1): logo, seções "Loja" e "Sistema", usuário. Fixa no desktop, off-canvas no mobile
+    (modules/admin/sidebar.js). Item ativo pelo controller atual. %>
+<aside class="adm-sidebar" aria-label="Navegação principal">
+  <div class="flex h-15 items-center justify-between border-b border-line px-5">
+    <%= link_to admin_dashboard_path, class: "flex items-center gap-2 text-ink-900" do %>
+      <span class="flex size-8 items-center justify-center rounded-md bg-primary-500 text-sm font-bold text-white">L</span>
+      <span class="text-base font-bold tracking-tight">Launch OS</span>
     <% end %>
-    <a href="/admin/sidekiq" target="_blank" rel="noopener" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-800 hover:text-white">Sidekiq ↗</a>
+    <button type="button" class="rounded-md p-1 text-ink-400 hover:bg-hover hover:text-ink-900 lg:hidden" data-sidebar-close aria-label="Fechar menu"><%= icon(:close) %></button>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto px-3 py-4">
+    <% active_products = controller_path.start_with?("admin/products", "admin/benefits", "admin/testimonials", "admin/faqs") %>
+    <% sections = [
+         [ "Loja", [
+           [ :dashboard, "Dashboard", admin_dashboard_path, controller_name == "dashboards" ],
+           [ :products, "Produtos", admin_products_path, active_products ],
+           [ :orders, "Pedidos", admin_orders_path, controller_name == "orders" ],
+           [ :clients, "Clientes", admin_clients_path, controller_name == "clients" ]
+         ] ],
+         [ "Sistema", [
+           [ :webhooks, "Webhook events", admin_webhook_events_path, controller_name == "webhook_events" ],
+           [ :sidekiq, "Sidekiq", "/admin/sidekiq", false, :external ]
+         ] ]
+       ] %>
+    <% sections.each do |heading, items| %>
+      <p class="adm-nav-heading"><%= heading %></p>
+      <ul class="space-y-0.5">
+        <% items.each do |icon_name, label, path, active, external| %>
+          <% if external %>
+            <li><a href="<%= path %>" target="_blank" rel="noopener" class="adm-nav-link"><%= icon(icon_name) %><span><%= label %></span><%= icon(:external, class: "ml-auto size-4!") %></a></li>
+          <% else %>
+            <li><%= link_to path, class: "adm-nav-link #{'adm-nav-link-active' if active}", "aria-current": (active ? "page" : nil) do %><%= icon(icon_name) %><span><%= label %></span><% end %></li>
+          <% end %>
+        <% end %>
+      </ul>
+    <% end %>
   </nav>
 
-  <div class="px-5 py-4 border-t border-gray-800 text-sm">
-    <p class="truncate text-gray-400" title="<%= Current.user.email_address %>"><%= Current.user.name %></p>
-    <%= button_to "Sair", admin_logout_path, method: :delete, class: "mt-2 text-gray-300 underline hover:text-white cursor-pointer" %>
+  <div class="border-t border-line px-5 py-4">
+    <p class="truncate text-sm font-medium text-ink-900"><%= Current.user.name %></p>
+    <p class="truncate text-xs text-ink-400" title="<%= Current.user.email_address %>"><%= Current.user.email_address %></p>
+    <%= button_to admin_logout_path, method: :delete, class: "mt-3 flex cursor-pointer items-center gap-1.5 text-sm text-ink-400 hover:text-danger-600" do %><%= icon(:logout, class: "size-4!") %> Sair<% end %>
   </div>
 </aside>

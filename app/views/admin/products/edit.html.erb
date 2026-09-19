@@ -1,28 +1,30 @@
 <% content_for :title, "Editar #{@product.name} — Launch OS" %>
 
-<p class="text-sm text-gray-500 mb-1"><%= link_to "Produtos", admin_products_path, class: "hover:underline" %> / <%= link_to @product.name, admin_product_path(@product), class: "hover:underline" %> /</p>
-<h1 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">Editar produto <%= status_badge(@product) %></h1>
+<%= render "admin/shared/page_header", title: "Editar produto", badges: status_badge(@product),
+           breadcrumb: [ [ "Produtos", admin_products_path ], [ @product.name, admin_product_path(@product) ], [ "Editar", nil ] ] do %>
+  <%= link_to "Ver produto", admin_product_path(@product), class: button_classes(:secondary) %>
+<% end %>
 
 <div class="max-w-4xl space-y-8">
   <%= render "form", product: @product %>
 
   <%# Coleções da LP: cada bloco é um container gerenciado por modules/admin/nested_list.js. %>
-  <section id="benefits" class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">Benefícios</h2>
+  <section id="benefits" class="adm-card">
+    <h2 class="adm-card-title">Benefícios</h2>
     <div data-module="admin/nested_list">
       <%= render "admin/benefits/list", product: @product, items: @product.benefits, invalid_item: nil %>
     </div>
   </section>
 
-  <section id="testimonials" class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">Depoimentos</h2>
+  <section id="testimonials" class="adm-card">
+    <h2 class="adm-card-title">Depoimentos</h2>
     <div data-module="admin/nested_list">
       <%= render "admin/testimonials/list", product: @product, items: @product.testimonials, invalid_item: nil %>
     </div>
   </section>
 
-  <section id="faqs" class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">FAQ</h2>
+  <section id="faqs" class="adm-card">
+    <h2 class="adm-card-title">FAQ</h2>
     <div data-module="admin/nested_list">
       <%= render "admin/faqs/list", product: @product, items: @product.faqs, invalid_item: nil %>
     </div>

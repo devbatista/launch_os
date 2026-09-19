@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full bg-gray-50">
+<html lang="pt-BR" class="h-full font-admin antialiased">
   <head>
     <title><%= content_for(:title) || "Launch OS — Admin" %></title>
     <meta charset="utf-8">
@@ -14,18 +14,27 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
+    <%# Inter só no admin (painel interno); a LP usa a pilha do sistema. %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
     <%= stylesheet_link_tag :app %>
     <%= javascript_importmap_tags "application" %>
   </head>
 
-  <body class="h-full text-gray-900 antialiased">
+  <body class="h-full bg-canvas text-ink-600">
     <% if authenticated? %>
-      <div class="flex min-h-screen">
+      <div data-module="admin/theme admin/sidebar admin/confirm">
+        <div class="adm-sidebar-backdrop" data-sidebar-close></div>
         <%= render "admin/shared/sidebar" %>
-        <main class="flex-1 px-8 py-6" data-module="admin/confirm">
-          <%= render "admin/shared/flash" %>
-          <%= yield %>
-        </main>
+        <div class="adm-main">
+          <%= render "admin/shared/header" %>
+          <main class="adm-content">
+            <%= render "admin/shared/flash" %>
+            <%= yield %>
+          </main>
+        </div>
       </div>
     <% else %>
       <%= yield %>

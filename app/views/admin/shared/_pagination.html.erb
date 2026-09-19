@@ -1,6 +1,6 @@
 <%# Navegação de página preservando os filtros da query string. Local: page (Admin::Paginated::Page). %>
 <% if page.total > page.per %>
-  <nav class="flex items-center justify-between px-4 py-3 text-sm text-gray-600" aria-label="Paginação">
+  <nav class="flex items-center justify-between border-t border-line px-4 py-3 text-sm text-ink-400" aria-label="Paginação">
     <p><%= page.from %>–<%= page.to %> de <%= page.total %></p>
     <div class="flex gap-2">
       <% if page.prev %>
@@ -13,5 +13,5 @@
     </div>
   </nav>
 <% elsif page.total.positive? %>
-  <p class="px-4 py-3 text-sm text-gray-500"><%= page.total %> <%= page.total == 1 ? "registro" : "registros" %></p>
+  <p class="border-t border-line px-4 py-3 text-sm text-ink-400"><%= page.total %> <%= page.total == 1 ? "registro" : "registros" %></p>
 <% end %>

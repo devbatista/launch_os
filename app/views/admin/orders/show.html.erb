@@ -1,149 +1,144 @@
 <% content_for :title, "Pedido #{short_id(@order.id)} — Launch OS" %>
 
-<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-  <div>
-    <p class="text-sm text-gray-500"><%= link_to "Pedidos", admin_orders_path, class: "hover:underline" %> / </p>
-    <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3">Pedido <span class="font-mono text-lg text-gray-600"><%= short_id(@order.id) %></span> <%= order_status_badge(@order) %></h1>
-    <p class="mt-1 text-gray-600"><%= @order.product.name %> · <%= money(@order.amount_cents, @order.currency) %> · <%= datetime_br(@order.created_at) %></p>
-  </div>
-
-  <div class="flex flex-wrap gap-2">
-    <% if @order.paid? %>
-      <%= button_to "Reenviar por email", resend_admin_order_path(@order, channel: "email"), class: button_classes(:secondary),
-            form: { data: { confirm: "Reenviar o link de download por email? Se o token expirou ou atingiu o limite, um novo é gerado." } } %>
-      <% if Delivery.whatsapp_enabled? && @order.client&.whatsapp_deliverable? %>
-        <%= button_to "Reenviar por WhatsApp", resend_admin_order_path(@order, channel: "whatsapp"), class: button_classes(:secondary),
-              form: { data: { confirm: "Reenviar o link por WhatsApp?" } } %>
-      <% end %>
-      <%= button_to "Regenerar token", regenerate_token_admin_order_path(@order), class: button_classes(:secondary),
-            form: { data: { confirm: "Gerar um novo token? O link anterior deixa de funcionar e o contador volta a zero." } } %>
+<%= render "admin/shared/page_header", title: "Pedido #{short_id(@order.id)}", badges: order_status_badge(@order),
+           subtitle: "#{@order.product.name} · #{money(@order.amount_cents, @order.currency)} · #{datetime_br(@order.created_at)}",
+           breadcrumb: [ [ "Pedidos", admin_orders_path ], [ short_id(@order.id), nil ] ] do %>
+  <% if @order.paid? %>
+    <%= button_to "Reenviar por email", resend_admin_order_path(@order, channel: "email"), class: button_classes(:secondary),
+          form: { data: { confirm: "Reenviar o link de download por email? Se o token expirou ou atingiu o limite, um novo é gerado." } } %>
+    <% if Delivery.whatsapp_enabled? && @order.client&.whatsapp_deliverable? %>
+      <%= button_to "Reenviar por WhatsApp", resend_admin_order_path(@order, channel: "whatsapp"), class: button_classes(:secondary),
+            form: { data: { confirm: "Reenviar o link por WhatsApp?" } } %>
     <% end %>
-    <% if @token && @token.revoked_at.nil? && !@order.refunded? %>
-      <%= button_to "Revogar acesso", revoke_token_admin_order_path(@order), class: button_classes(:danger),
-            form: { data: { confirm: "Revogar o acesso? O link de download passa a responder 410." } } %>
-    <% end %>
-    <% if @order.disputed? %>
-      <%= button_to "Disputa: ganhamos (voltar a pago)", resolve_dispute_admin_order_path(@order, outcome: "paid"), class: button_classes(:primary),
-            form: { data: { confirm: "Confirmar que a disputa foi resolvida a favor no PayPal? O pedido volta a pago e o token é regenerado." } } %>
-      <%= button_to "Disputa: perdemos (reembolsar)", resolve_dispute_admin_order_path(@order, outcome: "refunded"), class: button_classes(:danger),
-            form: { data: { confirm: "Confirmar que a disputa foi perdida no PayPal? O pedido vira reembolsado e o acesso é revogado." } } %>
-    <% end %>
-  </div>
-</div>
+    <%= button_to "Regenerar token", regenerate_token_admin_order_path(@order), class: button_classes(:secondary),
+          form: { data: { confirm: "Gerar um novo token? O link anterior deixa de funcionar e o contador volta a zero." } } %>
+  <% end %>
+  <% if @token && @token.revoked_at.nil? && !@order.refunded? %>
+    <%= button_to "Revogar acesso", revoke_token_admin_order_path(@order), class: button_classes(:danger),
+          form: { data: { confirm: "Revogar o acesso? O link de download passa a responder 410." } } %>
+  <% end %>
+  <% if @order.disputed? %>
+    <%= button_to "Disputa: ganhamos (voltar a pago)", resolve_dispute_admin_order_path(@order, outcome: "paid"), class: button_classes(:primary),
+          form: { data: { confirm: "Confirmar que a disputa foi resolvida a favor no PayPal? O pedido volta a pago e o token é regenerado." } } %>
+    <%= button_to "Disputa: perdemos (reembolsar)", resolve_dispute_admin_order_path(@order, outcome: "refunded"), class: button_classes(:danger),
+          form: { data: { confirm: "Confirmar que a disputa foi perdida no PayPal? O pedido vira reembolsado e o acesso é revogado." } } %>
+  <% end %>
+<% end %>
 
 <% if @order.disputed? %>
-  <div class="mb-6 rounded-md bg-red-50 px-4 py-3 text-sm text-red-800">
-    <strong>Pedido em disputa</strong> desde <%= datetime_br(@order.disputed_at) %>. O acesso está revogado. Resolva no PayPal (Resolution Center) e registre o desfecho aqui — o webhook <code>CUSTOMER.DISPUTE.RESOLVED</code> também faz isso automaticamente.
-  </div>
+  <div class="adm-alert adm-alert-danger"><%= icon(:alert, class: "mt-0.5 shrink-0") %><p><strong>Pedido em disputa</strong> desde <%= datetime_br(@order.disputed_at) %>. O acesso está revogado. Resolva no PayPal (Resolution Center) e registre o desfecho aqui — o webhook <code>CUSTOMER.DISPUTE.RESOLVED</code> também faz isso automaticamente.</p></div>
 <% elsif @order.pending? && @order.pending_reason.present? %>
-  <div class="mb-6 rounded-md bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-    Capture pendente no PayPal: <code><%= @order.pending_reason %></code>. O webhook <code>PAYMENT.CAPTURE.COMPLETED</code> confirma quando liberar.
-  </div>
+  <div class="adm-alert adm-alert-warning"><%= icon(:alert, class: "mt-0.5 shrink-0") %><p>Capture pendente no PayPal: <code><%= @order.pending_reason %></code>. O webhook <code>PAYMENT.CAPTURE.COMPLETED</code> confirma quando liberar.</p></div>
 <% end %>
 
 <div class="grid gap-6 lg:grid-cols-2">
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Pagamento</h2>
-    <dl class="space-y-2 text-sm">
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Status</dt><dd><%= order_status_badge(@order) %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Valor</dt><dd class="text-gray-900"><%= money(@order.amount_cents, @order.currency) %> <span class="text-gray-400"><%= @order.currency %></span></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">PayPal order</dt><dd class="font-mono text-xs text-gray-900"><%= @order.paypal_order_id || "—" %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">PayPal capture</dt><dd class="font-mono text-xs text-gray-900"><%= @order.paypal_capture_id || "—" %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Criado</dt><dd class="text-gray-900"><%= datetime_br(@order.created_at) %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Pago em</dt><dd class="text-gray-900"><%= datetime_br(@order.paid_at) %></dd></div>
-      <% if @order.refunded_at %><div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Reembolsado em</dt><dd class="text-gray-900"><%= datetime_br(@order.refunded_at) %></dd></div><% end %>
-      <% if @order.failed_at %><div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Falhou em</dt><dd class="text-gray-900"><%= datetime_br(@order.failed_at) %></dd></div><% end %>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">IP</dt><dd class="font-mono text-xs text-gray-900"><%= @order.ip_address || "—" %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">User agent</dt><dd class="text-xs text-gray-600 break-all"><%= @order.user_agent || "—" %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Purchase (Pixel)</dt><dd class="text-gray-900"><%= @order.purchase_tracked_at ? "marcado em #{datetime_br(@order.purchase_tracked_at)}" : "—" %> <span class="font-mono text-xs text-gray-400">event_id <%= @order.event_id %></span></dd></div>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Pagamento</h2>
+    <dl class="adm-dl">
+      <%= dl_row("Status") { order_status_badge(@order) } %>
+      <%= dl_row("Valor") { safe_join([ tag.span(money(@order.amount_cents, @order.currency), class: "adm-num"), " ", tag.span(@order.currency, class: "text-ink-400") ]) } %>
+      <%= dl_row("PayPal order") { tag.span(@order.paypal_order_id || "—", class: "adm-mono") } %>
+      <%= dl_row("PayPal capture") { tag.span(@order.paypal_capture_id || "—", class: "adm-mono") } %>
+      <%= dl_row "Criado", datetime_br(@order.created_at) %>
+      <%= dl_row "Pago em", datetime_br(@order.paid_at) %>
+      <% if @order.refunded_at %><%= dl_row "Reembolsado em", datetime_br(@order.refunded_at) %><% end %>
+      <% if @order.failed_at %><%= dl_row "Falhou em", datetime_br(@order.failed_at) %><% end %>
+      <%= dl_row("IP") { tag.span(@order.ip_address || "—", class: "adm-mono") } %>
+      <%= dl_row("User agent") { tag.span(@order.user_agent || "—", class: "text-xs text-ink-400 break-all") } %>
+      <%= dl_row("Purchase (Pixel)") do %>
+        <%= @order.purchase_tracked_at ? "marcado em #{datetime_br(@order.purchase_tracked_at)}" : "—" %>
+        <span class="adm-mono text-ink-300">event_id <%= @order.event_id %></span>
+      <% end %>
     </dl>
   </section>
 
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Cliente</h2>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Cliente</h2>
     <% if @order.client %>
-      <dl class="space-y-2 text-sm">
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Nome</dt><dd class="text-gray-900"><%= link_to @order.client.name.presence || "—", admin_client_path(@order.client), class: "hover:underline" %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Email</dt><dd class="text-gray-900"><%= @order.client.email %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">País</dt><dd class="text-gray-900"><%= @order.client.country || "—" %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Telefone</dt><dd class="text-gray-900"><%= masked_phone(@order.client.phone) %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">WhatsApp</dt><dd class="text-gray-900">
+      <dl class="adm-dl">
+        <%= dl_row("Nome") { link_to @order.client.name.presence || "—", admin_client_path(@order.client), class: "adm-link" } %>
+        <%= dl_row "Email", @order.client.email %>
+        <%= dl_row "País", @order.client.country %>
+        <%= dl_row "Telefone", masked_phone(@order.client.phone) %>
+        <%= dl_row("WhatsApp") do %>
           <% if @order.client.whatsapp_deliverable? %>opt-in em <%= datetime_br(@order.client.whatsapp_opt_in_at) %>
           <% elsif @order.client.whatsapp_opt_out_at %>opt-out em <%= datetime_br(@order.client.whatsapp_opt_out_at) %>
           <% else %>sem opt-in<% end %>
-        </dd></div>
+        <% end %>
       </dl>
     <% else %>
-      <p class="text-sm text-gray-600">Sem cliente vinculado<%= " (pagador: #{@order.payer_email})" if @order.payer_email %>. O cliente é criado no capture ou no webhook de pagamento.</p>
+      <p class="text-sm text-ink-600">Sem cliente vinculado<%= " (pagador: #{@order.payer_email})" if @order.payer_email %>. O cliente é criado no capture ou no webhook de pagamento.</p>
     <% end %>
 
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mt-6 mb-3">Token de download</h2>
+    <h2 class="adm-card-title">Token de download</h2>
     <% if @token %>
-      <dl class="space-y-2 text-sm">
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Token</dt><dd class="font-mono text-gray-900"><%= masked_token(@token) %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Situação</dt><dd>
-          <% if @token.active? %><%= badge("Ativo", "bg-green-100 text-green-800") %>
-          <% else %><%= badge({ revoked: "Revogado", not_paid: "Aguardando pagamento", expired: "Expirado", limit_reached: "Limite atingido" }.fetch(@token.inactive_reason), "bg-red-100 text-red-800") %><% end %>
-        </dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Expira em</dt><dd class="text-gray-900"><%= datetime_br(@token.expires_at) %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Downloads</dt><dd class="text-gray-900"><%= @token.download_count %> / <%= @token.max_downloads %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Último download</dt><dd class="text-gray-900"><%= datetime_br(@token.last_downloaded_at) %></dd></div>
-        <% if @token.revoked_at %><div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Revogado em</dt><dd class="text-gray-900"><%= datetime_br(@token.revoked_at) %></dd></div><% end %>
+      <dl class="adm-dl">
+        <%= dl_row("Token") { tag.span(masked_token(@token), class: "adm-mono") } %>
+        <%= dl_row("Situação") do %>
+          <% if @token.active? %><%= badge("Ativo", :success) %>
+          <% else %><%= badge({ revoked: "Revogado", not_paid: "Aguardando pagamento", expired: "Expirado", limit_reached: "Limite atingido" }.fetch(@token.inactive_reason), :danger) %><% end %>
+        <% end %>
+        <%= dl_row "Expira em", datetime_br(@token.expires_at) %>
+        <%= dl_row("Downloads") { tag.span("#{@token.download_count} / #{@token.max_downloads}", class: "adm-num") } %>
+        <%= dl_row "Último download", datetime_br(@token.last_downloaded_at) %>
+        <% if @token.revoked_at %><%= dl_row "Revogado em", datetime_br(@token.revoked_at) %><% end %>
       </dl>
     <% else %>
-      <p class="text-sm text-gray-600">Nenhum token ainda — é criado quando o pagamento é confirmado.</p>
+      <p class="text-sm text-ink-600">Nenhum token ainda — é criado quando o pagamento é confirmado.</p>
     <% end %>
   </section>
 
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Atribuição</h2>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Atribuição</h2>
     <% attribution = Order::ATTRIBUTION_FIELDS.filter_map { |f| [ f, @order.public_send(f) ] if @order.public_send(f).present? } %>
     <% if attribution.any? || @order.fbp.present? %>
-      <dl class="space-y-2 text-sm">
+      <dl class="adm-dl">
         <% attribution.each do |field, value| %>
-          <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500"><%= field %></dt><dd class="text-gray-900 break-all"><%= value %></dd></div>
+          <%= dl_row(field) { tag.span(value, class: "break-all") } %>
         <% end %>
-        <% if @order.fbp.present? %><div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">_fbp / _fbc</dt><dd class="font-mono text-xs text-gray-600 break-all"><%= @order.fbp %><%= " / #{@order.fbc}" if @order.fbc.present? %></dd></div><% end %>
+        <% if @order.fbp.present? %><%= dl_row("_fbp / _fbc") { tag.span([ @order.fbp, @order.fbc.presence ].compact.join(" / "), class: "adm-mono text-ink-400 break-all") } %><% end %>
       </dl>
     <% else %>
-      <p class="text-sm text-gray-600">Sem dados de atribuição (acesso direto ou cookie ausente).</p>
+      <p class="text-sm text-ink-600">Sem dados de atribuição (acesso direto ou cookie ausente).</p>
     <% end %>
   </section>
 
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Mensagens</h2>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Mensagens</h2>
     <% if @message_logs.empty? %>
-      <p class="text-sm text-gray-600">Nenhuma mensagem enviada.</p>
+      <p class="text-sm text-ink-600">Nenhuma mensagem enviada.</p>
     <% else %>
-      <table class="min-w-full text-sm">
-        <thead class="text-left text-xs font-semibold uppercase tracking-wide text-gray-500"><tr><th class="py-2 pr-3">Quando</th><th class="py-2 pr-3">Canal</th><th class="py-2 pr-3">Template</th><th class="py-2 pr-3">Status</th><th class="py-2">Detalhe</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-          <% @message_logs.each do |log| %>
-            <tr>
-              <td class="py-2 pr-3 whitespace-nowrap text-gray-500"><%= datetime_br(log.created_at) %></td>
-              <td class="py-2 pr-3"><%= log.channel_email? ? "email" : "WhatsApp" %></td>
-              <td class="py-2 pr-3 font-mono text-xs"><%= log.template %></td>
-              <td class="py-2 pr-3"><%= message_status_badge(log) %></td>
-              <td class="py-2 text-xs text-gray-600">
-                <% if log.failed? || log.undelivered? %><span class="text-red-700"><%= log.error_code %> <%= log.error_message %></span> (<%= log.attempts %> tentativa<%= "s" if log.attempts != 1 %>)
-                <% elsif log.sent_at %>enviado <%= datetime_br(log.sent_at) %><%= " · entregue #{datetime_br(log.delivered_at)}" if log.delivered_at %>
-                <% else %>—<% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <div class="overflow-x-auto">
+        <table class="adm-table-inline">
+          <thead><tr><th>Quando</th><th>Canal</th><th>Template</th><th>Status</th><th>Detalhe</th></tr></thead>
+          <tbody>
+            <% @message_logs.each do |log| %>
+              <tr>
+                <td class="adm-num text-ink-400"><%= datetime_br(log.created_at) %></td>
+                <td><%= log.channel_email? ? "email" : "WhatsApp" %></td>
+                <td class="adm-mono"><%= log.template %></td>
+                <td><%= message_status_badge(log) %></td>
+                <td class="text-xs">
+                  <% if log.failed? || log.undelivered? %><span class="text-danger-600"><%= log.error_code %> <%= log.error_message %></span> (<%= log.attempts %> tentativa<%= "s" if log.attempts != 1 %>)
+                  <% elsif log.sent_at %>enviado <%= datetime_br(log.sent_at) %><%= " · entregue #{datetime_br(log.delivered_at)}" if log.delivered_at %>
+                  <% else %>—<% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     <% end %>
 
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mt-6 mb-3">Webhooks</h2>
+    <h2 class="adm-card-title">Webhooks</h2>
     <% if @webhook_events.empty? %>
-      <p class="text-sm text-gray-600">Nenhum webhook vinculado a este pedido.</p>
+      <p class="text-sm text-ink-600">Nenhum webhook vinculado a este pedido.</p>
     <% else %>
-      <ul class="divide-y divide-gray-100 text-sm">
+      <ul class="divide-y divide-line text-sm">
         <% @webhook_events.each do |event| %>
           <li class="flex flex-wrap items-center gap-2 py-2">
-            <span class="text-gray-500 whitespace-nowrap"><%= datetime_br(event.created_at) %></span>
-            <%= link_to event.event_type, admin_webhook_event_path(event), class: "font-mono text-xs text-blue-700 hover:underline" %>
+            <span class="adm-num text-ink-400"><%= datetime_br(event.created_at) %></span>
+            <%= link_to event.event_type, admin_webhook_event_path(event), class: "adm-link adm-mono" %>
             <%= webhook_status_badge(event) %>
           </li>
         <% end %>

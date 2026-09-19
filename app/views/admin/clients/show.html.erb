@@ -1,75 +1,73 @@
 <% content_for :title, "#{@client.name.presence || @client.email} — Launch OS" %>
 
-<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-  <div>
-    <p class="text-sm text-gray-500"><%= link_to "Clientes", admin_clients_path, class: "hover:underline" %> / </p>
-    <h1 class="text-2xl font-bold text-gray-900"><%= @client.name.presence || "Sem nome" %></h1>
-    <p class="mt-1 text-gray-600"><%= @client.email %></p>
-  </div>
+<%= render "admin/shared/page_header", title: @client.name.presence || "Sem nome", subtitle: @client.email,
+           breadcrumb: [ [ "Clientes", admin_clients_path ], [ @client.name.presence || @client.email, nil ] ] do %>
   <% if @client.whatsapp_opt_in? %>
     <%= button_to "Revogar opt-in de WhatsApp", revoke_whatsapp_opt_in_admin_client_path(@client), class: button_classes(:danger),
           form: { data: { confirm: "Revogar o opt-in? O cliente não receberá mais mensagens no WhatsApp (use quando ele pedir ao suporte)." } } %>
   <% end %>
-</div>
+<% end %>
 
 <div class="grid gap-6 lg:grid-cols-2">
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Dados</h2>
-    <dl class="space-y-2 text-sm">
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Email</dt><dd class="text-gray-900"><%= @client.email %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">País</dt><dd class="text-gray-900"><%= @client.country || "—" %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Telefone</dt><dd class="font-mono text-gray-900"><%= masked_phone(@client.phone) %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Primeira compra</dt><dd class="text-gray-900"><%= datetime_br(@client.first_purchase_at) %></dd></div>
-      <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Última compra</dt><dd class="text-gray-900"><%= datetime_br(@client.last_purchase_at) %></dd></div>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Dados</h2>
+    <dl class="adm-dl">
+      <%= dl_row "Email", @client.email %>
+      <%= dl_row "País", @client.country %>
+      <%= dl_row("Telefone") { tag.span(masked_phone(@client.phone), class: "adm-mono") } %>
+      <%= dl_row "Primeira compra", datetime_br(@client.first_purchase_at) %>
+      <%= dl_row "Última compra", datetime_br(@client.last_purchase_at) %>
     </dl>
 
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mt-6 mb-3">WhatsApp</h2>
+    <h2 class="adm-card-title">WhatsApp</h2>
     <% if @client.whatsapp_opt_in_at || @client.whatsapp_opt_out_at %>
-      <dl class="space-y-2 text-sm">
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Situação</dt><dd><%= @client.whatsapp_deliverable? ? badge("Opt-in ativo", "bg-green-100 text-green-800") : badge("Sem envio", "bg-gray-100 text-gray-700") %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Opt-in em</dt><dd class="text-gray-900"><%= datetime_br(@client.whatsapp_opt_in_at) %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Texto aceito</dt><dd class="text-xs text-gray-600"><%= @client.whatsapp_opt_in_text || "—" %></dd></div>
-        <div class="flex gap-2"><dt class="w-36 shrink-0 text-gray-500">Opt-out em</dt><dd class="text-gray-900"><%= datetime_br(@client.whatsapp_opt_out_at) %></dd></div>
+      <dl class="adm-dl">
+        <%= dl_row("Situação") { @client.whatsapp_deliverable? ? badge("Opt-in ativo", :success) : badge("Sem envio", :neutral) } %>
+        <%= dl_row "Opt-in em", datetime_br(@client.whatsapp_opt_in_at) %>
+        <%= dl_row("Texto aceito") { tag.span(@client.whatsapp_opt_in_text || "—", class: "text-xs text-ink-400") } %>
+        <%= dl_row "Opt-out em", datetime_br(@client.whatsapp_opt_out_at) %>
       </dl>
     <% else %>
-      <p class="text-sm text-gray-600">Sem opt-in de WhatsApp.</p>
+      <p class="text-sm text-ink-600">Sem opt-in de WhatsApp.</p>
     <% end %>
   </section>
 
-  <section class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Pedidos</h2>
+  <section class="adm-card">
+    <h2 class="adm-card-title">Pedidos</h2>
     <% if @orders.empty? %>
-      <p class="text-sm text-gray-600">Nenhum pedido.</p>
+      <p class="text-sm text-ink-600">Nenhum pedido.</p>
     <% else %>
-      <table class="min-w-full text-sm">
-        <thead class="text-left text-xs font-semibold uppercase tracking-wide text-gray-500"><tr><th class="py-2 pr-3">Pedido</th><th class="py-2 pr-3">Data</th><th class="py-2 pr-3">Produto</th><th class="py-2 pr-3">Valor</th><th class="py-2 pr-3">Status</th><th class="py-2">Token</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-          <% @orders.each do |order| %>
-            <tr>
-              <td class="py-2 pr-3 font-mono text-xs"><%= link_to short_id(order.id), admin_order_path(order), class: "text-blue-700 hover:underline" %></td>
-              <td class="py-2 pr-3 whitespace-nowrap text-gray-500"><%= datetime_br(order.created_at) %></td>
-              <td class="py-2 pr-3 text-gray-900"><%= order.product.name %></td>
-              <td class="py-2 pr-3 whitespace-nowrap text-gray-900"><%= money(order.amount_cents, order.currency) %></td>
-              <td class="py-2 pr-3"><%= order_status_badge(order) %></td>
-              <td class="py-2 text-xs text-gray-600"><%= order.download_token ? (order.download_token.active? ? "ativo · #{order.download_token.download_count}/#{order.download_token.max_downloads}" : "inativo") : "—" %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <div class="overflow-x-auto">
+        <table class="adm-table-inline">
+          <thead><tr><th>Pedido</th><th>Data</th><th>Produto</th><th>Valor</th><th>Status</th><th>Token</th></tr></thead>
+          <tbody>
+            <% @orders.each do |order| %>
+              <tr>
+                <td class="adm-mono"><%= link_to short_id(order.id), admin_order_path(order), class: "adm-link" %></td>
+                <td class="adm-num text-ink-400"><%= datetime_br(order.created_at) %></td>
+                <td class="text-ink-900"><%= order.product.name %></td>
+                <td class="adm-num text-ink-900"><%= money(order.amount_cents, order.currency) %></td>
+                <td><%= order_status_badge(order) %></td>
+                <td class="text-xs"><%= order.download_token ? (order.download_token.active? ? "ativo · #{order.download_token.download_count}/#{order.download_token.max_downloads}" : "inativo") : "—" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     <% end %>
 
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mt-6 mb-3">Mensagens</h2>
+    <h2 class="adm-card-title">Mensagens</h2>
     <% if @message_logs.empty? %>
-      <p class="text-sm text-gray-600">Nenhuma mensagem enviada.</p>
+      <p class="text-sm text-ink-600">Nenhuma mensagem enviada.</p>
     <% else %>
-      <ul class="divide-y divide-gray-100 text-sm">
+      <ul class="divide-y divide-line text-sm">
         <% @message_logs.each do |log| %>
           <li class="flex flex-wrap items-center gap-2 py-2">
-            <span class="text-gray-500 whitespace-nowrap"><%= datetime_br(log.created_at) %></span>
+            <span class="adm-num text-ink-400"><%= datetime_br(log.created_at) %></span>
             <span><%= log.channel_email? ? "email" : "WhatsApp" %></span>
-            <span class="font-mono text-xs"><%= log.template %></span>
+            <span class="adm-mono"><%= log.template %></span>
             <%= message_status_badge(log) %>
-            <%= link_to "pedido #{short_id(log.order_id)}", admin_order_path(log.order_id), class: "text-xs text-blue-700 hover:underline" %>
+            <%= link_to "pedido #{short_id(log.order_id)}", admin_order_path(log.order_id), class: "adm-link text-xs" %>
           </li>
         <% end %>
       </ul>

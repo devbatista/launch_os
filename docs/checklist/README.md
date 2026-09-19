@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → M2 (compra Sandbox ponta a ponta: download em produção + teste real do WhatsApp no Sandbox da Twilio, que depende do Content Template `HX…` e do `join`) e a Fase 3 (3.1, polimento visual do admin — agora que o painel tem as telas reais). Fase 4 (tracking, testes e go-live) vem depois. Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → M2 (compra Sandbox ponta a ponta: download em produção + teste real do WhatsApp no Sandbox da Twilio, que depende do Content Template `HX…` e do `join`) e depois a Fase 4 (4.1 tracking). Fase 3 (visual do admin, claro e escuro) entregue em 19/09. Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -263,14 +263,17 @@ uma fase própria, agora que produtos, pedidos, clientes e webhook events existe
 spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, server-rendered, ERB + Tailwind, sidebar).
 
 ### 3.1 Visual do admin
-- [ ] Sidebar: hierarquia, item ativo, área do usuário, responsivo (colapsa no mobile)
-- [ ] Cabeçalhos de página, breadcrumbs e barras de ação consistentes (produto, pedido, cliente, evento)
-- [ ] Tabelas: densidade, alinhamento numérico, linhas clicáveis, estados vazios com CTA, paginação
-- [ ] Formulários do produto: agrupamento em seções, ajuda inline, erros, campos de arquivo e coleções (benefícios/depoimentos/FAQs)
-- [ ] Flashes (notice/alert) e confirmações (`data-confirm`) com o mesmo padrão visual
-- [ ] Badges e helpers (`button_classes`, `input_classes`, `badge`) como fonte única de estilo — nada de classes soltas repetidas
-- [ ] Login: tela alinhada ao restante do painel
-- [ ] Conferir no mobile (≥ 375 px) e no desktop; sem regressão nos specs de request/views
+**Decisão 19/09:** referência visual = template Conca (Aqlova), reimplementado em Tailwind (nada copiado — é Bootstrap/jQuery e comercial). Tokens e componentes `adm-*` em `tailwind/application.css`; detalhes na spec 11 ("Visual e tema").
+- [x] Sidebar: hierarquia, item ativo, área do usuário, responsivo (colapsa no mobile) — *seções Loja/Sistema com ícones (Heroicons inline), item ativo violeta, usuário + sair no rodapé; drawer com backdrop no mobile (`modules/admin/sidebar.js`)*
+- [x] Cabeçalhos de página, breadcrumbs e barras de ação consistentes (produto, pedido, cliente, evento) — *partial `admin/shared/_page_header` (breadcrumb, título + badges, subtítulo, ações em bloco); header fixo de 60 px com título curto, tema e "Ver site"*
+- [x] Tabelas: densidade, alinhamento numérico, linhas clicáveis, estados vazios com CTA, paginação — *`adm-table` com hover, `adm-num` tabular, `adm-empty`, paginação com borda; linha em disputa/falha em `adm-row-danger`*
+- [x] Formulários do produto: agrupamento em seções, ajuda inline, erros, campos de arquivo e coleções (benefícios/depoimentos/FAQs) — *cards por seção, `adm-label`/`adm-input`/`adm-hint`, Trix com o mesmo input (e toolbar legível no escuro), coleções e anexos nos tokens*
+- [x] Flashes (notice/alert) e confirmações (`data-confirm`) com o mesmo padrão visual — *`adm-alert-*` com ícone; avisos de página (disputa, capture pendente, falta para publicar) no mesmo componente*
+- [x] Badges e helpers (`button_classes`, `input_classes`, `badge`) como fonte única de estilo — nada de classes soltas repetidas — *`badge(label, tom)` com 6 tons; `dl_row`; `icon`; zero `gray-*/blue-*/red-*` nas views do admin*
+- [x] Login: tela alinhada ao restante do painel — *card centralizado com logo, mesmos inputs/botão*
+- [x] Conferir no mobile (≥ 375 px) e no desktop; sem regressão nos specs de request/views — *screenshots via Selenium/Chromium na rede do compose (1366×900 e 390×844, claro e escuro); 316 exemplos verdes*
+- [x] **Tema escuro** (pedido de 19/09) — *tokens em `html[data-theme="dark"]` + `prefers-color-scheme`; botão no header (`modules/admin/theme.js`, `localStorage`)*
+- [x] Dashboard com 4 totais reais (pagos, faturamento, clientes, pendentes/disputas) como placeholder até a 4.3
 
 ---
 

@@ -30,7 +30,7 @@ RSpec.describe "Admin orders" do
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("jane@example.com", "facebook / launch-1", "Pago", "Enviado", "Em disputa")
-        expect(response.body).to include(%(<tr class="bg-red-50">)).and include(disputed.id.first(8))
+        expect(response.body).to include(%(<tr class="adm-row-danger">)).and include(disputed.id.first(8))
       end
 
       it "filtra por status, produto e período, e busca por email ou ids do PayPal" do

@@ -36,6 +36,8 @@ Rails.application.configure do
 
   # Permite acessar o servidor de dev a partir de outros containers (ex.: Lighthouse via host.docker.internal).
   config.hosts << "host.docker.internal"
+  # Nome do serviço na rede do compose (Selenium/Chromium em container acessando o dev server).
+  config.hosts << "web"
   # Túnel do compose (perfil `tunnel`) para webhooks em dev.
   config.hosts << /.*\.trycloudflare\.com\z/
 
