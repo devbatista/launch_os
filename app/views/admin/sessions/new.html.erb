@@ -1,29 +1,57 @@
 <% content_for :title, "Entrar — Launch OS" %>
+<%# Login "cover" (referência: Conca auth-login-cover): painel violeta com boas-vindas + imagem à esquerda, form à direita.
+    Sem login social, "esqueci a senha" ou cadastro — não existem no projeto. A imagem é o mockup do produto publicado. %>
+<% product = Product.published.first %>
+<% cover = product && (product.mockup_image.attached? ? product.mockup_image : (product.cover_image.attached? ? product.cover_image : nil)) %>
 
-<div class="flex min-h-full items-center justify-center bg-canvas px-4 py-12 font-admin">
-  <div class="w-full max-w-sm">
-    <div class="mb-6 flex items-center justify-center gap-2 text-ink-900">
-      <span class="flex size-9 items-center justify-center rounded-md bg-primary-500 text-base font-bold text-white">L</span>
-      <span class="text-xl font-bold tracking-tight">Launch OS</span>
+<div class="flex min-h-full items-center justify-center bg-primary-500/15 px-4 py-10 font-admin" data-module="admin/theme admin/password_toggle">
+  <div class="grid w-full max-w-5xl overflow-hidden rounded-lg bg-surface shadow-card lg:grid-cols-2">
+    <div class="relative hidden overflow-hidden bg-[#600ee4] p-12 text-white/80 lg:flex lg:flex-col lg:justify-center">
+      <div class="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-white/10"></div>
+      <div class="pointer-events-none absolute -bottom-32 -left-16 size-80 rounded-full bg-black/10"></div>
+      <h2 class="relative text-3xl font-bold leading-tight text-white">Bem-vindo ao<br>Launch OS.</h2>
+      <p class="relative mt-3 text-sm">Produtos, pedidos, clientes e entregas — tudo do lançamento num só painel.</p>
+      <div class="relative mt-10 flex justify-center">
+        <% if cover %>
+          <%= image_tag cover.variant(:lp), alt: product.name, class: "h-auto w-64 rounded-lg object-contain drop-shadow-2xl" %>
+        <% else %>
+          <div class="grid w-64 gap-3">
+            <% 3.times do |i| %><div class="h-14 rounded-md bg-white/15" style="width: <%= 100 - i * 18 %>%"></div><% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
 
-    <div class="adm-card">
-      <h1 class="mb-1 text-lg font-semibold text-ink-900">Entrar no painel</h1>
-      <p class="mb-5 text-sm text-ink-400">Acesso restrito ao administrador.</p>
-
-      <%= render "admin/shared/flash" %>
-
-      <%= form_with url: admin_login_path, class: "space-y-4" do |form| %>
-        <div>
-          <%= form.label :email_address, "E-mail", class: label_classes %>
-          <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", value: params[:email_address], class: input_classes %>
+    <div class="px-6 py-10 sm:px-12 lg:py-14">
+      <div class="mx-auto w-full max-w-sm">
+        <div class="mb-8 text-center">
+          <div class="mb-5 flex items-center justify-center gap-2 text-ink-900">
+            <span class="flex size-10 items-center justify-center rounded-md bg-primary-500 text-lg font-bold text-white">L</span>
+            <span class="text-2xl font-bold tracking-tight">Launch OS</span>
+          </div>
+          <h1 class="text-lg font-semibold text-ink-900">Entrar no painel</h1>
+          <p class="mt-1 text-sm text-ink-400">Acesso restrito ao administrador.</p>
         </div>
-        <div>
-          <%= form.label :password, "Senha", class: label_classes %>
-          <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: input_classes %>
-        </div>
-        <%= form.submit "Entrar", class: "#{button_classes(:primary)} w-full" %>
-      <% end %>
+
+        <%= render "admin/shared/flash" %>
+
+        <%= form_with url: admin_login_path, class: "space-y-4" do |form| %>
+          <div>
+            <%= form.label :email_address, "E-mail", class: label_classes %>
+            <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", value: params[:email_address], placeholder: "voce@exemplo.com", class: input_classes %>
+          </div>
+          <div>
+            <%= form.label :password, "Senha", class: label_classes %>
+            <div class="relative">
+              <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, placeholder: "••••••••••", class: "#{input_classes} pr-10", data: { password_input: true } %>
+              <button type="button" class="absolute inset-y-0 right-0 flex items-center px-3 text-ink-400 hover:text-ink-900" data-password-toggle aria-label="Mostrar ou ocultar a senha" aria-pressed="false">
+                <%= icon(:eye, "data-eye": "show") %><%= icon(:eye_off, "data-eye": "hide", class: "hidden") %>
+              </button>
+            </div>
+          </div>
+          <%= form.submit "Entrar", class: "#{button_classes(:primary)} mt-2 w-full" %>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>

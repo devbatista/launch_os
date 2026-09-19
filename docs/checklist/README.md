@@ -270,7 +270,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 - [x] Formulários do produto: agrupamento em seções, ajuda inline, erros, campos de arquivo e coleções (benefícios/depoimentos/FAQs) — *cards por seção, `adm-label`/`adm-input`/`adm-hint`, Trix com o mesmo input (e toolbar legível no escuro), coleções e anexos nos tokens*
 - [x] Flashes (notice/alert) e confirmações (`data-confirm`) com o mesmo padrão visual — *`adm-alert-*` com ícone; avisos de página (disputa, capture pendente, falta para publicar) no mesmo componente*
 - [x] Badges e helpers (`button_classes`, `input_classes`, `badge`) como fonte única de estilo — nada de classes soltas repetidas — *`badge(label, tom)` com 6 tons; `dl_row`; `icon`; zero `gray-*/blue-*/red-*` nas views do admin*
-- [x] Login: tela alinhada ao restante do painel — *card centralizado com logo, mesmos inputs/botão*
+- [x] Login: tela alinhada ao restante do painel — *layout "cover" do Conca (`auth-login-cover`): painel violeta com boas-vindas + mockup do produto publicado, form com logo, e-mail e senha com "olho" (`modules/admin/password_toggle.js`); sem social/"esqueci a senha"/cadastro*
 - [x] Conferir no mobile (≥ 375 px) e no desktop; sem regressão nos specs de request/views — *screenshots via Selenium/Chromium na rede do compose (1366×900 e 390×844, claro e escuro); 316 exemplos verdes*
 - [x] **Tema escuro** (pedido de 19/09) — *tokens em `html[data-theme="dark"]` + `prefers-color-scheme`; botão no header (`modules/admin/theme.js`, `localStorage`)*
 - [x] Dashboard com 4 totais reais (pagos, faturamento, clientes, pendentes/disputas) como placeholder até a 4.3

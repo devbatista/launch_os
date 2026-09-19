@@ -29,6 +29,11 @@ a sidebar vira drawer com backdrop (`modules/admin/sidebar.js`). Componentes: `a
 `adm-dl`/`dl_row`, `adm-table` (+ `-inline`), `adm-btn-*`, `adm-input`/`adm-label`, `adm-badge-*`, `adm-alert-*`,
 `adm-filters`, `adm-empty`, `adm-code`, `admin/shared/_page_header` (breadcrumb, título com badges, ações).
 
+**Login** segue o layout "cover" do Conca (`auth-login-cover`): card de duas colunas sobre o canvas tingido de
+violeta — painel esquerdo violeta com boas-vindas e o mockup do produto publicado (fallback decorativo), formulário
+à direita com logo, e-mail e senha com botão "olho" (`modules/admin/password_toggle.js`). Sem login social,
+"esqueci a senha" ou cadastro (não existem no projeto).
+
 **Tema escuro:** os mesmos tokens com outros valores em `html[data-theme="dark"]`; sem escolha explícita vale
 `prefers-color-scheme`. O botão do header (`modules/admin/theme.js`) alterna e guarda em `localStorage`
 (`adm-theme` = `light`|`dark`). Ícones são Heroicons (MIT) inline via `icon(:nome)`. Fora do MVP: sidebar
