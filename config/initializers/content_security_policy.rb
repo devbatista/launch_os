@@ -10,14 +10,15 @@
 # isso não enfraquece nada aqui porque nenhum conteúdo de usuário entra em <script>/<style> inline.
 # O 304 do `stale?` sai sem Content-Type, logo sem CSP, e o navegador mantém o header da cópia dele.
 #
-# Violações vão para o Sentry (Security Policy Reports) quando há SENTRY_DSN.
+# Violações vão para o Sentry (Security Policy Reports) em produção, quando há SENTRY_DSN — o navegador
+# reporta direto, então em dev/test o header sai sem report-uri para não poluir o projeto.
 Rails.application.configure do
   s3_origin = ENV["S3_ENDPOINT"].presence || "https://*.amazonaws.com"
   paypal = %w[https://www.paypal.com https://www.sandbox.paypal.com]
 
   # DSN https://<chave>@o<org>.ingest.sentry.io/<projeto> → endpoint de Security Reports do Sentry.
   # A chave do DSN é pública por definição (vai no header para o navegador).
-  sentry_report_uri = ENV["SENTRY_DSN"].presence&.then do |dsn|
+  sentry_report_uri = Rails.env.production? && ENV["SENTRY_DSN"].presence&.then do |dsn|
     uri = URI(dsn)
     "#{uri.scheme}://#{uri.host}/api#{uri.path}/security/?sentry_key=#{uri.user}"
   end
