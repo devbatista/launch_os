@@ -8,6 +8,9 @@ Sentry.init do |config|
 
   config.breadcrumbs_logger = [ :active_support_logger, :http_logger ]
 
+  # `exit` em scripts de runner/rake não é erro.
+  config.excluded_exceptions += [ "SystemExit" ]
+
   # Email, telefone e IP do comprador são dados pessoais: nada de PII automático nos eventos.
   config.send_default_pii = false
 
