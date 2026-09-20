@@ -16,7 +16,7 @@
           <%= image_tag cover.variant(:lp), alt: product.name, class: "h-auto w-64 rounded-lg object-contain drop-shadow-2xl" %>
         <% else %>
           <div class="grid w-64 gap-3">
-            <% 3.times do |i| %><div class="h-14 rounded-md bg-white/15" style="width: <%= 100 - i * 18 %>%"></div><% end %>
+            <% %w[w-full w-[82%] w-[64%]].each do |width| %><div class="h-14 rounded-md bg-white/15 <%= width %>"></div><% end %>
           </div>
         <% end %>
       </div>

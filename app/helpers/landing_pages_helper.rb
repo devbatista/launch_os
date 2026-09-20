@@ -3,8 +3,9 @@ module LandingPagesHelper
   def paypal_client_id = ENV.fetch("PAYPAL_CLIENT_ID", "")
   def twilio_enabled? = ENV["TWILIO_ENABLED"] == "true"
 
-  # Meta Pixel (spec 10): só com o id configurado e nunca no preview do admin.
+  # Meta Pixel e GA4 (spec 10): só com o id configurado e nunca no preview do admin.
   def meta_pixel_id = @preview ? nil : ENV["META_PIXEL_ID"].presence
+  def ga4_measurement_id = @preview ? nil : ENV["GA4_MEASUREMENT_ID"].presence
 
   # <img> de um anexo com variant WebP, `alt`, `loading` e width/height explícitos (evita layout shift).
   # As dimensões vêm dos metadados do blob (AnalyzeJob) reduzidas ao limite do variant; sem metadados

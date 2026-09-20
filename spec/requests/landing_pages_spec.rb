@@ -146,17 +146,30 @@ RSpec.describe "Landing pages" do
       expect(response.body).to include(%(data-product-name="#{product.name}"), %(data-value="#{product.price}")) # #buy para InitiateCheckout
     end
 
-    it "sem META_PIXEL_ID não declara o Pixel; no preview do admin não há Pixel, atribuição nem aviso" do
-      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => nil))
+    it "com GA4_MEASUREMENT_ID declara o gtag pelo mesmo módulo (sem inline), com ou sem Pixel" do
+      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => "123456", "GA4_MEASUREMENT_ID" => "G-TEST1"))
+      create(:product, :published, slug: "ga")
+
+      get "/ga"
+      expect(response.body).to include(%(<body class="h-full text-slate-900 antialiased" data-module="tracking" data-pixel-id="123456" data-ga4-id="G-TEST1">))
+      expect(response.body).not_to include("googletagmanager.com", "gtag(")
+
+      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => nil, "GA4_MEASUREMENT_ID" => "G-TEST1"))
+      get "/ga"
+      expect(response.body).to include(%(<body class="h-full text-slate-900 antialiased" data-module="tracking" data-ga4-id="G-TEST1">))
+    end
+
+    it "sem META_PIXEL_ID/GA4_MEASUREMENT_ID não declara tracking no body; no preview do admin não há Pixel, GA4, atribuição nem aviso" do
+      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => nil, "GA4_MEASUREMENT_ID" => nil))
       product = create(:product, :published, slug: "plain")
       get "/plain"
-      expect(response.body).not_to include("data-pixel-id")
+      expect(response.body).to include(%(<body class="h-full text-slate-900 antialiased">))
       expect(response.body).to include('data-module="attribution tracking"')
 
-      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => "123456"))
+      stub_const("ENV", ENV.to_h.merge("META_PIXEL_ID" => "123456", "GA4_MEASUREMENT_ID" => "G-TEST1"))
       sign_in_admin
       get preview_admin_product_path(product)
-      expect(response.body).not_to include("data-pixel-id", 'data-module="attribution tracking"', 'data-module="consent"')
+      expect(response.body).not_to include("data-pixel-id", "data-ga4-id", 'data-module="attribution tracking"', 'data-module="consent"')
     end
   end
 end

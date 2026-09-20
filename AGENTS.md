@@ -18,7 +18,7 @@ Se código e spec divergirem, aponte a divergência antes de escolher um lado.
 
 - 100% Docker (dev, teste e produção). Ruby 3.4, **Rails 8.1.3**, PostgreSQL 17.
 - Jobs: **Sidekiq + Redis**. Cache: Redis.
-- Frontend: ERB server-rendered + **JavaScript puro** em módulos ES via importmap. **Sem Hotwire/Turbo/Stimulus**, sem Node, sem jQuery, sem frameworks JS. Módulos ativados por `data-module`.
+- Frontend: ERB server-rendered + **JavaScript puro** em módulos ES via importmap. **Sem Hotwire/Turbo/Stimulus**, sem Node, sem jQuery, sem frameworks JS. Módulos ativados por `data-module`. **CSP com nonce e sem `unsafe-inline`**: nunca `<script>`, `<style>` ou `style="…"` nas views — configuração vai em `data-*`, estilo em classes; origem externa nova entra em `config/initializers/content_security_policy.rb`.
 - Arquivos: Active Storage em bucket S3-compatível privado (MinIO em dev). PDF só por URL assinada.
 - Pagamento: PayPal Orders API v2 + Webhooks, cliente Faraday próprio (sem SDK).
 - **Toda integração externa fica em `app/services/providers/`** (`Providers::Paypal::Client`, `Providers::Ses::Client`, `Providers::Twilio::Client`), via API HTTP oficial, sem gems de SDK de provedor (exceção: `aws-sdk-sesv2`). Nada fora desse namespace chama API de terceiro.

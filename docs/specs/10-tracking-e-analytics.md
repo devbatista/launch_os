@@ -70,6 +70,11 @@ mesmo caminho na 4.2.
 `view_item`, `begin_checkout`, `purchase` (`transaction_id: order.id`, `value`, `currency`, `items`).
 Mesma regra de disparo único para `purchase`.
 
+*(4.2, 20/09: mesmo caminho do Pixel — `<body data-module="tracking" data-ga4-id="…">` só com
+`GA4_MEASUREMENT_ID` e fora do preview; `tracking.js` cria `dataLayer`/`gtag`, injeta o `gtag/js` e faz
+`config`. `page_view` sai no `config`; os três eventos de e-commerce já eram disparados pelos wrappers.
+Sem GA4 em produção por enquanto — a variável fica vazia até existir uma propriedade.)*
+
 ## Consentimento de cookies
 
 Banner simples ("We use cookies and pixels to measure our ads. [OK] [Privacy Policy]"). Não bloqueia

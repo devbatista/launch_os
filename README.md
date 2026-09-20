@@ -79,3 +79,28 @@ descontinuado pela plataforma). Dois serviços a partir deste repositório:
 
 Mais os plugins **Postgres** (`DATABASE_URL`) e **Redis** (`REDIS_URL`). Variáveis obrigatórias e passo a passo
 em [docs/specs/02-docker-e-ambiente.md](docs/specs/02-docker-e-ambiente.md#produção--railway).
+
+### Backup do banco
+
+`bin/rails backup:database` faz `pg_dump --format=custom` do banco atual e envia para o bucket privado em
+`backups/postgres/<UTC>.dump`, mantendo os últimos 30 (`Backups::DatabaseDump`). Em produção roda como um
+terceiro serviço do Railway a partir deste repositório, com **Cron Schedule** `0 6 * * *` e *Custom Start
+Command* `bin/rails backup:database` (mesmas variáveis do web; sem healthcheck). Falha no dump → exceção →
+o cron aparece como falho no Railway e o erro vai ao Sentry.
+
+- `bin/rails backup:list` — dumps disponíveis, do mais recente para o mais antigo.
+- `bin/rails backup:download[backups/postgres/<UTC>.dump,tmp/prod.dump]` — baixa um dump.
+- Restaurar em um banco vazio: `pg_restore --no-owner --no-privileges -d <DATABASE_URL> tmp/prod.dump`
+  (validado em 20/09: dump → MinIO → restore → contagens iguais em todas as tabelas).
+
+### Segurança (resumo)
+
+Checklist completo em [docs/specs/13-seguranca.md](docs/specs/13-seguranca.md). O que vale saber ao mexer no front:
+
+- **CSP sem `unsafe-inline`**: `script-src` e `style-src` usam nonce por requisição. Nunca escreva `<script>`,
+  `<style>` ou `style="…"` nas views — use módulos (`data-module`) e classes do Tailwind. Bibliotecas que
+  injetam inline precisam do nonce: o Trix lê `<meta name="csp-nonce">`, o SDK do PayPal recebe
+  `data-csp-nonce` (`modules/checkout.js`). Nova origem externa (script, fetch, imagem, iframe)? Adicione em
+  `config/initializers/content_security_policy.rb` — violações chegam ao Sentry via `report-uri`.
+- `Permissions-Policy` mínimo em `permissions_policy.rb`; `config.hosts` e `force_ssl` em `production.rb`;
+  `filter_parameters` cobre email, telefone, senha e tokens.

@@ -13,4 +13,9 @@ Sentry.init do |config|
 
   # Só monitoramento de erros no MVP (sem tracing/profiling).
   config.traces_sample_rate = 0.0
+
+  # Jobs com retry (SendOrderEmailJob, SendWhatsappMessageJob…) só viram evento quando as tentativas
+  # acabam — erro transitório que se resolve na 2ª tentativa não polui o Sentry. Jobs sem retry
+  # reportam na primeira falha. Dead jobs continuam visíveis em /admin/sidekiq.
+  config.sidekiq.report_after_job_retries = true
 end
