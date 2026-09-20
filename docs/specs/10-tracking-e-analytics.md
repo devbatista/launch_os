@@ -87,7 +87,7 @@ DEVEM informar o uso. Preferência gravada em cookie `lo_consent` (1 ano). *(4.1
 
 - [x] Visita `/:slug?utm_source=ig&utm_campaign=test&fbclid=abc` → após compra, `Order` tem esses campos preenchidos. *(T22 no checkout desde a 2.1; cookie `lo_attr` verificado em navegador real na 4.1)*
 - [x] Segunda visita sem UTMs no mesmo navegador mantém a atribuição original (first-touch). *(4.1: verificado com Chromium — `lo_attr` intacto; a `PageVisit` da 2ª visita vem sem UTMs, como deve)*
-- [ ] `ViewContent`, `InitiateCheckout` e `Purchase` aparecem no Test Events da Meta com `value`/`currency` corretos.
+- [x] `ViewContent`, `InitiateCheckout` e `Purchase` aparecem no Test Events da Meta com `value`/`currency` corretos. *(19/09, em produção, conjunto `LaunchOS`: os três recebidos e processados; `Purchase` com a identificação do evento = `order.event_id`)*
 - [x] Recarregar a Thank You não dispara um segundo `Purchase`. *(T21 desde a 2.4)*
 - [x] Preview do admin não carrega Pixel nem GA4. *(4.1: request spec — sem `data-pixel-id`, atribuição nem aviso no preview)*
 - [x] `PageVisit` gravado de forma assíncrona; LP responde sem esperar o job. *(4.1: beacon → job; LP nem vê a requisição)*

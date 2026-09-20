@@ -31,7 +31,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 9/9 — concluída em 17/09 (M1) | ✅ |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 7/8 código entregue em 17–18/09; 2.7 aguarda teste real no Sandbox da Twilio; M2 pendente | 🟦 |
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
-| Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 0/5 | ⬜ |
+| Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 1/5 — 4.1 concluída em 19/09 | 🟦 |
 | Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
 | Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
 | Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
@@ -144,7 +144,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 
 | ID | Tarefa | Spec | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| 4.1 | Meta Pixel, captura de UTMs/fbclid em cookie first-party e gravação no `Order`; ViewContent, InitiateCheckout, Purchase com `event_id`; `PageVisit` | [10](../specs/10-tracking-e-analytics.md) | 6 | 2.3 | 🟦 | | 19/09: attribution.js, Pixel via módulo (sem inline), PageVisit por beacon (LP é cacheada), consent; verificado em navegador real. Falta só o Test Events da Meta em produção |
+| 4.1 | Meta Pixel, captura de UTMs/fbclid em cookie first-party e gravação no `Order`; ViewContent, InitiateCheckout, Purchase com `event_id`; `PageVisit` | [10](../specs/10-tracking-e-analytics.md) | 6 | 2.3 | ✅ | 19/09 | attribution.js, Pixel via módulo (sem inline), PageVisit por beacon (LP é cacheada), consent; verificado em navegador real. Eventos de teste da Meta em produção: ViewContent → InitiateCheckout → Purchase (com `event_id`) recebidos no conjunto `LaunchOS` |
 | 4.2 | GA4, Sentry, monitor de uptime, backup diário do banco, versionamento do bucket, CSP, `config.hosts` | [10](../specs/10-tracking-e-analytics.md), [13](../specs/13-seguranca.md) | 3 | 0.5 | ⬜ | | |
 | 4.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 4.1 | ⬜ | | Pode ir para Fase 6 se faltar tempo |
 | 4.4 | Executar o plano de testes (T01–T27 automatizados + manuais 1–4) em Sandbox e corrigir falhas | [15](../specs/15-plano-de-testes.md) | 6 | 2.8, 4.1 | ⬜ | | |
