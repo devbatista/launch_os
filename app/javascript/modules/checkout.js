@@ -35,6 +35,9 @@ function loadSdk(el) {
     const script = document.createElement("script");
     script.src = `${SDK_URL}?${params}`;
     script.async = true;
+    // CSP com nonce (spec 13): o SDK repassa o nonce aos <script>/<style> inline que ele cria.
+    const nonce = document.querySelector('meta[name="csp-nonce"]')?.content;
+    if (nonce) script.setAttribute("data-csp-nonce", nonce);
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);

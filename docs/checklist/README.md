@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 4.2 (GA4, Sentry, monitoramento, CSP, hardening). Em paralelo: M2 — download em produção ✅ (19/09); faltam webhook apontando para produção e o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 4.3 (dashboard). Da 4.2 (20/09) ficam dois passos de operação: erro de teste no Sentry após o deploy e o serviço cron de backup no Railway (+ restaurar um dump de produção). Em paralelo: M2 — download em produção ✅ (19/09); faltam webhook apontando para produção e o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -290,12 +290,12 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 - [x] Specs: T22 em `checkout/paypal_spec.rb`, T21 em `thank_you_spec.rb`, `spec/jobs/record_page_visit_job_spec.rb` — *+ `requests/visits_spec` (beacon, bot, rate limit), `models/page_visit_spec`, LP spec (Pixel com/sem id, preview, consent). Navegador real (Chromium via Selenium): cookies `lo_attr`/`lo_vid`/`_fbp`/`_fbc`, `fbevents.js` carregado e fila vazia, first-touch mantido na 2ª visita, 2 `PageVisit` gravadas, consent gravado*
 
 ### 4.2 GA4, Sentry, monitoramento, hardening — spec [13](../specs/13-seguranca.md)
-- [ ] GA4 (`view_item`, `begin_checkout`, `purchase` único)
-- [ ] Sentry recebendo erro de teste; integração Sidekiq (dead jobs)
-- [ ] Uptime monitor ativo; backup diário confirmado e **restauração testada**; versionamento do bucket — *backup: decidir aqui entre upgrade para Railway Pro (backups de volume) ou `pg_dump` agendado para o bucket (ver 0.4)*
-- [ ] CSP com nonces (PayPal, Meta, GA); headers de segurança; `config.hosts`; `filter_parameters`
-- [ ] `brakeman` e `bundler-audit` limpos; Dependabot ativo
-- [ ] Checklist da spec 13 percorrido item a item
+- [x] GA4 (`view_item`, `begin_checkout`, `purchase` único) — *20/09: `tracking.js` carrega o `gtag/js` pelo mesmo módulo do Pixel (`<body data-ga4-id>` só com `GA4_MEASUREMENT_ID`, fora do preview); os eventos já saíam pelos wrappers. Verificado em Chromium sob a CSP (`config` + `view_item` no dataLayer). Sem propriedade GA4 criada ainda — a variável fica vazia em produção*
+- [ ] Sentry recebendo erro de teste; integração Sidekiq (dead jobs) — *código pronto: `sentry-sidekiq` com `report_after_job_retries = true` (só reporta quando as retentativas acabam) e `report-uri` da CSP apontando ao Sentry. Falta o erro de teste em produção após o deploy (`Sentry.capture_message` via `railway ssh`)*
+- [ ] Uptime monitor ativo; backup diário confirmado e **restauração testada**; versionamento do bucket — *UptimeRobot ativo desde 16/09; versionamento do bucket ativo desde a Fase 0. **Decisão 20/09:** `pg_dump` para o bucket em vez do Railway Pro — `Backups::DatabaseDump` + `rake backup:database|list|download`, retenção 30; restauração testada em dev (dump → MinIO → `pg_restore` → contagens iguais). Falta: criar o serviço cron no Railway (`0 6 * * *`, `bin/rails backup:database` — README) e rodar/restaurar um dump de produção*
+- [x] CSP com nonces (PayPal, Meta, GA); headers de segurança; `config.hosts`; `filter_parameters` — *20/09: CSP com nonce em `script-src` e `style-src`, sem `unsafe-inline` (importmap com nonce, Trix lê a `<meta csp-nonce>`, SDK do PayPal recebe `data-csp-nonce`); `object-src 'none'`, `frame-ancestors 'none'`; `Permissions-Policy` via `default_headers` (o DSL do Rails 8.1 só emite `Feature-Policy`); `filter_parameters` + `phone`/`from`/`to`/`body`/`name`; `config.hosts` e HSTS já estavam. Verificado em Chromium: LP com botões do PayPal, Pixel e GA4 + admin com Trix e tema — zero violações; `spec/requests/security_headers_spec.rb`*
+- [x] `brakeman` e `bundler-audit` limpos; Dependabot ativo — *já rodavam no CI (`scan_ruby`, `scan_js` = `importmap audit`); `.github/dependabot.yml` bundler + actions semanal. 20/09: 0 warnings, 0 vulnerabilidades*
+- [x] Checklist da spec 13 percorrido item a item — *20/09: 32 de 35 marcados com a evidência ao lado de cada um. Testes manuais em produção: webhook forjado → 400, bucket sem assinatura → 403. Ficam abertos: páginas legais coerentes (C.5), revisão por segunda pessoa e a adulteração de valor via DevTools (T04 cobre; manual na 4.5)*
 
 ### 4.3 Dashboard — spec [11](../specs/11-admin-pedidos-clientes-dashboard.md)
 - [ ] `Admin::DashboardsController#show` com período e filtro por produto

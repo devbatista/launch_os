@@ -17,7 +17,7 @@ RSpec.describe "Layouts" do
     it "usa o entry application.js, em português e sem indexação" do
       expect(html).to include('<html lang="pt-BR"')
       expect(html).to include('<meta name="robots" content="noindex, nofollow">')
-      expect(html).to include('<script type="module">import "application"</script>')
+      expect(html).to match(%r{<script type="module" nonce="[^"]+">import "application"</script>}) # nonce da CSP (4.2)
       expect(html).not_to include('import "landing"')
     end
   end
@@ -27,7 +27,7 @@ RSpec.describe "Layouts" do
 
     it "usa o entry landing.js e é em inglês" do
       expect(html).to include('<html lang="en"')
-      expect(html).to include('<script type="module">import "landing"</script>')
+      expect(html).to match(%r{<script type="module" nonce="[^"]+">import "landing"</script>})
       expect(html).not_to include('import "application"')
     end
   end

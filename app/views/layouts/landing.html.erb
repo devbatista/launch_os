@@ -19,8 +19,8 @@
     <%= javascript_importmap_tags "landing" %>
   </head>
 
-  <%# Pixel só com META_PIXEL_ID e fora do preview do admin (spec 10); carregado por modules/tracking.js, sem inline. %>
-  <body class="h-full text-slate-900 antialiased"<% if meta_pixel_id %> data-module="tracking" data-pixel-id="<%= meta_pixel_id %>"<% end %>>
+  <%# Pixel e GA4 só com os ids configurados e fora do preview do admin (spec 10); carregados por modules/tracking.js, sem inline. %>
+  <body class="h-full text-slate-900 antialiased"<% if meta_pixel_id || ga4_measurement_id %> data-module="tracking"<% end %><% if meta_pixel_id %> data-pixel-id="<%= meta_pixel_id %>"<% end %><% if ga4_measurement_id %> data-ga4-id="<%= ga4_measurement_id %>"<% end %>>
     <%= yield %>
 
     <%= render "shared/footer" %>
