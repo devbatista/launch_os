@@ -30,8 +30,9 @@ depois do deploy da branch (o YAML vai na imagem).
 
 ## Checklist de publicação
 
-- [x] PDF v1.1 revisado (C.1–C.3) — 21/09; pendente: trocar o anexo em produção
-- [x] Copy da LP versionada e aplicada localmente (C.4) — 21/09; pendente: `content:load` em produção após o deploy
+- [x] PDF v1.1 revisado (C.1–C.3) e anexo trocado em produção — 21/09
+- [x] Copy da LP versionada e aplicada em produção com `content:load` (C.4) — 21/09
 - [x] Páginas legais com razão social (C.5) — 21/09
-- [ ] Imagens novas com a paleta navy do PDF v1.1: capa, mockup, og_image 1200×630 JPEG e previews (páginas 11, 12, 20 e 29 são as melhores amostras)
+- [x] Capa, mockup e og_image na paleta navy — 21/09
+- [ ] Previews de páginas (opcional; 11, 12, 20 e 29 são as melhores amostras) — o bloco "Take a peek inside" só aparece com ≥ 1
 - [ ] Decisão sobre `compare_at_price`
