@@ -201,6 +201,18 @@ Resultado `verification_status == "SUCCESS"`. Em dev sem túnel, PODE-se usar `P
 Taxa PayPal internacional + spread cambial entram no cálculo de receita líquida no dashboard
 (campo de configuração `PAYPAL_FEE_PERCENT` / `PAYPAL_FEE_FIXED_CENTS` — estimativa exibida, não valor real).
 
+*(21/09: taxa real observada no Live para pagamento doméstico em BRL: 4,79% + R$ 0,60. A tabela para
+comprador US → conta BR em USD é outra (internacional + conversão) — calibrar as variáveis na primeira venda
+real em USD lendo `seller_receivable_breakdown` do capture.)*
+
+## Moedas e conta brasileira
+
+Regra do PayPal Brasil: **entre duas contas brasileiras o pagamento só pode ser em BRL** — um comprador BR não
+consegue pagar USD a um vendedor BR ("O vendedor não aceita pagamentos em sua moeda"), e a preferência
+"aceitar e converter" não se aplica (a conversão para BRL é automática na conta BR). Comprador dos EUA pagando
+USD funciona normalmente. Por isso o teste do Live foi feito com um produto temporário em BRL (`Product`
+aceita `USD`/`BRL`; o SDK lê a moeda de `data-currency`), e o teste em USD exige um comprador fora do Brasil.
+
 ## Critérios de aceite
 
 - [x] Compra Sandbox completa: `Order.paid`, `paypal_capture_id` preenchido, `Client` criado, token gerado, `DeliverOrderJob` enfileirado uma única vez. *(18/09: enfileirado após o commit e só na transição — a reentrega do webhook sobre pedido já pago não enfileira; `mark_paid_spec` cobre)*
