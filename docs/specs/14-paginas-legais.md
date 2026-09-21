@@ -8,7 +8,7 @@ orientação jurídica/contábil; é um checklist de conferência.
 
 | Rota | Título | Conteúdo mínimo |
 |---|---|---|
-| `/privacy` | Privacy Policy | Quem opera (nome/razão social, país), dados coletados (email, nome, telefone com opt-in, IP, user agent, cookies, UTMs, pixels Meta/GA4), finalidade (entrega, suporte, medição de anúncios), compartilhamento (PayPal, Twilio, provedor de email, Meta, Google, hospedagem), retenção, direitos do usuário (acesso, exclusão — contato via email), cookies e como desativar, menção a CCPA (aplicabilidade) e LGPD (operador brasileiro), contato |
+| `/privacy` | Privacy Policy | Quem opera (razão social **DevBatista Desenvolvimento de Software e Serviços LTDA**, Brasil), dados coletados (email, nome, telefone com opt-in, IP, user agent, cookies, UTMs, pixels Meta/GA4), finalidade (entrega, suporte, medição de anúncios), compartilhamento (PayPal, Twilio, provedor de email, Meta, Google, hospedagem), retenção, direitos do usuário (acesso, exclusão — contato via email), cookies e como desativar, menção a CCPA (aplicabilidade) e LGPD (operador brasileiro), contato |
 | `/terms` | Terms of Service | Natureza do produto (digital, entrega por link), licença de uso pessoal e não transferível, proibição de redistribuição, preço em USD, entrega imediata após confirmação, validade do link e reenvio, limitação de responsabilidade, isenção (não é aconselhamento médico/psicológico), lei aplicável, contato |
 | `/refund-policy` | Refund Policy | Prazo (**14 dias**, alinhado a `refund_days` do produto — o texto DEVE ler o valor do produto ou ser genérico), como solicitar (email ao suporte com o email da compra), prazo de processamento, revogação do acesso após reembolso, disputas |
 

@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 4.5: **PayPal Live no ar desde 21/09** (compra real em BRL + reembolso validados). Falta: rotacionar o Secret Live, conteúdo final (C.3/C.4/C.5) e a definição de pronto. A compra em USD será a primeira venda real da campanha (decisão 21/09). 4.4 ✅ em 21/09 (Twilio Sandbox adiado por decisão — lançamento só com email). Em paralelo: M2 — download em produção ✅ (19/09); webhook em produção ✅ (21/09). **Decisão 21/09:** o teste no Sandbox da Twilio fica adiado, sem data — lançamento com `TWILIO_ENABLED=false` (plano B da Fase 0); código e specs do WhatsApp prontos para quando houver sender/template. Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 4.5: **PayPal Live no ar desde 21/09** (compra real em BRL + reembolso validados). Falta: rotacionar o Secret Live, publicar o conteúdo final (PDF v1.1 no anexo + `content:load` em produção + imagens navy; C.1–C.3 e C.5 ✅ em 21/09, C.4 copy ✅) e a definição de pronto. A compra em USD será a primeira venda real da campanha (decisão 21/09). 4.4 ✅ em 21/09 (Twilio Sandbox adiado por decisão — lançamento só com email). Em paralelo: M2 — download em produção ✅ (19/09); webhook em produção ✅ (21/09). **Decisão 21/09:** o teste no Sandbox da Twilio fica adiado, sem data — lançamento com `TWILIO_ENABLED=false` (plano B da Fase 0); código e specs do WhatsApp prontos para quando houver sender/template. Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -325,11 +325,11 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 
 ## Trilha de conteúdo (paralela)
 
-- [ ] C.5 Políticas em inglês revisadas — até 04/10
-- [ ] C.1 PDF escrito (intro, semanas 1–3, anexos) — até 11/10
-- [ ] C.2 Revisão do inglês — até 11/10
-- [ ] C.4 Copy final da LP + mockup — até 11/10
-- [ ] C.3 Diagramação do PDF + tracker imprimível — até 18/10
+- [x] C.5 Políticas em inglês revisadas — *21/09: razão social **DevBatista Desenvolvimento de Software e Serviços LTDA** nas três páginas (`LAST_UPDATED` 21/09); texto já revisado em 17/09*
+- [x] C.1 PDF escrito (intro, semanas 1–3, anexos) — *21/09: v1.1, 38 páginas (4 partes: Understand / Make Starting Easier / The 21-Day Reset / Your Toolkit)*
+- [x] C.2 Revisão do inglês — *21/09: duas rodadas de revisão (v1.0 → v1.1: p. 6 nomeada "Procrastination Audit", cartão da p. 12 com 4 passos, checkbox do Day 21, copyright com razão social + email de suporte)*
+- [x] C.4 Copy final da LP — *21/09: copy derivada do PDF em `db/content/21-day-procrastination-reset.yml` + `bin/rails content:load[slug]` (6 benefícios, 7 FAQs, sem depoimentos fictícios, "10–20 minutes a day", entrega só por email); decisões em `docs/conteudo/README.md`. **Pendente:** mockup/capa/og/previews com a paleta navy, `content:load` em produção após o deploy, decisão sobre o preço riscado*
+- [x] C.3 Diagramação do PDF + tracker imprimível — *21/09: WeasyPrint, US Letter, fontes embutidas, 243 KB, metadados Title/Author, bookmarks; trackers de 21 e 30 dias, cartões recortáveis. **Pendente:** trocar o anexo `pdf_file` em produção (admin)*
 - [ ] C.6 Três criativos (dor / mecanismo / transformação), sem claims absolutos — até 25/10; subir como rascunho em 24/10
 
 ---
