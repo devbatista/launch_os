@@ -32,7 +32,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 8/8 código entregue em 17–18/09; M2 ✅ 21/09. Teste real da Twilio adiado por decisão (lançamento com `TWILIO_ENABLED=false`) | ✅ |
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 4/5 — 4.1 em 19/09, 4.2–4.4 em 21/09; 4.5 aguarda PayPal Live | 🟦 |
-| Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 4/6 | 🟦 |
+| Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 5/6 | 🟦 |
 | Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
 | Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
 | Fase 6 — Pós-validação | a definir | — | — | | — | ⬜ |
@@ -148,7 +148,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 | 4.2 | GA4, Sentry, monitor de uptime, backup diário do banco, versionamento do bucket, CSP, `config.hosts` | [10](../specs/10-tracking-e-analytics.md), [13](../specs/13-seguranca.md) | 3 | 0.5 | ✅ | 21/09 | GA4 pelo módulo; CSP com nonce (script e style, sem unsafe-inline), Permissions-Policy, filter_parameters; Sentry só após retentativas + report-uri (erro de teste confirmado); serviço cron `backup` no Railway (pg_dump 18 → bucket, dump de produção restaurado localmente com contagens iguais); spec 13 percorrida (32/35 — restam C.5, revisão por 2ª pessoa e o manual da 4.5) |
 | 4.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 4.1 | ✅ | 21/09 | `Admin::Dashboard` com período/produto; funil, receita (líquida estimada), entregas, vendas por campanha/criativo, últimos pedidos e alertas; coorte por pedido criado no período |
 | 4.4 | Executar o plano de testes (T01–T27 automatizados + manuais 1–4) em Sandbox e corrigir falhas | [15](../specs/15-plano-de-testes.md) | 6 | 2.8, 4.1 | ✅ | 21/09 | Matriz T01–T30 conferida (343 specs verdes), cobertura ≥ 97% nos grupos com `minimum_coverage 90`, registro de QA em `docs/qa/`; compra mobile ✅. Twilio Sandbox adiado por decisão (lançamento só com email) |
-| 4.5 | Go-live: credenciais PayPal Live, SES fora do sandbox, compra real com valor controlado + reembolso, validação no Events Manager, checklist de segurança e definição de pronto | [13](../specs/13-seguranca.md), [00](../specs/00-visao-geral.md) | 4 | 4.4 | 🟦 | | 21/09: PayPal Live em produção (credenciais + webhook `1SX830858W927974S`); compra real R$ 5,00 + reembolso validados ponta a ponta. Falta: rotação do Secret, conteúdo final (C.3–C.5), definição de pronto. Compra em USD = primeira venda real da campanha (decisão 21/09) |
+| 4.5 | Go-live: credenciais PayPal Live, SES fora do sandbox, compra real com valor controlado + reembolso, validação no Events Manager, checklist de segurança e definição de pronto | [13](../specs/13-seguranca.md), [00](../specs/00-visao-geral.md) | 4 | 4.4 | 🟦 | | 21/09: PayPal Live em produção (credenciais + webhook `1SX830858W927974S`); compra real R$ 5,00 + reembolso validados ponta a ponta. Falta: rotação do Secret, preço riscado, definição de pronto (conteúdo C.1–C.5 publicado em 21/09). Compra em USD = primeira venda real da campanha (decisão 21/09) |
 
 **Total: 23 h**
 
@@ -159,7 +159,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 | C.1 | Escrever o PDF (30–40 páginas) seguindo a estrutura de 3 semanas + anexos | [16](../specs/16-roadmap-e-fases.md) | 20 | S3 (11/10) | ✅ | 21/09 | v1.1 com 38 páginas |
 | C.2 | Revisão do inglês (nativo ou ferramenta) | — | 4 | S3 (11/10) | ✅ | 21/09 | Duas rodadas de revisão (v1.0 → v1.1) |
 | C.3 | Diagramação do PDF e do tracker imprimível | — | 8 | S4 (18/10) | ✅ | 21/09 | WeasyPrint, US Letter, fontes embutidas; falta só trocar o anexo em produção |
-| C.4 | Copy final da LP (headline, benefícios, FAQ, garantia) e mockup do produto | [06](../specs/06-landing-page.md) | 5 | S3 (11/10) | 🟦 | | Copy ✅ 21/09 (`db/content` + `content:load`); faltam as imagens na paleta navy e o `content:load` em produção |
+| C.4 | Copy final da LP (headline, benefícios, FAQ, garantia) e mockup do produto | [06](../specs/06-landing-page.md) | 5 | S3 (11/10) | ✅ | 21/09 | Copy (`db/content` + `content:load`) e capa/mockup/og navy publicados; pendente só a decisão sobre o preço riscado |
 | C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | ✅ | 21/09 | Razão social nas três páginas |
 | C.6 | Três criativos (imagem + texto principal + headline) — ângulos dor / mecanismo / transformação | [16](../specs/16-roadmap-e-fases.md) | 6 | S5 (25/10) | ⬜ | | Subir como rascunho em 24/10 para revisão antecipada da Meta |
 
