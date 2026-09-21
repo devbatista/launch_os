@@ -120,6 +120,17 @@ RSpec.describe "Landing pages" do
       expect(response.body).not_to include('name="phone"', "whatsapp_opt_in")
     end
 
+    # T15: o layout mobile em si é conferido em navegador (Lighthouse mobile 100 e screenshots a 375 px — docs/qa);
+    # aqui garantimos as peças que só existem para ele: barra fixa (sticky_cta) e o container do PayPal.
+    it "renderiza a barra fixa mobile escondida por padrão e o container dos botões (T15)" do
+      create(:product, :published, slug: "mobile")
+
+      get "/mobile"
+
+      expect(response.body).to include('<div data-module="sticky_cta" data-hide-when="#hero, #buy" hidden')
+      expect(response.body).to include('id="paypal-button-container"', 'href="#buy"')
+    end
+
     it "mostra telefone e opt-in desmarcado com TWILIO_ENABLED=true" do
       stub_const("ENV", ENV.to_h.merge("TWILIO_ENABLED" => "true"))
       create(:product, :published, slug: "offer-wa")

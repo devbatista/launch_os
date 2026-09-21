@@ -76,7 +76,7 @@ Configurações em `rails_helper.rb`:
 | T12 | Segunda compra com o mesmo email | Reaproveita `Client`; `last_purchase_at` atualizado; nenhum duplicado | `spec/services/orders/mark_paid_spec.rb` |
 | T13 | Login admin com senha errada 5× | `locked_at` preenchido; 6ª tentativa correta falha; após 15 min (`travel_to`) funciona | `spec/requests/admin/sessions_spec.rb` |
 | T14 | Produto em rascunho | `/:slug` → 404; preview admin → 200 | `spec/requests/landing_pages_spec.rb`, `spec/requests/admin/products_spec.rb` |
-| T15 | LP em mobile | Layout/botão PayPal em viewport 375 px (system spec) + checklist manual iOS/Android | `spec/system/landing_page_spec.rb` + manual |
+| T15 | LP em mobile | Barra fixa (`sticky_cta`) e `#paypal-button-container` presentes (request spec); layout a 375 px conferido em navegador (Lighthouse mobile 100, screenshots) + checklist manual iOS/Android | `spec/requests/landing_pages_spec.rb` + [docs/qa](../qa/README.md) — *sem system spec no MVP (decisão 4.4: Selenium fica fora do compose/CI; conferências em navegador são feitas sob demanda)* |
 | T16 | Capture chamado 2× | Segunda chamada idempotente, mesmo `thank_you_url` | `spec/requests/checkout/paypal_spec.rb` |
 | T17 | Capture PENDING | Order pending; Thank You mostra "processing"; webhook posterior conclui | idem + job spec |
 | T18 | Disputa criada / resolvida | `disputed` + token revogado; resolvida a favor → `paid` + token restaurado | `spec/services/orders/mark_disputed_spec.rb` |
@@ -146,8 +146,8 @@ Executar em ordem, registrar resultado em `docs/qa/` (data, ambiente, resultado)
 
 ## Critérios de aceite
 
-- [ ] Todos os casos T01–T30 automatizados e verdes em `bundle exec rspec`.
-- [ ] Cobertura de `app/services` (incluindo `providers/`), `app/jobs` e `app/controllers/webhooks` ≥ 90% (SimpleCov).
-- [ ] WebMock em `disable_net_connect!` (exceto localhost/selenium/web); nenhuma request real vaza.
-- [ ] `rubocop-rspec` sem ofensas.
-- [ ] Testes manuais 1–8 registrados antes de ativar a campanha.
+- [x] Todos os casos T01–T30 automatizados e verdes em `bundle exec rspec`. *(4.4, 21/09: matriz conferida caso a caso — cada T tem spec com a tag no nome; T15 é request spec (barra fixa + container) + conferência em navegador; T28/T30 existiam sem tag, tagueados. 343 exemplos, 0 falhas)*
+- [x] Cobertura de `app/services` (incluindo `providers/`), `app/jobs` e `app/controllers/webhooks` ≥ 90% (SimpleCov). *(21/09: Services 99%, Providers 99%, Jobs 97%, Webhooks 99%; `minimum_coverage 90` global no `spec_helper` — o CI falha se cair)*
+- [x] WebMock em `disable_net_connect!` (exceto localhost/selenium/web); nenhuma request real vaza. *(rails_helper; SES via `stub_responses`)*
+- [x] `rubocop-rspec` sem ofensas. *(no CI desde a Fase 1)*
+- [ ] Testes manuais 1–8 registrados antes de ativar a campanha. *(registro em [docs/qa/README.md](../qa/README.md): 1-desktop, 2, 4, 6, 7, 8 ✅; faltam 1-mobile, 3 (Twilio Sandbox) e 5 (compra real, 4.5))*

@@ -1,5 +1,6 @@
 require "rails_helper"
 
+# T30 (spec 15)
 RSpec.describe DeliveryMethods::SesApi do
   it "está registrado como :ses_api no Action Mailer" do
     expect(ActionMailer::Base.delivery_methods[:ses_api]).to eq(described_class)

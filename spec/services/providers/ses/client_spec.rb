@@ -1,5 +1,6 @@
 require "rails_helper"
 
+# T30 (spec 15)
 RSpec.describe Providers::Ses::Client do
   let(:mail) do
     Mail.new(from: "DevBatista <no-reply@devbatista.online>", to: "Jane Buyer <jane@example.com>",
