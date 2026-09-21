@@ -72,26 +72,27 @@ e use `selenium-webdriver` de dentro do `web` apontando para `http://lo-selenium
 ## Produção (Railway)
 
 Deploy por `Dockerfile`; a configuração de cada serviço fica no dashboard do Railway (o *Config as Code* foi
-descontinuado pela plataforma). Dois serviços a partir deste repositório:
+descontinuado pela plataforma). Três serviços a partir deste repositório:
 
 - **launch_os** (web) — comando padrão da imagem, healthcheck em `/up`; o Railway injeta `PORT` e o entrypoint roda `db:prepare` no boot.
 - **sidekiq** — *Custom Start Command*: `bundle exec sidekiq -C config/sidekiq.yml`, sem healthcheck.
+- **backup** — cron `0 6 * * *`, *Custom Start Command*: `bin/rails backup:database`, sem healthcheck (ver abaixo).
 
-Mais os plugins **Postgres** (`DATABASE_URL`) e **Redis** (`REDIS_URL`). Variáveis obrigatórias e passo a passo
+Mais os plugins **Postgres** (`DATABASE_URL`; é Postgres **18** — por isso a imagem instala `postgresql-client-18` do PGDG) e **Redis** (`REDIS_URL`). Variáveis obrigatórias e passo a passo
 em [docs/specs/02-docker-e-ambiente.md](docs/specs/02-docker-e-ambiente.md#produção--railway).
 
 ### Backup do banco
 
 `bin/rails backup:database` faz `pg_dump --format=custom` do banco atual e envia para o bucket privado em
 `backups/postgres/<UTC>.dump`, mantendo os últimos 30 (`Backups::DatabaseDump`). Em produção roda como um
-terceiro serviço do Railway a partir deste repositório, com **Cron Schedule** `0 6 * * *` e *Custom Start
-Command* `bin/rails backup:database` (mesmas variáveis do web; sem healthcheck). Falha no dump → exceção →
+terceiro serviço do Railway (`backup`, criado em 20/09) a partir deste repositório, com **Cron Schedule** `0 6 * * *`
+e *Custom Start Command* `bin/rails backup:database` (mesmas variáveis do `sidekiq`; sem healthcheck). Falha no dump → exceção →
 o cron aparece como falho no Railway e o erro vai ao Sentry.
 
 - `bin/rails backup:list` — dumps disponíveis, do mais recente para o mais antigo.
 - `bin/rails backup:download[backups/postgres/<UTC>.dump,tmp/prod.dump]` — baixa um dump.
 - Restaurar em um banco vazio: `pg_restore --no-owner --no-privileges -d <DATABASE_URL> tmp/prod.dump`
-  (validado em 20/09: dump → MinIO → restore → contagens iguais em todas as tabelas).
+  (validado em 20/09 em dev e em 21/09 com um dump real de produção restaurado localmente — contagens iguais).
 
 ### Segurança (resumo)
 
