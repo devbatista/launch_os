@@ -6,9 +6,9 @@ class LegalPagesController < ApplicationController
 
   # Atualize ao mudar o texto da página correspondente.
   LAST_UPDATED = {
-    privacy: Date.new(2026, 9, 17),
-    terms: Date.new(2026, 9, 17),
-    refund: Date.new(2026, 9, 17)
+    privacy: Date.new(2026, 9, 21),
+    terms: Date.new(2026, 9, 21),
+    refund: Date.new(2026, 9, 21)
   }.freeze
 
   DEFAULT_REFUND_DAYS = 14

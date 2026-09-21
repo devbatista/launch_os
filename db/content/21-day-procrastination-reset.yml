@@ -1,0 +1,63 @@
+# Copy final da LP do 21-Day Procrastination Reset (C.4). Fonte de verdade: o PDF v1.1 — tudo
+# aqui descreve o que está no workbook, sem claims absolutos (Meta/FTC) e com "10–20 minutes a day"
+# como o próprio PDF promete. Aplicar com `bin/rails content:load[21-day-procrastination-reset]`
+# (docs/conteudo/README.md). Sem depoimentos até haver reais, com permissão.
+name: 21-Day Procrastination Reset
+headline: "Stop putting things off. One small start at a time."
+subheadline: "A practical 21-day workbook: one short challenge a day, a 5-minute method for starting, and a toolkit you keep using after Day 21. 10–20 minutes a day."
+cta_text: Get the workbook
+
+meta_title: "21-Day Procrastination Reset — Printable Workbook"
+meta_description: "One short challenge a day and a 5-minute method for starting what you keep putting off. A 38-page printable workbook, 10–20 minutes a day. Instant PDF download."
+
+problem_text: |
+  You know exactly what needs doing. You could list it right now. The hard part is the space between knowing and doing.
+
+  So you check one more thing first. You'll do it when you're more in the mood. You'll start fresh on Monday. The task doesn't get smaller while you wait — it just picks up extra weight, and the next delay gets easier.
+
+  That isn't a character flaw. It's a loop. And the easiest place to break it is the moment of starting.
+
+description: |
+  <p>A 38-page PDF workbook (US Letter). Print it, or fill it in on a tablet with any app that lets you write on PDFs.</p>
+  <ul>
+    <li><strong>Part 1 · Understand</strong> — why tasks get postponed, the Procrastination Cycle and where to break it, and the worksheets that show you what you're avoiding and why.</li>
+    <li><strong>Part 2 · Make Starting Easier</strong> — making tasks smaller, the Next Visible Action, the 5-Minute Start, a daily action system, removing friction and distractions, starting before you feel motivated, and recovering after a bad day.</li>
+    <li><strong>Part 3 · The 21-Day Reset</strong> — 21 daily challenges with checkboxes, end-of-day questions and three weekly reviews.</li>
+    <li><strong>Part 4 · Your Toolkit</strong> — trackers, a weekly review, your personal anti-procrastination system, cut-out reference cards and a plan for your next 30 days.</li>
+  </ul>
+  <p>No videos, no login, nothing to install. Plan on 10–20 minutes a day; some days will take less.</p>
+
+guarantee_text: |
+  Read it, print it, try the first week. If it isn't what you expected, email support@devbatista.online from the address you used at checkout within 14 days and we'll refund you in full. No questions asked.
+
+benefits:
+  - title: The 5-Minute Start
+    description: "The core method: choose one thing, shrink it, set a five-minute timer, then decide what happens next. Starting is the goal, not finishing."
+  - title: 21 daily challenges
+    description: "One short challenge a day, with two or three concrete steps to check off and one end-of-day question. Weekly reviews on Days 7, 14 and 21."
+  - title: Worksheets that find your pattern
+    description: "Procrastination Audit, Trigger Mapping, Task Breakdown, Distraction Audit and a reusable Daily Action Planner."
+  - title: Two printable trackers
+    description: "A 21-Day Progress Tracker for the challenge and a 30-Day Continuation Tracker for what comes after."
+  - title: Cut-out reference cards
+    description: "The \"Feeling Stuck? Do This.\" card, the \"I'm Procrastinating. What Do I Do Now?\" checklist and a quick-reference table of fixes by how the task feels."
+  - title: Your personal system, on one page
+    description: "By Day 20 you'll have written down your triggers, your warning signs, the method that helps you start and what you do after a bad day."
+
+faqs:
+  - question: What exactly am I buying?
+    answer: "A 38-page PDF workbook, delivered as a download link. Print the whole thing or just the worksheets, or fill it in on a tablet with a PDF app. There are no videos, no login and nothing to install."
+  - question: How much time does it take each day?
+    answer: "Plan on 10–20 minutes a day. Each day has one short challenge, two or three steps to check off and one end-of-day question. Some days take less."
+  - question: How do I get the file?
+    answer: "As soon as PayPal confirms your payment, we email your download link — usually within a minute. If you don't see it, check your spam folder; it comes from an @devbatista.online address. Links are temporary for security; if yours has expired, we'll send a fresh one at no cost."
+  - question: Will this stop me from procrastinating for good?
+    answer: "No — and we don't promise that. You'll still have days when you put things off. What the reset gives you is a repeatable way to start, and a personal system for the days when starting feels hard."
+  - question: Is it useful if I have ADHD, anxiety or depression?
+    answer: "The workbook is a general productivity resource. It is not medical or psychological advice, and it isn't a treatment or a substitute for professional support. If you're already getting care, please talk to your professional about how it fits."
+  - question: Do I have to print it?
+    answer: "No. It works on screen too. Printing the worksheets, trackers and cut-out cards helps, because the point is to keep them where you work."
+  - question: What if it isn't for me?
+    answer: "Email us within 14 days of purchase and we'll refund you in full. See the Refund Policy for the details."
+
+testimonials: []

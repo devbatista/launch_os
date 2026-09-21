@@ -32,7 +32,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 8/8 código entregue em 17–18/09; M2 ✅ 21/09. Teste real da Twilio adiado por decisão (lançamento com `TWILIO_ENABLED=false`) | ✅ |
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 4/5 — 4.1 em 19/09, 4.2–4.4 em 21/09; 4.5 aguarda PayPal Live | 🟦 |
-| Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
+| Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 4/6 | 🟦 |
 | Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
 | Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
 | Fase 6 — Pós-validação | a definir | — | — | | — | ⬜ |
@@ -156,11 +156,11 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 
 | ID | Tarefa | Spec | Horas | Prazo | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|---|
-| C.1 | Escrever o PDF (30–40 páginas) seguindo a estrutura de 3 semanas + anexos | [16](../specs/16-roadmap-e-fases.md) | 20 | S3 (11/10) | ⬜ | | Aceitar v1.0 enxuta (30 p.) se apertar |
-| C.2 | Revisão do inglês (nativo ou ferramenta) | — | 4 | S3 (11/10) | ⬜ | | |
-| C.3 | Diagramação do PDF e do tracker imprimível | — | 8 | S4 (18/10) | ⬜ | | |
-| C.4 | Copy final da LP (headline, benefícios, FAQ, garantia) e mockup do produto | [06](../specs/06-landing-page.md) | 5 | S3 (11/10) | ⬜ | | |
-| C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | 🟦 | | Publicadas em 17/09 (1.8); falta a revisão do texto do operador (razão social) com o contador |
+| C.1 | Escrever o PDF (30–40 páginas) seguindo a estrutura de 3 semanas + anexos | [16](../specs/16-roadmap-e-fases.md) | 20 | S3 (11/10) | ✅ | 21/09 | v1.1 com 38 páginas |
+| C.2 | Revisão do inglês (nativo ou ferramenta) | — | 4 | S3 (11/10) | ✅ | 21/09 | Duas rodadas de revisão (v1.0 → v1.1) |
+| C.3 | Diagramação do PDF e do tracker imprimível | — | 8 | S4 (18/10) | ✅ | 21/09 | WeasyPrint, US Letter, fontes embutidas; falta só trocar o anexo em produção |
+| C.4 | Copy final da LP (headline, benefícios, FAQ, garantia) e mockup do produto | [06](../specs/06-landing-page.md) | 5 | S3 (11/10) | 🟦 | | Copy ✅ 21/09 (`db/content` + `content:load`); faltam as imagens na paleta navy e o `content:load` em produção |
+| C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | ✅ | 21/09 | Razão social nas três páginas |
 | C.6 | Três criativos (imagem + texto principal + headline) — ângulos dor / mecanismo / transformação | [16](../specs/16-roadmap-e-fases.md) | 6 | S5 (25/10) | ⬜ | | Subir como rascunho em 24/10 para revisão antecipada da Meta |
 
 ### 4.7 Fase 5 — Campanha de validação (26/10 – 01/11)
