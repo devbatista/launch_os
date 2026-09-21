@@ -31,7 +31,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 9/9 — concluída em 17/09 (M1) | ✅ |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 7/8 código entregue em 17–18/09; 2.7 aguarda teste real no Sandbox da Twilio; M2 pendente | 🟦 |
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
-| Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 2/5 — 4.1 em 19/09, 4.2 em 21/09 | 🟦 |
+| Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 3/5 — 4.1 em 19/09, 4.2 e 4.3 em 21/09 | 🟦 |
 | Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
 | Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
 | Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
@@ -146,7 +146,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 |---|---|---|---|---|---|---|---|
 | 4.1 | Meta Pixel, captura de UTMs/fbclid em cookie first-party e gravação no `Order`; ViewContent, InitiateCheckout, Purchase com `event_id`; `PageVisit` | [10](../specs/10-tracking-e-analytics.md) | 6 | 2.3 | ✅ | 19/09 | attribution.js, Pixel via módulo (sem inline), PageVisit por beacon (LP é cacheada), consent; verificado em navegador real. Eventos de teste da Meta em produção: ViewContent → InitiateCheckout → Purchase (com `event_id`) recebidos no conjunto `LaunchOS` |
 | 4.2 | GA4, Sentry, monitor de uptime, backup diário do banco, versionamento do bucket, CSP, `config.hosts` | [10](../specs/10-tracking-e-analytics.md), [13](../specs/13-seguranca.md) | 3 | 0.5 | ✅ | 21/09 | GA4 pelo módulo; CSP com nonce (script e style, sem unsafe-inline), Permissions-Policy, filter_parameters; Sentry só após retentativas + report-uri (erro de teste confirmado); serviço cron `backup` no Railway (pg_dump 18 → bucket, dump de produção restaurado localmente com contagens iguais); spec 13 percorrida (32/35 — restam C.5, revisão por 2ª pessoa e o manual da 4.5) |
-| 4.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 4.1 | ⬜ | | Pode ir para Fase 6 se faltar tempo |
+| 4.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 4.1 | ✅ | 21/09 | `Admin::Dashboard` com período/produto; funil, receita (líquida estimada), entregas, vendas por campanha/criativo, últimos pedidos e alertas; coorte por pedido criado no período |
 | 4.4 | Executar o plano de testes (T01–T27 automatizados + manuais 1–4) em Sandbox e corrigir falhas | [15](../specs/15-plano-de-testes.md) | 6 | 2.8, 4.1 | ⬜ | | |
 | 4.5 | Go-live: credenciais PayPal Live, SES fora do sandbox, compra real com valor controlado + reembolso, validação no Events Manager, checklist de segurança e definição de pronto | [13](../specs/13-seguranca.md), [00](../specs/00-visao-geral.md) | 4 | 4.4 | ⬜ | | |
 

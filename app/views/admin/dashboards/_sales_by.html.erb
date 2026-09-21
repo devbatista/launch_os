@@ -1,0 +1,22 @@
+<%# Tabela de vendas por campo de atribuição. Locals: title, field_label, rows ([[valor, vendas, cents], …]), currency. %>
+<section class="adm-card">
+  <h2 class="adm-card-title"><%= title %></h2>
+  <% if rows.empty? %>
+    <p class="text-sm text-ink-600">Nenhuma venda no período.</p>
+  <% else %>
+    <div class="overflow-x-auto">
+      <table class="adm-table-inline">
+        <thead><tr><th><%= field_label %></th><th class="text-right">Vendas</th><th class="text-right">Receita</th></tr></thead>
+        <tbody>
+          <% rows.each do |value, count, cents| %>
+            <tr>
+              <td class="<%= value ? 'text-ink-900' : 'text-ink-400' %>"><%= value || "(direto / sem UTM)" %></td>
+              <td class="adm-num text-right"><%= count %></td>
+              <td class="adm-num text-right"><%= money(cents, currency) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>
