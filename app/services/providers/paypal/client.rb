@@ -76,6 +76,29 @@ module Providers
         result["verification_status"] == "SUCCESS"
       end
 
+      # Eventos que ProcessPaypalWebhookJob trata (spec 07).
+      WEBHOOK_EVENT_TYPES = %w[
+        CHECKOUT.ORDER.APPROVED PAYMENT.CAPTURE.COMPLETED PAYMENT.CAPTURE.PENDING PAYMENT.CAPTURE.DENIED
+        PAYMENT.CAPTURE.DECLINED PAYMENT.CAPTURE.REFUNDED PAYMENT.CAPTURE.REVERSED
+        CUSTOMER.DISPUTE.CREATED CUSTOMER.DISPUTE.RESOLVED
+      ].freeze
+
+      # GET /v1/notifications/webhooks — os webhooks do app (Sandbox ou Live conforme PAYPAL_ENV).
+      def list_webhooks
+        response = handle_transport { @http.get("/v1/notifications/webhooks") { |req| req.headers["Authorization"] = bearer } }
+        ensure_success!(response, "list_webhooks").fetch("webhooks", [])
+      end
+
+      # POST /v1/notifications/webhooks — cria um webhook para `url` com os eventos tratados. Usado uma
+      # vez por ambiente (rake paypal:webhook_create); o id vai para PAYPAL_WEBHOOK_ID.
+      def create_webhook(url)
+        payload = { url:, event_types: WEBHOOK_EVENT_TYPES.map { |name| { name: } } }
+        response = handle_transport do
+          @http.post("/v1/notifications/webhooks", payload) { |req| req.headers["Authorization"] = bearer }
+        end
+        ensure_success!(response, "create_webhook")
+      end
+
       # PATCH /v1/notifications/webhooks/:id — troca a URL de entrega. Só para dev (bin/tunnel): o quick
       # tunnel do Cloudflare muda de endereço a cada subida; em produção a URL é fixa.
       def update_webhook_url(url, webhook_id: ENV.fetch("PAYPAL_WEBHOOK_ID"))

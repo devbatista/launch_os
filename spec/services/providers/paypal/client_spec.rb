@@ -108,6 +108,26 @@ RSpec.describe Providers::Paypal::Client, :paypal do
     end
   end
 
+  describe "#list_webhooks / #create_webhook" do
+    before { stub_paypal_token }
+
+    it "lista os webhooks do app" do
+      stub_request(:get, "#{PaypalStubs::BASE}/v1/notifications/webhooks")
+        .to_return(status: 200, body: { webhooks: [ { id: "WH-1", url: "https://a/webhooks/paypal", event_types: [] } ] }.to_json, headers: json_headers)
+
+      expect(client.list_webhooks.map { |w| w["id"] }).to eq([ "WH-1" ])
+    end
+
+    it "cria um webhook com os 9 eventos tratados pelo job" do
+      stub = stub_request(:post, "#{PaypalStubs::BASE}/v1/notifications/webhooks")
+        .with { |req| body = JSON.parse(req.body); body["url"] == "https://www.devbatista.online/webhooks/paypal" && body["event_types"].map { |e| e["name"] } == Providers::Paypal::Client::WEBHOOK_EVENT_TYPES }
+        .to_return(status: 201, body: { id: "WH-NEW", url: "https://www.devbatista.online/webhooks/paypal", event_types: [] }.to_json, headers: json_headers)
+
+      expect(client.create_webhook("https://www.devbatista.online/webhooks/paypal")["id"]).to eq("WH-NEW")
+      expect(stub).to have_been_requested
+    end
+  end
+
   it "rejeita PAYPAL_ENV desconhecido" do
     expect { described_class.new(env: "prod") }.to raise_error(ArgumentError, /sandbox or live/)
   end

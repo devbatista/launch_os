@@ -29,7 +29,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 |---|---|---|---|---|---|---|
 | Fase 0 — Contas e aprovações | 14/09 – 20/09 | S0 | 11 | | 3/5 (0.2, 0.4, 0.5 ✅; 0.1 aguarda verificação PayPal; 0.3 Sender adiado) | 🟦 |
 | Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 9/9 — concluída em 17/09 (M1) | ✅ |
-| Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 7/8 código entregue em 17–18/09; 2.7 aguarda teste real no Sandbox da Twilio; M2 pendente | 🟦 |
+| Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 7/8 código entregue em 17–18/09; 2.7 aguarda teste real no Sandbox da Twilio; M2 só falta o WhatsApp | 🟦 |
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 3/5 — 4.1 em 19/09, 4.2 e 4.3 em 21/09 | 🟦 |
 | Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 0/6 | ⬜ |
@@ -50,7 +50,7 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 |---|---|---|---|---|
 | **M0** — Contas prontas | 20/09 | PayPal, Meta, Twilio, hospedagem, domínio, SES e Sentry criados; aprovações solicitadas | ⬜ | |
 | **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Debugger da Meta e email de suporte ok — Fase 1 concluída |
-| **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ⬜ | |
+| **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | 🟦 | 21/09: em produção — pago, webhook próprio com assinatura válida, email via SES, download ok, duplicado é no-op (T02). Falta só o WhatsApp (Twilio Sandbox) |
 | **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ⬜ | |
 | **M4** — Campanha no ar | 26/10 | Três anúncios aprovados pela Meta e ativos, R$ 18/dia | ⬜ | |
 | **M5** — Decisão | 03/11 | Relatório com métricas (17.3) e cenário (17.4) escolhido; próximo orçamento definido ou teste encerrado | ⬜ | |
