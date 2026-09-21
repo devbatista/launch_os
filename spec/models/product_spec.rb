@@ -18,6 +18,7 @@ RSpec.describe Product do
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:headline) }
+    it { is_expected.to validate_inclusion_of(:currency).in_array(%w[USD BRL]) }
     it { is_expected.to validate_numericality_of(:price_cents).only_integer.is_greater_than(0) }
     it { is_expected.to define_enum_for(:status).with_values(draft: "draft", published: "published", archived: "archived").backed_by_column_of_type(:string) }
 

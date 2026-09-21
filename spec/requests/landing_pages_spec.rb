@@ -120,6 +120,14 @@ RSpec.describe "Landing pages" do
       expect(response.body).not_to include('name="phone"', "whatsapp_opt_in")
     end
 
+    it "passa a moeda do produto ao checkout (SDK do PayPal usa data-currency)" do
+      create(:product, :published, slug: "brl", currency: "BRL", price_cents: 500)
+
+      get "/brl"
+
+      expect(response.body).to include('data-module="checkout"', 'data-currency="BRL"', "BRL 5.00")
+    end
+
     # T15: o layout mobile em si é conferido em navegador (Lighthouse mobile 100 e screenshots a 375 px — docs/qa);
     # aqui garantimos as peças que só existem para ele: barra fixa (sticky_cta) e o container do PayPal.
     it "renderiza a barra fixa mobile escondida por padrão e o container dos botões (T15)" do

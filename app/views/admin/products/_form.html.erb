@@ -41,7 +41,7 @@
       </div>
       <div>
         <%= form.label :currency, "Moeda", class: label_classes %>
-        <%= form.select :currency, [ [ "USD", "USD" ] ], {}, class: input_classes %>
+        <%= form.select :currency, Product::CURRENCIES.map { |c| [ c, c ] }, {}, class: input_classes %>
       </div>
       <div>
         <%= form.label :cta_text, "Texto do botão", class: label_classes %>

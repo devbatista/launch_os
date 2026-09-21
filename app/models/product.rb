@@ -47,7 +47,10 @@ class Product < ApplicationRecord
   validates :price_cents, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :compare_at_price_cents, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :refund_days, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
-  validates :currency, length: { is: 3 }
+  # USD é a moeda da campanha; BRL existe para o produto de teste do Live (regra do PayPal Brasil:
+  # comprador BR → vendedor BR só em BRL). `money` já formata as duas.
+  CURRENCIES = %w[USD BRL].freeze
+  validates :currency, inclusion: { in: CURRENCIES }
   validates :template, inclusion: { in: TEMPLATES }
 
   validate :compare_at_price_greater_than_price

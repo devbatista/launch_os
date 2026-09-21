@@ -28,7 +28,8 @@ function loadSdk(el) {
   return new Promise((resolve, reject) => {
     const params = new URLSearchParams({
       "client-id": el.dataset.paypalClientId,
-      currency: "USD",
+      // A moeda do SDK precisa bater com a do pedido (product.currency, em data-currency).
+      currency: el.dataset.currency || "USD",
       intent: "capture",
       "disable-funding": "paylater",
     });
