@@ -1,0 +1,6 @@
+<%# Card numérico do dashboard. Locals: label, value, hint: nil, tone: nil (:success/:danger/:warning colore o valor). %>
+<div class="adm-card">
+  <p class="text-xs font-semibold uppercase tracking-wider text-ink-400"><%= label %></p>
+  <p class="adm-num mt-2 text-2xl font-bold <%= { success: 'text-success-600', danger: 'text-danger-600', warning: 'text-warning-600' }[local_assigns[:tone]] || 'text-ink-900' %>"><%= value %></p>
+  <% if local_assigns[:hint].present? %><p class="adm-hint mt-1"><%= hint %></p><% end %>
+</div>

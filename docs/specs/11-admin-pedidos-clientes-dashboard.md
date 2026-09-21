@@ -109,11 +109,19 @@ Deixar o layout com espaço para esses cards (fase 2, Insights API).
 Sem gráficos no MVP; cards numéricos e tabelas bastam. Queries com `group(:utm_campaign)` e índices
 existentes; período padrão 7 dias.
 
+*(4.3, 21/09: `Admin::Dashboard` (objeto de consulta em `app/models/admin/`) + `DashboardsController#show`
+com `period` = today / 7d / 30d / custom (`from`/`to`) e `product_id`. **Semântica de coorte:** checkouts,
+vendas e reembolsos são dos pedidos **criados** no período, para que as taxas comparem o mesmo grupo de
+visitantes; "últimos pedidos" e alertas ignoram o período. Visitas só de `PageVisit.humans`; únicos por
+`visitor_id`. Entregas = `MessageLog` `order_delivery` dos pedidos do período: email conta `sent/delivered/read`,
+WhatsApp só `delivered/read`. Taxa PayPal estimada com padrão 4,4% + US$ 0,30. Card "CAC e ROAS" fica como
+espaço reservado com o aviso.)*
+
 ## Critérios de aceite
 
 - [x] Pedido pago aparece no index com cliente, UTMs e status dos canais. *(2.8, 18/09)*
 - [x] "Resend by email" gera novo `MessageLog` e email em `/letter_opener`. *(2.8: request spec + smoke em dev)*
 - [x] "Revoke access" → download retorna 410; "Regenerate token" → novo token ativo. *(2.8: request spec)*
-- [ ] Dashboard reflete uma compra de teste: +1 checkout, +1 venda, faturamento correto.
-- [ ] Filtro por produto e período funciona; taxa de conversão calculada corretamente.
+- [x] Dashboard reflete uma compra de teste: +1 checkout, +1 venda, faturamento correto. *(4.3: request spec com visita, checkout pendente e venda — bruto, líquido, entrega e campanha; conferido em dev com os pedidos Sandbox)*
+- [x] Filtro por produto e período funciona; taxa de conversão calculada corretamente. *(4.3: request spec — produto, 7d/30d/hoje/custom com De/Até, período inválido cai no padrão; taxas com denominador zero viram "—")*
 - [x] Nenhum dado de cliente visível sem autenticação. *(2.8: todas as rotas redirecionam ao login; `/admin/sidekiq` sem sessão → 404)*

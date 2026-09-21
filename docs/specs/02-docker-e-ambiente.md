@@ -194,6 +194,10 @@ SENTRY_DSN=
 
 DOWNLOAD_TOKEN_TTL_DAYS=7
 DOWNLOAD_MAX_COUNT=10
+
+# Taxa do PayPal estimada, só para a receita líquida do dashboard (padrão 4.4% + 30¢)
+PAYPAL_FEE_PERCENT=4.4
+PAYPAL_FEE_FIXED_CENTS=30
 ```
 
 ## `config/storage.yml`

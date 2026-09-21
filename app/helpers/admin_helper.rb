@@ -73,6 +73,9 @@ module AdminHelper
   # Id UUID abreviado para tabelas (o link leva ao registro completo).
   def short_id(id) = id.to_s.first(8)
 
+  # Porcentagem do dashboard (0–100, uma casa) em pt-BR; nil = sem denominador.
+  def percent(value) = value.nil? ? "—" : number_to_percentage(value, precision: 1, separator: ",", strip_insignificant_zeros: true)
+
   # Datas do admin no formato brasileiro, no fuso de São Paulo (sem depender de rails-i18n).
   def datetime_br(time)
     return "—" if time.nil?

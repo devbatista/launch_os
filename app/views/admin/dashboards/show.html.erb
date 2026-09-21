@@ -1,17 +1,111 @@
 <% content_for :title, "Dashboard — Launch OS" %>
+<% d = @dashboard %>
+<% currency = d.product&.currency || "USD" %>
+<% range_label = "#{d.range.begin.strftime('%d/%m')} – #{d.range.end.strftime('%d/%m/%Y')}" %>
 
-<%= render "admin/shared/page_header", title: "Dashboard", subtitle: "Bem-vindo, #{Current.user.name}." %>
+<%= render "admin/shared/page_header", title: "Dashboard",
+           subtitle: "#{Admin::Dashboard::PERIODS.fetch(d.period)} · #{range_label}#{" · #{d.product.name}" if d.product} — pedidos criados no período; taxas sobre visitantes únicos (sem bots)." %>
 
-<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-  <% [ [ "Pedidos pagos", Order.paid.count ], [ "Faturamento", money(Order.paid.sum(:amount_cents)) ], [ "Clientes", Client.count ], [ "Pendentes / disputas", "#{Order.pending.count} / #{Order.disputed.count}" ] ].each do |label, value| %>
-    <div class="adm-card">
-      <p class="text-xs font-semibold uppercase tracking-wider text-ink-400"><%= label %></p>
-      <p class="adm-num mt-2 text-2xl font-bold text-ink-900"><%= value %></p>
+<%= form_with url: admin_dashboard_path, method: :get, class: "adm-filters grid md:grid-cols-6" do |f| %>
+  <div class="md:col-span-2">
+    <%= f.label :period, "Período", class: label_classes %>
+    <div class="flex flex-wrap gap-1.5" role="group" aria-label="Período">
+      <% Admin::Dashboard::PERIODS.each do |key, label| %>
+        <label class="adm-btn <%= d.period == key ? 'adm-btn-primary' : 'adm-btn-secondary' %> adm-btn-sm cursor-pointer">
+          <%= f.radio_button :period, key, checked: d.period == key, class: "sr-only" %><%= label %>
+        </label>
+      <% end %>
     </div>
-  <% end %>
+  </div>
+  <div>
+    <%= f.label :from, "De", class: label_classes %>
+    <%= f.date_field :from, value: (params[:from].presence || d.range.begin.to_date if d.period == "custom"), class: input_classes %>
+  </div>
+  <div>
+    <%= f.label :to, "Até", class: label_classes %>
+    <%= f.date_field :to, value: (params[:to].presence || d.range.end.to_date if d.period == "custom"), class: input_classes %>
+  </div>
+  <div>
+    <%= f.label :product_id, "Produto", class: label_classes %>
+    <%= f.select :product_id, options_for_select([ [ "Todos", "" ] ] + @products.map { |p| [ p.name, p.id ] }, d.product_id), {}, class: input_classes %>
+  </div>
+  <div class="flex items-end gap-2">
+    <%= f.button "Aplicar", type: :submit, class: button_classes(:primary) %>
+    <%= link_to "Limpar", admin_dashboard_path, class: button_classes(:secondary) %>
+  </div>
+  <p class="adm-hint md:col-span-6">Escolha "Período" para usar as datas De/Até; nos outros, elas são ignoradas.</p>
+<% end %>
+
+<% if d.alerts? %>
+  <div class="adm-alert adm-alert-danger mb-6">
+    <%= icon(:alert, class: "mt-0.5 shrink-0") %>
+    <div class="space-y-1">
+      <p><strong>Atenção</strong></p>
+      <ul class="list-disc pl-5">
+        <% if d.failed_webhooks.positive? %><li><%= link_to pluralize(d.failed_webhooks, "webhook com falha", "webhooks com falha"), admin_webhook_events_path(status: "failed"), class: "adm-link" %> nas últimas 24 h</li><% end %>
+        <% if d.failed_messages.positive? %><li><%= pluralize(d.failed_messages, "mensagem falhou", "mensagens falharam") %> nos últimos 7 dias (email ou WhatsApp) — veja o pedido em <%= link_to "Pedidos", admin_orders_path, class: "adm-link" %></li><% end %>
+        <% if d.open_disputes.positive? %><li><%= link_to pluralize(d.open_disputes, "pedido em disputa", "pedidos em disputa"), admin_orders_path(status: "disputed"), class: "adm-link" %> — resolva no PayPal e registre o desfecho</li><% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>
+
+<h2 class="adm-card-title">Funil</h2>
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <%= render "stat", label: "Visitas", value: d.visits, hint: "páginas vistas por humanos" %>
+  <%= render "stat", label: "Visitantes únicos", value: d.unique_visitors, hint: "por cookie lo_vid" %>
+  <%= render "stat", label: "Checkouts", value: d.checkouts, hint: "cliques no PayPal · LP → checkout #{percent(d.visitor_to_checkout_rate)}" %>
+  <%= render "stat", label: "Vendas", value: d.sales, hint: "checkout → venda #{percent(d.checkout_to_sale_rate)} · conversão total #{percent(d.conversion_rate)}", tone: (:success if d.sales.positive?) %>
 </div>
 
-<div class="adm-card mt-6">
-  <h2 class="adm-card-title">Métricas</h2>
-  <p class="text-sm text-ink-600">Visitas, conversão por etapa, vendas por campanha e alertas entram na tarefa 4.3 (spec 11). Os totais acima já refletem os pedidos reais.</p>
+<h2 class="adm-card-title">Receita</h2>
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <%= render "stat", label: "Faturamento bruto", value: money(d.gross_cents, currency) %>
+  <%= render "stat", label: "Receita líquida estimada", value: money(d.net_cents, currency), hint: "bruto − taxa PayPal estimada (#{percent(Admin::Dashboard.fee_percent)} + #{money(Admin::Dashboard.fee_fixed_cents, currency)} por venda = #{money(d.fee_cents, currency)})" %>
+  <%= render "stat", label: "Reembolsos", value: "#{d.refunds} · #{money(d.refunded_cents, currency)}", tone: (:danger if d.refunds.positive?), hint: "pedidos do período reembolsados" %>
+  <%= render "stat", label: "Pendentes / disputas", value: "#{d.pending} / #{d.disputed}", tone: (:warning if d.disputed.positive?), hint: "pendente = capture ainda não confirmado" %>
 </div>
+
+<h2 class="adm-card-title">Entregas (link de download)</h2>
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <% e = d.email_delivery %>
+  <%= render "stat", label: "Email enviado", value: percent(e[:rate]), hint: "#{e[:ok]} de #{e[:total]}#{" · #{e[:failed]} com falha" if e[:failed].positive?}", tone: (:danger if e[:failed].positive?) %>
+  <% w = d.whatsapp_delivery %>
+  <%= render "stat", label: "WhatsApp entregue", value: percent(w[:rate]), hint: (w[:total].zero? ? "nenhum envio (opt-in ou Twilio desligada)" : "#{w[:ok]} de #{w[:total]}#{" · #{w[:failed]} com falha" if w[:failed].positive?}"), tone: (:danger if w[:failed].positive?) %>
+  <div class="adm-card sm:col-span-2">
+    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">CAC e ROAS</p>
+    <p class="mt-2 text-sm text-ink-600">Fora do MVP: o gasto de mídia não entra no sistema — leia no Gerenciador de Anúncios e compare com o faturamento acima. Espaço reservado para a Insights API (Fase 6).</p>
+  </div>
+</div>
+
+<div class="mt-7 grid gap-6 lg:grid-cols-2">
+  <%= render "sales_by", title: "Vendas por campanha", field_label: "utm_campaign", rows: d.sales_by_campaign, currency: currency %>
+  <%= render "sales_by", title: "Vendas por conteúdo (criativo)", field_label: "utm_content", rows: d.sales_by_content, currency: currency %>
+</div>
+
+<section class="adm-card mt-6">
+  <h2 class="adm-card-title">Últimos pedidos<span class="ml-2 font-normal normal-case tracking-normal text-ink-300">independente do período</span></h2>
+  <% if d.latest_orders.empty? %>
+    <p class="text-sm text-ink-600">Nenhum pedido ainda.</p>
+  <% else %>
+    <div class="overflow-x-auto">
+      <table class="adm-table-inline">
+        <thead><tr><th>Pedido</th><th>Quando</th><th>Produto</th><th>Cliente</th><th class="text-right">Valor</th><th>Status</th><th>Campanha</th></tr></thead>
+        <tbody>
+          <% d.latest_orders.each do |order| %>
+            <tr class="<%= 'adm-row-danger' if order.disputed? %>">
+              <td class="adm-mono"><%= link_to short_id(order.id), admin_order_path(order), class: "adm-link" %></td>
+              <td class="adm-num text-ink-400"><%= datetime_br(order.created_at) %></td>
+              <td class="text-ink-900"><%= order.product.name %></td>
+              <td><%= order.client ? link_to(order.client.email, admin_client_path(order.client), class: "hover:underline") : tag.span(order.payer_email || "—", class: "text-ink-400") %></td>
+              <td class="adm-num text-right"><%= money(order.amount_cents, order.currency) %></td>
+              <td><%= order_status_badge(order) %></td>
+              <td class="<%= order.utm_campaign ? '' : 'text-ink-400' %>"><%= order.utm_campaign || "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3"><%= link_to "Todos os pedidos →", admin_orders_path, class: "adm-link text-sm" %></p>
+  <% end %>
+</section>

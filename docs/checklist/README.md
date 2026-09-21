@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 4.3 (dashboard). 4.2 ✅ em 21/09 (Sentry testado, backup diário no Railway com restauração validada). Em paralelo: M2 — download em produção ✅ (19/09); faltam webhook apontando para produção e o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 4.4 (plano de testes T01–T27 + manuais em Sandbox). 4.2 e 4.3 ✅ em 21/09. Em paralelo: M2 — download em produção ✅ (19/09); faltam webhook apontando para produção e o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -298,11 +298,11 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 - [x] Checklist da spec 13 percorrido item a item — *20/09: 32 de 35 marcados com a evidência ao lado de cada um. Testes manuais em produção: webhook forjado → 400, bucket sem assinatura → 403. Ficam abertos: páginas legais coerentes (C.5), revisão por segunda pessoa e a adulteração de valor via DevTools (T04 cobre; manual na 4.5)*
 
 ### 4.3 Dashboard — spec [11](../specs/11-admin-pedidos-clientes-dashboard.md)
-- [ ] `Admin::DashboardsController#show` com período e filtro por produto
-- [ ] Cards: visitas, únicos, checkouts, vendas, faturamento bruto/líquido estimado, taxas, reembolsos, entregas
-- [ ] Vendas por `utm_campaign`/`utm_content`; últimos pedidos; alertas (webhooks/mensagens falhas, disputas)
-- [ ] Spec: `spec/requests/admin/dashboards_spec.rb` com uma compra refletida
-- [ ] *(Pode ir para a Fase 6 se faltar tempo — registrar no cronograma)*
+- [x] `Admin::DashboardsController#show` com período e filtro por produto — *21/09: `period` hoje / 7 dias (padrão) / 30 dias / custom (`from`/`to`, fuso São Paulo) + `product_id`; toda a conta em `Admin::Dashboard` (objeto de consulta). **Decisão:** coorte por `created_at` do pedido — checkouts, vendas e reembolsos do período são dos pedidos criados nele, para as taxas compararem o mesmo grupo*
+- [x] Cards: visitas, únicos, checkouts, vendas, faturamento bruto/líquido estimado, taxas, reembolsos, entregas — *visitas só `PageVisit.humans`, únicos por `visitor_id`; líquido = bruto − (`PAYPAL_FEE_PERCENT` 4,4% + `PAYPAL_FEE_FIXED_CENTS` 30¢ por venda) — novas variáveis, com padrão; entregas por `MessageLog` `order_delivery` (email `sent+`, WhatsApp `delivered+`, falhas em vermelho); card "CAC e ROAS" reservado (Fase 6)*
+- [x] Vendas por `utm_campaign`/`utm_content`; últimos pedidos; alertas (webhooks/mensagens falhas, disputas) — *top 10 por vendas, `nil` = "(direto / sem UTM)"; últimos 10 pedidos e alertas ignoram o período; alertas linkam para as listas filtradas*
+- [x] Spec: `spec/requests/admin/dashboards_spec.rb` com uma compra refletida — *7 exemplos: compra refletida (visitas, únicos, taxas, bruto/líquido, entrega, campanha), filtros de produto e período, reembolso/disputa/alertas, estado vazio sem divisão por zero. Screenshots claro/escuro/375 px conferidos*
+- [x] ~~*(Pode ir para a Fase 6 se faltar tempo — registrar no cronograma)*~~ — *entregue na Fase 4*
 
 ### 4.4 Plano de testes — spec [15](../specs/15-plano-de-testes.md)
 - [ ] Matriz T01–T30 conferida: cada caso tem spec e está verde
