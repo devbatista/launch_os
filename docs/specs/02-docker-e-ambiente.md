@@ -256,8 +256,12 @@ docker compose --profile tunnel up -d tunnel
 docker compose --profile tunnel logs tunnel | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com'
 ```
 
-A URL muda a cada subida do túnel. Cadastre `<url>/webhooks/paypal` no PayPal Developer (ou via API
-`POST /v1/notifications/webhooks`, como feito em 18/09) e ponha o id em `PAYPAL_WEBHOOK_ID` no `.env`.
+A URL muda a cada subida do túnel. Cadastre `<url>/webhooks/paypal` no PayPal Developer (ou
+`bin/rails paypal:webhook_create[<url>]`, que cria o webhook com os eventos tratados e imprime o id) e ponha
+o id em `PAYPAL_WEBHOOK_ID` no `.env`. `paypal:webhooks` lista os existentes. **Cada ambiente tem o seu
+webhook** (o mesmo app Sandbox pode ter vários): dev = túnel (`4T3411320U005420J`), produção =
+`https://www.devbatista.online/webhooks/paypal` (`67H18935V6305262B`, criado em 21/09). Para o Live,
+repetir `paypal:webhook_create` com `PAYPAL_ENV=live` e as credenciais Live.
 `development.rb` já libera `*.trycloudflare.com` em `config.hosts`. **Depois de mudar o `.env`, recrie os
 containers (`docker compose up -d web sidekiq`) — `restart` não relê o env_file.**
 

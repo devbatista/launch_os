@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 4.5 (go-live) assim que o PayPal Live liberar. Da 4.4 (21/09) falta só o manual do Twilio Sandbox (ver `docs/qa/`), que fecha junto com o item pendente da 2.7. Em paralelo: M2 — download em produção ✅ (19/09); faltam webhook apontando para produção e o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 4.5 (go-live) assim que o PayPal Live liberar. Da 4.4 (21/09) falta só o manual do Twilio Sandbox (ver `docs/qa/`), que fecha junto com o item pendente da 2.7. Em paralelo: M2 — download em produção ✅ (19/09); webhook em produção ✅ (21/09); falta o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -212,7 +212,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] `ThankYouController#show` (pending / pago / inativo), `no-store`, marca `purchase_tracked_at` na 1ª visita — *renderiza `data-module="tracking" data-event="purchase"` só nessa visita (o disparo real é a 4.1); `noindex`. **Decisão 18/09**: a Thank You é por `/thank-you/:order_id` e **não mostra o link de download** — ele vai só por email/WhatsApp (2.6/2.7); a página só confirma o pagamento e diz para onde o link foi. Specs 08 e 12 atualizadas*
 - [x] `DownloadsController#show`: lock + incremento, redirect para URL assinada (5 min), 410/429, rate limit — *402 para não-pago; `include ActiveStorage::SetCurrent` (serviço Disk nos testes); página `downloads/unavailable` com partial `shared/_token_unavailable` reutilizado pela Thank You*
 - [x] Download do PDF real funcionando em dev (MinIO) — *18/09: redirect `X-Amz-Expires=300` + `attachment; filename="<slug>.pdf"`, PDF servido, contador 1; URL assinada de 1 s → 403 após expirar; objeto sem assinatura → 403. Em produção confirmar na primeira compra real (S3 já validado 403 na 1.9)*
-- [x] Download do PDF real funcionando em produção — *19/09: compra Sandbox em produção → pedido pago, token ativo, email pelo SES real; `/download/:token` → 303 para URL assinada do bucket `launch-os-prod` → PDF (3 páginas, 297 KB). Achados: (1) o comprador sandbox padrão tem email fake → bounce no SES; usar conta sandbox com email customizado nos próximos testes; (2) `PAYPAL_WEBHOOK_ID` do Railway aponta para o túnel de dev — produção ainda não recebe webhooks*
+- [x] Download do PDF real funcionando em produção — *19/09: compra Sandbox em produção → pedido pago, token ativo, email pelo SES real; `/download/:token` → 303 para URL assinada do bucket `launch-os-prod` → PDF (3 páginas, 297 KB). Achados: (1) o comprador sandbox padrão tem email fake → bounce no SES; usar conta sandbox com email customizado nos próximos testes; (2) `PAYPAL_WEBHOOK_ID` do Railway apontava para o túnel de dev — **resolvido em 21/09**: webhook Sandbox próprio para produção (`67H18935V6305262B`, `rake paypal:webhook_create`), id nos três serviços do Railway; evento `PAYMENT.CAPTURE.COMPLETED` reenviado pela API chegou com assinatura válida e foi `processed` (no-op, pedido já pago)*
 - [x] Specs: `spec/requests/thank_you_spec.rb` (T21), `spec/requests/downloads_spec.rb` (T06), `spec/models/download_token_spec.rb`
 
 ### 2.5 Recuperação de acesso — spec [08](../specs/08-entrega-download-tokens.md)
@@ -312,7 +312,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 - [x] Falhas corrigidas — *nenhuma falha encontrada na auditoria*
 
 ### 4.5 Go-live — spec [00](../specs/00-visao-geral.md), [13](../specs/13-seguranca.md)
-- [ ] Credenciais PayPal Live em produção; webhook Live cadastrado
+- [ ] Credenciais PayPal Live em produção; webhook Live cadastrado — *21/09: produção já recebe webhooks do **Sandbox** (webhook `67H18935V6305262B` via `rake paypal:webhook_create[https://www.devbatista.online]`; assinatura verificada em produção). Para o Live: `PAYPAL_ENV=live`, credenciais Live e repetir a task — id novo em `PAYPAL_WEBHOOK_ID`*
 - [ ] `TWILIO_ENABLED` conforme aprovação do sender (true só com sender + template aprovados)
 - [ ] Copy final da LP (C.4), PDF final (C.3) e políticas revisadas (C.5) publicados
 - [ ] Manuais 5–8: compra real US$ 14.90 → entrega → reembolso; Events Manager; email real em Gmail/Outlook/iCloud; Lighthouse
