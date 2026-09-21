@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 4.5 (go-live) assim que o PayPal Live liberar. Da 4.4 (21/09) faltam só dois manuais com o Rafael: compra Sandbox pelo celular e Twilio Sandbox (ver `docs/qa/`). Em paralelo: M2 — download em produção ✅ (19/09); faltam webhook apontando para produção e o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → 4.5 (go-live) assim que o PayPal Live liberar. Da 4.4 (21/09) falta só o manual do Twilio Sandbox (ver `docs/qa/`), que fecha junto com o item pendente da 2.7. Em paralelo: M2 — download em produção ✅ (19/09); faltam webhook apontando para produção e o WhatsApp no Sandbox da Twilio (Content Template `HX…` + `join`). Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
 
 ---
 
@@ -308,7 +308,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 - [x] Matriz T01–T30 conferida: cada caso tem spec e está verde — *21/09: todos com spec (tags T01–T30 nos nomes; T28/T30 tagueados agora). **Decisão:** sem system spec no MVP — T15 vira request spec (barra fixa + container do PayPal) mais conferência em navegador (Lighthouse 100, screenshots 375 px). + caso de erro inesperado no `ProcessPaypalWebhookJob` (failed + Sentry + relança). 343 exemplos, 0 falhas*
 - [x] SimpleCov ≥ 90% em services/jobs/webhooks — *Services 99%, Providers 99%, Jobs 97%, Webhooks 99%, total 98,9%; `minimum_coverage 90` ligado no `spec_helper` (CI falha se cair). Linhas descobertas são só rescues de corrida/JSON inválido*
 - [x] `rubocop` + `rubocop-rspec` sem ofensas — *no CI (job `lint`) e conferido localmente*
-- [ ] Manuais 1–4 executados e registrados em `docs/qa/` (compra Sandbox desktop + mobile, refund Sandbox, Twilio Sandbox + STOP, webhook real via túnel) — *registro criado em `docs/qa/README.md` com os 8 manuais da spec 15: desktop, refund, webhook via túnel, Test Events, SES e Lighthouse ✅ (com data e evidência). **Faltam:** compra Sandbox pelo **celular** (LP de produção) e o **Twilio Sandbox** (template `HX…` + `join`), ambos dependem do Rafael*
+- [ ] Manuais 1–4 executados e registrados em `docs/qa/` (compra Sandbox desktop + mobile, refund Sandbox, Twilio Sandbox + STOP, webhook real via túnel) — *registro criado em `docs/qa/README.md` com os 8 manuais da spec 15: desktop, refund, webhook via túnel, Test Events, SES e Lighthouse ✅ (com data e evidência). Compra pelo **celular** ✅ 21/09 (iPhone/Safari em produção, pedido `f599fb07`). **Falta:** o **Twilio Sandbox** (template `HX…` + `join`), que depende do Rafael*
 - [x] Falhas corrigidas — *nenhuma falha encontrada na auditoria*
 
 ### 4.5 Go-live — spec [00](../specs/00-visao-geral.md), [13](../specs/13-seguranca.md)
