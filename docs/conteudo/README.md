@@ -25,7 +25,7 @@ depois do deploy da branch (o YAML vai na imagem).
 - **Entrega só por email/WhatsApp** — a FAQ antiga dizia "you land on a download page"; a Thank You não entrega o link (regra do projeto). A FAQ nova descreve o email, o spam e o reenvio.
 - **Saúde mental**: FAQ sobre ADHD/ansiedade/depressão diz que não é tratamento nem substitui apoio profissional, alinhada ao disclaimer do PDF.
 - **Garantia** cita `support@devbatista.online` e "14 days" em texto (coincide com `refund_days = 14`; se mudar o prazo, mudar o YAML também).
-- **Preço riscado** (`compare_at_price` US$ 29,00): só manter se o produto tiver sido vendido a esse preço por um período real; "de/por" sem histórico é preço enganoso (FTC). Decidir antes da campanha — recomendação: zerar.
+- **Preço riscado** (`compare_at_price` US$ 29,00): **decisão 21/09 — manter.** Alertado o risco de "de/por" sem histórico de venda a esse preço (FTC); decisão do usuário.
 - Razão social **DevBatista Desenvolvimento de Software e Serviços LTDA** nas três páginas legais e no PDF (p. 38); no rodapé da LP fica a marca "DevBatista" (curto) — a razão social está a um clique.
 
 ## Checklist de publicação
@@ -35,4 +35,4 @@ depois do deploy da branch (o YAML vai na imagem).
 - [x] Páginas legais com razão social (C.5) — 21/09
 - [x] Capa, mockup e og_image na paleta navy — 21/09
 - [ ] Previews de páginas (opcional; 11, 12, 20 e 29 são as melhores amostras) — o bloco "Take a peek inside" só aparece com ≥ 1
-- [ ] Decisão sobre `compare_at_price`
+- [x] Decisão sobre `compare_at_price` — manter US$ 29,00 (21/09)
