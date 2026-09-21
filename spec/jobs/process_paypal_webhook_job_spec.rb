@@ -111,6 +111,18 @@ RSpec.describe ProcessPaypalWebhookJob do
     expect(order.reload).to be_refunded
   end
 
+  it "erro inesperado marca o evento como failed, reporta ao Sentry e relança (fica visível no Sidekiq)" do
+    order = create(:order)
+    event = event_for("PAYMENT.CAPTURE.COMPLETED", order)
+    allow(Orders::MarkPaid).to receive(:call).and_raise(RuntimeError, "boom")
+    allow(Sentry).to receive(:capture_exception)
+
+    expect { described_class.perform_now(event.id) }.to raise_error(RuntimeError, "boom")
+    expect(event.reload).to be_failed
+    expect(event.error).to eq("boom")
+    expect(Sentry).to have_received(:capture_exception).with(an_instance_of(RuntimeError))
+  end
+
   it "não reprocessa evento que não está received e descarta id inexistente" do
     order = create(:order)
     event = event_for("PAYMENT.CAPTURE.COMPLETED", order)

@@ -1,5 +1,6 @@
 require "rails_helper"
 
+# T28 (spec 15)
 RSpec.describe Providers::Paypal::Client, :paypal do
   subject(:client) { described_class.new }
 

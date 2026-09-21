@@ -8,7 +8,9 @@ SimpleCov.start "rails" do
   group "Mailers", "app/mailers"
   group "Providers", "app/services/providers"
   # O mínimo global passa a valer quando houver código nesses grupos (a partir da Fase 2).
-  minimum_coverage 0
+  # Spec 15: services, jobs e webhooks ≥ 90%. A suíte inteira está em ~99%, então o mínimo global vale
+  # para todos os grupos — se cair, o CI falha.
+  minimum_coverage 90
 end
 
 RSpec.configure do |config|
