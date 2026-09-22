@@ -10,9 +10,7 @@
     <%# Meta tags de SEO/OG, canonical e snippets de tracking (com nonce) vêm do controller/view via content_for. %>
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <%= favicon_tags(@product) %>
 
     <%# Só Tailwind: actiontext.css (Trix) é do admin; o conteúdo do Action Text na LP usa `prose`. %>
     <%= stylesheet_link_tag "tailwind", "application" %>

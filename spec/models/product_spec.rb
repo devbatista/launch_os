@@ -9,6 +9,7 @@ RSpec.describe Product do
     it { is_expected.to have_one_attached(:cover_image) }
     it { is_expected.to have_one_attached(:mockup_image) }
     it { is_expected.to have_one_attached(:og_image) }
+    it { is_expected.to have_one_attached(:favicon) }
     it { is_expected.to have_many_attached(:preview_images) }
     it { is_expected.to have_rich_text(:description) }
   end
@@ -123,6 +124,14 @@ RSpec.describe Product do
 
       expect(product.errors[:mockup_image]).to include("deve ser JPEG, PNG ou WebP")
       expect(product.reload.mockup_image).not_to be_attached
+    end
+
+    it "valida o favicon como as demais imagens" do
+      product.favicon.attach(text_upload)
+
+      expect(product).not_to be_valid
+      expect(product.errors[:favicon]).to include("deve ser JPEG, PNG ou WebP")
+      expect(product.reload.favicon).not_to be_attached
     end
 
     it "rejeita PDF acima de 50 MB" do

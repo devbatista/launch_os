@@ -325,6 +325,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 
 ## Trilha de conteúdo (paralela)
 
+- [x] Favicon da marca (D navy + ponto azul da capa) em `public/icon.svg`/`icon.png`/`apple-touch-icon.png` e favicon por produto no admin — *22/09: anexo `favicon` com variant `:icon` 512×512 PNG; a LP usa o do produto e cai para a marca*
 - [x] C.5 Políticas em inglês revisadas — *21/09: razão social **DevBatista Desenvolvimento de Software e Serviços LTDA** nas três páginas (`LAST_UPDATED` 21/09); texto já revisado em 17/09*
 - [x] C.1 PDF escrito (intro, semanas 1–3, anexos) — *21/09: v1.1, 38 páginas (4 partes: Understand / Make Starting Easier / The 21-Day Reset / Your Toolkit)*
 - [x] C.2 Revisão do inglês — *21/09: duas rodadas de revisão (v1.0 → v1.1: p. 6 nomeada "Procrastination Audit", cartão da p. 12 com 4 passos, checkbox do Day 21, copyright com razão social + email de suporte)*

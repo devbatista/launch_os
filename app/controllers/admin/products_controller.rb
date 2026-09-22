@@ -93,7 +93,7 @@ module Admin
         permitted = params.expect(product: [
           :name, :slug, :headline, :subheadline, :cta_text, :price, :compare_at_price, :currency,
           :description, :problem_text, :guarantee_text, :refund_days, :meta_title, :meta_description,
-          :pdf_file, :cover_image, :mockup_image, :og_image, preview_images: []
+          :pdf_file, :cover_image, :mockup_image, :og_image, :favicon, preview_images: []
         ])
         permitted[:preview_images] = Array(permitted[:preview_images]).compact_blank if permitted.key?(:preview_images)
         permitted.reject { |key, value| Product::ATTACHMENT_NAMES.include?(key) && value.blank? }

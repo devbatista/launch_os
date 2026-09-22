@@ -10,7 +10,7 @@ RSpec.describe "Admin product uploads" do
     it "cria o produto com PDF, imagens e previews" do
       post admin_products_path, params: { product: base_params.merge(
         pdf_file: pdf_upload, cover_image: image_upload, mockup_image: image_upload, og_image: image_upload,
-        preview_images: [ image_upload, image_upload ]
+        favicon: image_upload, preview_images: [ image_upload, image_upload ]
       ) }
 
       product = Product.sole
@@ -19,6 +19,7 @@ RSpec.describe "Admin product uploads" do
       expect(product.cover_image).to be_attached
       expect(product.mockup_image).to be_attached
       expect(product.og_image).to be_attached
+      expect(product.favicon).to be_attached
       expect(product.preview_images.count).to eq(2)
       expect(product.pdf_file.blob.service_name).to eq("test")
     end
@@ -126,6 +127,17 @@ RSpec.describe "Admin product uploads" do
       expect(response).to redirect_to(edit_admin_product_path(product, anchor: "files"))
       expect(flash[:alert]).to include("Despublique")
       expect(product.reload.pdf_file).to be_attached
+    end
+
+    it "remove o favicon (não é obrigatório para publicar)" do
+      create(:benefit, product:)
+      product.favicon.attach(image_upload)
+      product.publish
+
+      delete admin_product_attachment_path(product, product.favicon.attachment)
+
+      expect(product.reload.favicon).not_to be_attached
+      expect(product).to be_published
     end
 
     it "remove a capa de um publicado quando ainda há mockup" do

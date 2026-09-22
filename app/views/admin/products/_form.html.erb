@@ -87,6 +87,9 @@
                  hint: "Imagem do produto em 3D/dispositivo.", accept: Product::IMAGE_CONTENT_TYPES.join(","), max_bytes: Product::IMAGE_MAX_BYTES %>
       <%= render "admin/products/attachment_field", form:, product:, name: :og_image, label: "Imagem OG",
                  hint: "Compartilhamento em redes (1200×630).", accept: Product::IMAGE_CONTENT_TYPES.join(","), max_bytes: Product::IMAGE_MAX_BYTES %>
+      <%= render "admin/products/attachment_field", form:, product:, name: :favicon, label: "Favicon",
+                 hint: "Ícone da aba da LP, quadrado (512×512). Sem ele, usa o ícone da DevBatista.",
+                 accept: Product::IMAGE_CONTENT_TYPES.join(","), max_bytes: Product::IMAGE_MAX_BYTES %>
     </div>
 
     <%= render "admin/products/attachment_field", form:, product:, name: :preview_images, label: "Previews (páginas de amostra)",
