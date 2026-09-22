@@ -39,7 +39,8 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Meta Business: portfólio `DevBatista` e conta de anúncios `DevBatista` (ID `2425512304918484`, BRL, São Paulo, CNPJ) já existiam; forma de pagamento adicionada em 16/09
 - [x] Conjunto de dados (Pixel) `LaunchOS` criado → `META_PIXEL_ID=2908081392894300` no `.env` e no Railway (16/09)
 - [x] Domínio `devbatista.online` verificado no portfólio DevBatista via TXT `facebook-domain-verification=…` no apex (16/09). *A 1ª tentativa deu "já verificado por outra empresa"; a 2ª passou — mensagem antiga fica na tela, ignorar*
-- [ ] Eventos priorizados (Aggregated Event Measurement) com Purchase no topo — pode ficar para a Fase 4
+- [x] Página do Facebook vinculada ao portfólio — *22/09: confirmada pela campanha anterior `E-book | Leads | DevBatista | Set/2026` (3.139 de alcance, 3 leads a R$ 38,07), que só veicula com Página. Conta já aquecida: pagamento aprovado, anúncios já aprovados em revisão, sem limite de gasto de conta nova*
+- [ ] Eventos priorizados (Aggregated Event Measurement) com Purchase no topo — **pendência da Fase 5, antes de veicular**: sem isso o público iOS perde conversão
 
 ### 0.3 Twilio — spec [09](../specs/09-notificacoes-email-whatsapp.md)
 - [x] Twilio: **subconta `launch_os`** (SID `AC661274f8…`) criada dentro da conta existente para isolar credenciais, números e Sender do outro app; `TWILIO_ACCOUNT_SID`/`TWILIO_AUTH_TOKEN` no `.env` (16/09)
