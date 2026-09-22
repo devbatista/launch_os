@@ -167,7 +167,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 
 | ID | Tarefa | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|
-| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 18/dia | 2 | 4.5, C.6 | ⬜ | | |
+| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 18/dia | 2 | 4.5, C.6 | ⬜ | | Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
 | 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | ⬜ | | |
 | 5.3 | Suporte a compradores e monitoramento de erros (Sentry, MessageLog, disputas) | 2 | 5.1 | ⬜ | | |
 | 5.4 | Análise final (02–03/11): comparar com referências e escolher o cenário de decisão | 4 | 5.2 | ⬜ | | |

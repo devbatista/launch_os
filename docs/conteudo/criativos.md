@@ -93,11 +93,19 @@ O `fbclid` a Meta acrescenta sozinha.
 
 - [x] Pixel `LaunchOS` (2908081392894300) instalado e domínio verificado; ViewContent, InitiateCheckout e Purchase validados no Events Manager (4.1)
 - [x] LP, checkout PayPal Live, entrega por email e páginas legais em produção
-- [ ] Página do Facebook + conta do Instagram vinculadas (a Meta não veicula anúncio sem Página)
-- [ ] Conta de anúncios com forma de pagamento e fuso/moeda conferidos
+- [x] Página do Facebook vinculada e conta de anúncios `DevBatista` (`2425512304918484`, BRL, São Paulo) com pagamento — confirmados em 22/09 pela campanha de Set/2026 que já veiculou
+- [ ] Conta do Instagram vinculada (opcional; sem ela o anúncio aparece com o nome da Página)
 - [ ] Priorização de eventos agregados no Events Manager com **Purchase em primeiro lugar** (necessário para iOS)
 - [ ] Os 6 arquivos revisados nas regras da seção 4
 - [ ] Campanha montada conforme 5.1 do cronograma e planilha de acompanhamento diário pronta (5.2)
+
+**Ao montar:** criar do zero, sem duplicar a campanha de Leads de Set/2026 — ela arrasta objetivo, evento de
+otimização e público brasileiro. Deixá-la desativada. Os R$ 38,07 por lead dela não servem de referência aqui:
+outro objetivo, outro público, outro país. Nomear conjunto e anúncios como os `utm_content` da seção 5, para o
+Gerenciador bater com "Vendas por conteúdo (criativo)" no painel.
+
+**Moeda:** a conta cobra em BRL e o produto vende em USD. O relatório da Meta virá em reais e o do painel em
+dólares — converter antes de comparar CPC e CAC.
 
 ## 7. Como ler o resultado (7 dias)
 
