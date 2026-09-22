@@ -128,6 +128,11 @@ export function init(el) {
 
 `og_image` variant 1200×630 WebP/JPEG.
 
+**Favicon.** O `<head>` usa o `favicon` do produto (variant `:icon`, 512×512 PNG, servido pelo proxy do
+Active Storage) quando houver; na falta dele, a marca DevBatista em `public/icon.svg` / `icon.png` /
+`apple-touch-icon.png`. Com o ícone do produto o `<link>` do SVG da marca sai fora, porque o navegador
+prefere SVG a qualquer PNG. Helper: `LandingPagesHelper#favicon_tags`.
+
 ## Performance
 
 - Imagens: variants WebP, `loading="lazy"` (exceto mockup do hero), `width`/`height` explícitos.

@@ -106,6 +106,28 @@ RSpec.describe "Landing pages" do
       expect(response.body).to include('property="og:image"')
       expect(response.body).not_to include("og:image:width")
     end
+
+    it "usa o favicon do produto no lugar do ícone da marca" do
+      product = create(:product, :published, slug: "fav")
+      product.favicon.attach(image_upload)
+
+      get "/fav"
+
+      expect(response.body).to match(%r{<link rel="icon" type="image/png" href="/rails/active_storage/representations/proxy/[^"]+">})
+      expect(response.body).to match(%r{<link rel="apple-touch-icon" href="/rails/active_storage/representations/proxy/[^"]+">})
+      # O SVG da marca sairia na frente do PNG do produto em Chrome/Firefox.
+      expect(response.body).not_to include("/icon.svg")
+    end
+
+    it "usa o ícone da marca quando o produto não tem favicon" do
+      create(:product, :published, slug: "sem-fav")
+
+      get "/sem-fav"
+
+      expect(response.body).to include('<link rel="icon" type="image/png" href="/icon.png">',
+                                       '<link rel="icon" type="image/svg+xml" href="/icon.svg">',
+                                       '<link rel="apple-touch-icon" href="/apple-touch-icon.png">')
+    end
   end
 
   describe "bloco de oferta (#buy)" do

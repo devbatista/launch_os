@@ -25,7 +25,7 @@ com fallback de submit HTML normal se o JS falhar):
 1. **Básico**: name, slug (editável, pré-preenchido via `parameterize`), status (somente leitura; muda pelos botões).
 2. **Oferta**: headline, subheadline, cta_text, price (input em dólares, convertido para cents), compare_at_price, currency (select, só USD no MVP).
 3. **Conteúdo**: description (Action Text / Trix), problem_text, guarantee_text, refund_days.
-4. **Arquivos**: pdf_file, cover_image, mockup_image, og_image, preview_images (múltiplo; permite remover individualmente).
+4. **Arquivos**: pdf_file, cover_image, mockup_image, og_image, favicon, preview_images (múltiplo; permite remover individualmente).
 5. **SEO**: meta_title (default = name), meta_description (default = subheadline).
 6. **Benefícios** (lista ordenável: title, description).
 7. **Depoimentos** (author_name, author_role, quote).

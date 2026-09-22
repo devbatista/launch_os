@@ -10,7 +10,7 @@ class Product < ApplicationRecord
   IMAGE_CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
   IMAGE_MAX_BYTES = 5.megabytes
   PREVIEW_IMAGES_MAX = 8
-  ATTACHMENT_NAMES = %w[pdf_file cover_image mockup_image og_image preview_images].freeze
+  ATTACHMENT_NAMES = %w[pdf_file cover_image mockup_image og_image favicon preview_images].freeze
   TEMPLATES = %w[direct_response].freeze # app/views/landing_pages/templates/<template>/show
 
   has_many :benefits, -> { ordered }, dependent: :destroy, inverse_of: :product
@@ -30,6 +30,10 @@ class Product < ApplicationRecord
   has_one_attached :og_image do |a|
     # 1200×630 JPEG: o scraper do Facebook não lida bem com WebP.
     a.variant :og, resize_to_fill: [ 1200, 630 ], format: :jpeg, saver: { quality: 85 }, preprocessed: true
+  end
+  # Ícone da aba da LP (spec 06); sem ele a página usa a marca DevBatista (`public/icon.*`).
+  has_one_attached :favicon do |a|
+    a.variant :icon, resize_to_limit: [ 512, 512 ], format: :png, preprocessed: true
   end
   has_many_attached :preview_images do |a|
     a.variant :thumb, resize_to_limit: [ 600, 800 ], format: :webp, preprocessed: true
@@ -150,7 +154,7 @@ class Product < ApplicationRecord
     end
 
     def image_formats
-      { cover_image:, mockup_image:, og_image: }.each do |attribute, attachment|
+      { cover_image:, mockup_image:, og_image:, favicon: }.each do |attribute, attachment|
         validate_image(attribute, attachment.blob) if attachment.attached?
       end
 

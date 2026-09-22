@@ -129,7 +129,7 @@ Coluna `email_address` segue o gerador `rails g authentication`.
 | cta_text | string | default `"Buy Now"` |
 
 Anexos (Active Storage): `pdf_file` (has_one), `cover_image` (has_one), `mockup_image` (has_one),
-`og_image` (has_one), `preview_images` (has_many). Validações de content type e tamanho
+`og_image` (has_one), `favicon` (has_one, variant `:icon` 512×512 PNG), `preview_images` (has_many). Validações de content type e tamanho
 (PDF ≤ 50 MB; imagens JPEG/PNG/WebP ≤ 5 MB).
 
 Índices: `slug` único; `status`.
@@ -253,6 +253,7 @@ class Product < ApplicationRecord
   has_one_attached :cover_image
   has_one_attached :mockup_image
   has_one_attached :og_image
+  has_one_attached :favicon
   has_many_attached :preview_images
   has_rich_text :description
 

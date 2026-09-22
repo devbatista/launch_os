@@ -1,3 +1,7 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<!-- Marca DevBatista: "D" em navy #0E172B com o ponto azul #8EA6DA da capa do PDF.
+     Sem texto (fontes não são garantidas em favicon): o D é um path. -->
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DevBatista">
+  <rect width="512" height="512" rx="112" fill="#0E172B"/>
+  <path fill="#F9FAFC" fill-rule="evenodd" d="M133 128 H245 C321 128 379 185 379 256 C379 327 321 384 245 384 H133 Z M205 192 V320 H245 C283 320 311 292 311 256 C311 220 283 192 245 192 Z"/>
+  <circle cx="352" cy="360" r="38" fill="#8EA6DA"/>
 </svg>

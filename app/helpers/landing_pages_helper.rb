@@ -31,5 +31,24 @@ module LandingPagesHelper
     rails_storage_proxy_url(variant)
   end
 
+  # Ícone da aba: o do produto quando houver (spec 05/06), senão a marca DevBatista.
+  # Com o ícone do produto o SVG da marca sai fora — navegadores preferem o SVG a qualquer PNG.
+  # Servido pelo proxy do Active Storage (mesma origem, cacheável) em vez do redirect para o S3.
+  def favicon_tags(product = nil)
+    return brand_favicon_tags unless product.respond_to?(:favicon) && product.favicon.attached?
+
+    href = rails_storage_proxy_path(product.favicon.variant(:icon))
+    safe_join([ tag.link(rel: "icon", type: "image/png", href:), tag.link(rel: "apple-touch-icon", href:) ], "\n    ")
+  end
+
   def support_email = ENV.fetch("SUPPORT_EMAIL", "support@devbatista.online")
+
+  private
+    def brand_favicon_tags
+      safe_join([
+        tag.link(rel: "icon", type: "image/png", href: "/icon.png"),
+        tag.link(rel: "icon", type: "image/svg+xml", href: "/icon.svg"),
+        tag.link(rel: "apple-touch-icon", href: "/apple-touch-icon.png")
+      ], "\n    ")
+    end
 end
