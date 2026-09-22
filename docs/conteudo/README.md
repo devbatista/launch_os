@@ -28,6 +28,9 @@ depois do deploy da branch (o YAML vai na imagem).
 - **Preço riscado** (`compare_at_price` US$ 29,00): só manter se o produto tiver sido vendido a esse preço por um período real; "de/por" sem histórico é preço enganoso (FTC). Decidir antes da campanha — recomendação: zerar.
 - Razão social **DevBatista Desenvolvimento de Software e Serviços LTDA** nas três páginas legais e no PDF (p. 38); no rodapé da LP fica a marca "DevBatista" (curto) — a razão social está a um clique.
 
+Criativos da campanha (C.6): briefing, copy dos três anúncios, UTMs e prompts de geração em
+[criativos.md](criativos.md).
+
 ## Checklist de publicação
 
 - [x] PDF v1.1 revisado (C.1–C.3) e anexo trocado em produção — 21/09

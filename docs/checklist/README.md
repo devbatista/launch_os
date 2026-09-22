@@ -331,7 +331,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 - [x] C.2 Revisão do inglês — *21/09: duas rodadas de revisão (v1.0 → v1.1: p. 6 nomeada "Procrastination Audit", cartão da p. 12 com 4 passos, checkbox do Day 21, copyright com razão social + email de suporte)*
 - [x] C.4 Copy final da LP — *21/09: copy derivada do PDF em `db/content/21-day-procrastination-reset.yml` + `bin/rails content:load[slug]` (6 benefícios, 7 FAQs, sem depoimentos fictícios, "10–20 minutes a day", entrega só por email); decisões em `docs/conteudo/README.md`. **Publicado em 21/09:** `content:load` em produção + capa/mockup/og na paleta navy. **Pendente:** decisão sobre o preço riscado (US$ 29,00) e, opcional, previews de páginas*
 - [x] C.3 Diagramação do PDF + tracker imprimível — *21/09: WeasyPrint, US Letter, fontes embutidas, 243 KB, metadados Title/Author, bookmarks; trackers de 21 e 30 dias, cartões recortáveis. Anexo trocado em produção em 21/09 (243.337 bytes, igual ao arquivo revisado)*
-- [ ] C.6 Três criativos (dor / mecanismo / transformação), sem claims absolutos — até 25/10; subir como rascunho em 24/10
+- [ ] C.6 Três criativos (dor / mecanismo / transformação), sem claims absolutos — até 25/10; subir como rascunho em 24/10 — *22/09: briefing pronto em `docs/conteudo/criativos.md` (copy dos 3 anúncios, formatos 4:5 e 9:16, regras de política da Meta, UTMs por criativo e prompts de geração); falta produzir os 6 arquivos*
 
 ---
 
