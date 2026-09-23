@@ -31,7 +31,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 1 — Base | 21/09 – 04/10 | S1–S2 | 46 | | 9/9 — concluída em 17/09 (M1) | ✅ |
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 8/8 código entregue em 17–18/09; M2 ✅ 21/09. Teste real da Twilio adiado por decisão (lançamento com `TWILIO_ENABLED=false`) | ✅ |
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
-| Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 4/5 — 4.1 em 19/09, 4.2–4.4 em 21/09; 4.5 aguarda PayPal Live | 🟦 |
+| Fase 4 — Tracking, testes e go-live | 19/09 – 23/09 | S1 | 23 | | 5/5 — 4.1 em 19/09, 4.2–4.4 em 21/09, 4.5 em 23/09 | ✅ |
 | Trilha de conteúdo (paralela) | 21/09 – 23/09 | S1 | 45 (fora do dev) | | 6/6 | ✅ |
 | Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
 | Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
@@ -51,7 +51,7 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | **M0** — Contas prontas | 20/09 | PayPal, Meta, Twilio, hospedagem, domínio, SES e Sentry criados; aprovações solicitadas | ⬜ | |
 | **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Debugger da Meta e email de suporte ok — Fase 1 concluída |
 | **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ✅ | 21/09: em produção — pago, webhook próprio com assinatura válida, email via SES, download ok, duplicado é no-op (T02). WhatsApp fora do escopo do M2 por decisão (Twilio adiada; lançamento só com email) |
-| **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ⬜ | |
+| **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ✅ | 23/09 — um mês antes da meta |
 | **M4** — Campanha no ar | 26/10 | Três anúncios aprovados pela Meta e ativos, R$ 18/dia | ⬜ | |
 | **M5** — Decisão | 03/11 | Relatório com métricas (17.3) e cenário (17.4) escolhido; próximo orçamento definido ou teste encerrado | ⬜ | |
 
@@ -148,7 +148,7 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 | 4.2 | GA4, Sentry, monitor de uptime, backup diário do banco, versionamento do bucket, CSP, `config.hosts` | [10](../specs/10-tracking-e-analytics.md), [13](../specs/13-seguranca.md) | 3 | 0.5 | ✅ | 21/09 | GA4 pelo módulo; CSP com nonce (script e style, sem unsafe-inline), Permissions-Policy, filter_parameters; Sentry só após retentativas + report-uri (erro de teste confirmado); serviço cron `backup` no Railway (pg_dump 18 → bucket, dump de produção restaurado localmente com contagens iguais); spec 13 percorrida (32/35 — restam C.5, revisão por 2ª pessoa e o manual da 4.5) |
 | 4.3 | Dashboard básico no admin: visitas, checkouts, vendas, faturamento, conversão, vendas por campanha | [11](../specs/11-admin-pedidos-clientes-dashboard.md) | 4 | 4.1 | ✅ | 21/09 | `Admin::Dashboard` com período/produto; funil, receita (líquida estimada), entregas, vendas por campanha/criativo, últimos pedidos e alertas; coorte por pedido criado no período |
 | 4.4 | Executar o plano de testes (T01–T27 automatizados + manuais 1–4) em Sandbox e corrigir falhas | [15](../specs/15-plano-de-testes.md) | 6 | 2.8, 4.1 | ✅ | 21/09 | Matriz T01–T30 conferida (343 specs verdes), cobertura ≥ 97% nos grupos com `minimum_coverage 90`, registro de QA em `docs/qa/`; compra mobile ✅. Twilio Sandbox adiado por decisão (lançamento só com email) |
-| 4.5 | Go-live: credenciais PayPal Live, SES fora do sandbox, compra real com valor controlado + reembolso, validação no Events Manager, checklist de segurança e definição de pronto | [13](../specs/13-seguranca.md), [00](../specs/00-visao-geral.md) | 4 | 4.4 | 🟦 | | 21/09: PayPal Live em produção (credenciais + webhook `1SX830858W927974S`); compra real R$ 5,00 + reembolso validados ponta a ponta. Falta: rotação do Secret, preço riscado, definição de pronto (conteúdo C.1–C.5 publicado em 21/09). Compra em USD = primeira venda real da campanha (decisão 21/09) |
+| 4.5 | Go-live: credenciais PayPal Live, SES fora do sandbox, compra real com valor controlado + reembolso, validação no Events Manager, checklist de segurança e definição de pronto | [13](../specs/13-seguranca.md), [00](../specs/00-visao-geral.md) | 4 | 4.4 | ✅ | 23/09 | 21/09: PayPal Live em produção (credenciais + webhook `1SX830858W927974S`); compra real R$ 5,00 + reembolso validados ponta a ponta. 23/09: definição de pronto 13/13 e spec 13 40/40 (adulteração de valor testada, revisão por segunda pessoa feita). Ressalvas registradas: compra em USD pela primeira venda real e WhatsApp na versão com Twilio. Compra em USD = primeira venda real da campanha (decisão 21/09) |
 
 **Total: 23 h**
 

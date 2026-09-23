@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → 4.5: **PayPal Live no ar desde 21/09** (compra real em BRL + reembolso validados). Falta: rotacionar o Secret Live, decidir o preço riscado (C.1–C.5 ✅ e publicados em 21/09: PDF v1.1, copy, imagens navy, razão social) e a definição de pronto. A compra em USD será a primeira venda real da campanha (decisão 21/09). 4.4 ✅ em 21/09 (Twilio Sandbox adiado por decisão — lançamento só com email). Em paralelo: M2 — download em produção ✅ (19/09); webhook em produção ✅ (21/09). **Decisão 21/09:** o teste no Sandbox da Twilio fica adiado, sem data — lançamento com `TWILIO_ENABLED=false` (plano B da Fase 0); código e specs do WhatsApp prontos para quando houver sender/template. Fases 1–3 entregues; 4.1 ✅ em 19/09 (Pixel validado no Events Manager). Fase 2: 2.1–2.8 com código entregue em 17–18/09. Da 2.4 fica só confirmar o download em produção (M2). **M1 (LP em produção) atingido em 17/09**, antes da meta de 04/10. Fase 1 fechada; o polimento visual do admin virou a Fase 3 (3.1). Fase 0: 0.1 aguarda verificação PayPal; 0.3 Sender adiado até 04/10.
+**Próximo passo:** → **Fase 5 — campanha de validação**. A Fase 4 fechou em 23/09 (4.1–4.5): definição de pronto 13/13, spec 13 40/40, conteúdo C.1–C.6 publicado e a campanha montada como rascunho no Gerenciador (início 3/10). Fora do repositório, antes de publicar: liberar o limite de gastos da conta de anúncios e priorizar os eventos agregados com Purchase no topo. Durante os 7 dias, a planilha diária da 5.2. Decisões já registradas: compra em USD validada pela primeira venda real, WhatsApp adiado para a versão com Twilio, Marketing API só depois da 5.4.
 
 ---
 
@@ -31,7 +31,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 ### 0.1 PayPal — spec [07](../specs/07-checkout-paypal.md)
 - [x] Conta PayPal Business (CNPJ, separada da PF) criada e verificação de identidade enviada em 16/09 — prazo informado 2–4 dias úteis; Live no Developer fica "restricted" até aprovar (seção 6 do cronograma)
 - [x] App no PayPal Developer (Sandbox): `launch_os` (Merchant) criado em 16/09 na conta CNPJ; Client ID + Secret no gerenciador de senhas
-- [ ] App no PayPal Developer (Live): Client ID + Secret — *bloqueado pela verificação da conta; necessário só na 4.5*
+- [x] App no PayPal Developer (Live): Client ID + Secret — *21/09: app Live criado após a verificação da conta; credenciais nos serviços `launch_os`, `sidekiq` e `backup` (4.5)*
 - [x] Contas Sandbox: business (vendedor, `sb-…@business.example.com`) e personal US com saldo (comprador) — email/senha no gerenciador de senhas (16/09)
 - [x] Credenciais Sandbox (Client ID + Secret) guardadas fora do repositório (gerenciador de senhas) (16/09)
 
@@ -53,7 +53,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Sentry: org `devbatista`, projeto Rails `launch_os` (plano grátis, só Error Monitoring) → `SENTRY_DSN` no `.env` e no Railway (16/09). Gems + initializer entram na 1.1 (`send_default_pii = false`)
 - [x] UptimeRobot (grátis): monitor HTTP `https://www.devbatista.online/up` a cada 5 min, alerta por email (16/09)
 - [x] Repositório Git `devbatista/launch_os` (privado); `AGENTS.md`, `docs/` commitados; CI do Rails (lint/brakeman) e Dependabot ativos
-- [ ] Conta GA4 → `GA4_MEASUREMENT_ID` (pode ficar para a Fase 4)
+- [ ] Conta GA4 → `GA4_MEASUREMENT_ID` — *23/09: o código está pronto (`modules/tracking.js` carrega o gtag.js quando há `data-ga4-id`), mas a variável **não está definida em produção**, então o GA4 não coleta nada hoje. Decisão pendente antes da campanha: criar a propriedade ou seguir só com o Pixel + `PageVisit`*
 
 **M0 — Contas prontas (20/09):** todos os itens acima marcados ou com data de solicitação registrada.
 
@@ -318,7 +318,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 - [x] Copy final da LP (C.4), PDF final (C.3) e políticas revisadas (C.5) publicados — *23/09: copy final confirmada pelo Rafael; PDF v1.1, copy da LP via `content:load` e páginas legais com a razão social já em produção desde 21/09*
 - [x] Manuais 5–8: compra real US$ 14.90 → entrega → reembolso; Events Manager; email real em Gmail/Outlook/iCloud; Lighthouse — *6, 7 (Gmail) e 8 ✅ (docs/qa). **5 feito em BRL** (21/09): produto temporário `live-test` a R$ 5,00 → capture COMPLETED, webhooks Live válidos, email de entrega, download, reembolso pelo painel → `REFUNDED` em segundos, token revogado, email de reembolso; produto arquivado. Taxa real R$ 0,84 (4,79% + R$ 0,60, tabela doméstica). **Decisão 21/09:** a compra em USD será validada pela **primeira venda real da campanha** (não há comprador US disponível antes). Plano: nas primeiras 24 h de campanha, acompanhar cada pedido no admin (status `paid` vs `pending` com `pending_reason`), o Sentry e as mensagens; se vier `PENDING` por moeda, aceitar no painel do PayPal e o webhook conclui. Calibrar `PAYPAL_FEE_*` com o `seller_receivable_breakdown` da primeira venda* **23/09: fechado** — 6, 7 e 8 ✅ e o 5 validado ponta a ponta em BRL; a perna em USD é a primeira venda real da campanha, por decisão*
 - [x] Definição de pronto (spec 00) 100% marcada — *23/09: os 13 itens marcados na spec 00, com duas ressalvas registradas ali: compra em USD na primeira venda real e WhatsApp fora desta versão*
-- [ ] Checklist de segurança (spec 13) 100% marcado e revisado por segunda pessoa — *23/09: adulteração de valor testada manualmente e páginas legais conferidas — **39 dos 40 itens da spec 13 marcados**. Falta só a revisão por segunda pessoa, que não pode ser feita por quem escreveu o código*
+- [x] Checklist de segurança (spec 13) 100% marcado e revisado por segunda pessoa — *23/09: **40 de 40**. Adulteração de valor e páginas legais fechados no mesmo dia; revisão feita pelo Rafael*
 
 **M3 — Definição de pronto (25/10).**
 
