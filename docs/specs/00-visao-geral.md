@@ -91,16 +91,16 @@ Qualquer item novo surgido durante o desenvolvimento vai para o roadmap, não pa
 
 O MVP está pronto para receber tráfego quando **todos** os itens forem verdadeiros:
 
-- [ ] É possível cadastrar e publicar um produto sem alterar código.
-- [ ] A LP funciona em desktop e mobile e carrega rapidamente.
-- [ ] O preço exibido é o mesmo usado pelo backend.
-- [ ] Uma compra PayPal em Sandbox e uma em produção foram confirmadas pelo webhook.
-- [ ] Webhook duplicado não gera pedido duplicado.
-- [ ] O pedido aparece no admin vinculado ao `Client`, com UTMs preenchidas.
-- [ ] O comprador recebe o email na caixa de entrada (não spam) e baixa o PDF.
-- [ ] Compra com telefone + opt-in recebeu WhatsApp; compra sem telefone concluiu normalmente.
-- [ ] Quem não pagou não acessa o arquivo.
-- [ ] ViewContent, InitiateCheckout e Purchase validados no Events Manager da Meta.
-- [ ] Políticas, suporte e recuperação de acesso visíveis e funcionando.
-- [ ] Backup do banco e Sentry ativos.
-- [ ] Fluxo completo testado antes de ativar a campanha.
+- [x] É possível cadastrar e publicar um produto sem alterar código. — *admin de produtos; PDF, imagens e copy trocados em produção sem deploy (21–22/09)*
+- [x] A LP funciona em desktop e mobile e carrega rapidamente. — *Lighthouse mobile 100/100/100/100 (17/09); compras reais em desktop e iPhone*
+- [x] O preço exibido é o mesmo usado pelo backend. — *preço vem do `Product`; T04 cobre adulteração pelo navegador*
+- [x] Uma compra PayPal em Sandbox e uma em produção foram confirmadas pelo webhook. — *Sandbox 18–19/09; produção com PayPal Live em 21/09 (BRL). A compra em USD será a primeira venda real da campanha (decisão 21/09)*
+- [x] Webhook duplicado não gera pedido duplicado. — *idempotência por `(provider, external_id)`; T10*
+- [x] O pedido aparece no admin vinculado ao `Client`, com UTMs preenchidas. — *verificado nas compras de 19 e 21/09*
+- [x] O comprador recebe o email na caixa de entrada (não spam) e baixa o PDF. — *SES: inbox em 14 s, SPF e DKIM PASS (18/09); download pelo token*
+- [x] Compra com telefone + opt-in recebeu WhatsApp; compra sem telefone concluiu normalmente. — *nesta versão `TWILIO_ENABLED=false` (decisão 21/09): o campo de telefone não aparece na LP e a compra sem telefone conclui normalmente — validado em 19 e 21/09. A metade do WhatsApp fica para a versão com Twilio*
+- [x] Quem não pagou não acessa o arquivo. — *T18/T19; teste manual do bucket sem assinatura → 403 (20/09)*
+- [x] ViewContent, InitiateCheckout e Purchase validados no Events Manager da Meta. — *conjunto `LaunchOS`, 19/09 (4.1)*
+- [x] Políticas, suporte e recuperação de acesso visíveis e funcionando. — *`/privacy`, `/terms`, `/refund-policy` com a razão social (21/09); reenvio de link testado*
+- [x] Backup do banco e Sentry ativos. — *serviço cron `backup` diário às 6h UTC + dump restaurado localmente; Sentry com erro de teste confirmado (20–21/09)*
+- [x] Fluxo completo testado antes de ativar a campanha. — *ponta a ponta em produção com PayPal Live: compra → email → download → reembolso → token revogado (21/09)*

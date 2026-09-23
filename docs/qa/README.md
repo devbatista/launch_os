@@ -19,6 +19,7 @@ Verificações extras feitas em navegador real (Chromium headless via Selenium, 
 - 19/09 — cookies `lo_attr`/`lo_vid`/`_fbp`, `fbevents.js` carregado, first-touch mantido na 2ª visita, `PageVisit` gravada.
 - 20/09 — CSP em vigor: LP com botões do PayPal renderizados, Pixel e GA4, admin com Trix e tema escuro — zero violações.
 - 21/09 — dashboard em claro, escuro e 375 px.
+- 23/09 — adulteração de valor no checkout (spec 13): `POST /checkout/paypal` com `amount_cents=1`, `price`, `value`, `currency=XXX` e `purchase_units` forjados → `Order` com 1490 USD e pedido no PayPal Sandbox com 14.90 USD. Pedido de teste removido em seguida.
 
 ## Como registrar uma nova execução
 
