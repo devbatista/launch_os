@@ -32,7 +32,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 2 — Pagamento e entrega | 05/10 – 18/10 | S3–S4 | 48 | | 8/8 código entregue em 17–18/09; M2 ✅ 21/09. Teste real da Twilio adiado por decisão (lançamento com `TWILIO_ENABLED=false`) | ✅ |
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/10 – 25/10 | S5 | 23 | | 4/5 — 4.1 em 19/09, 4.2–4.4 em 21/09; 4.5 aguarda PayPal Live | 🟦 |
-| Trilha de conteúdo (paralela) | 21/09 – 25/10 | S1–S5 | 45 (fora do dev) | | 5/6 | 🟦 |
+| Trilha de conteúdo (paralela) | 21/09 – 23/09 | S1 | 45 (fora do dev) | | 6/6 | ✅ |
 | Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
 | Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
 | Fase 6 — Pós-validação | a definir | — | — | | — | ⬜ |
@@ -161,13 +161,13 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 | C.3 | Diagramação do PDF e do tracker imprimível | — | 8 | S4 (18/10) | ✅ | 21/09 | WeasyPrint, US Letter, fontes embutidas; falta só trocar o anexo em produção |
 | C.4 | Copy final da LP (headline, benefícios, FAQ, garantia) e mockup do produto | [06](../specs/06-landing-page.md) | 5 | S3 (11/10) | ✅ | 21/09 | Copy (`db/content` + `content:load`) e capa/mockup/og navy publicados; pendente só a decisão sobre o preço riscado |
 | C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | ✅ | 21/09 | Razão social nas três páginas |
-| C.6 | Três criativos (imagem + texto principal + headline) — ângulos dor / mecanismo / transformação | [16](../specs/16-roadmap-e-fases.md) | 6 | S5 (25/10) | ⬜ | | Subir como rascunho em 24/10 para revisão antecipada da Meta |
+| C.6 | Três criativos (imagem + texto principal + headline) — ângulos dor / mecanismo / transformação | [16](../specs/16-roadmap-e-fases.md) | 6 | S5 (25/10) | ✅ | 23/09 | Entregue um mês antes do prazo; artes na paleta navy do PDF e copy da seção 3 do briefing |
 
 ### 4.7 Fase 5 — Campanha de validação (26/10 – 01/11)
 
 | ID | Tarefa | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|
-| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 18/dia | 2 | 4.5, C.6 | ⬜ | | Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
+| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 18/dia | 2 | 4.5, C.6 | 🟦 | | Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
 | 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | ⬜ | | |
 | 5.3 | Suporte a compradores e monitoramento de erros (Sentry, MessageLog, disputas) | 2 | 5.1 | ⬜ | | |
 | 5.4 | Análise final (02–03/11): comparar com referências e escolher o cenário de decisão | 4 | 5.2 | ⬜ | | |

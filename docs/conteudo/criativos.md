@@ -94,10 +94,11 @@ O `fbclid` a Meta acrescenta sozinha.
 - [x] Pixel `LaunchOS` (2908081392894300) instalado e domínio verificado; ViewContent, InitiateCheckout e Purchase validados no Events Manager (4.1)
 - [x] LP, checkout PayPal Live, entrega por email e páginas legais em produção
 - [x] Página do Facebook vinculada e conta de anúncios `DevBatista` (`2425512304918484`, BRL, São Paulo) com pagamento — confirmados em 22/09 pela campanha de Set/2026 que já veiculou
-- [ ] Conta do Instagram vinculada (opcional; sem ela o anúncio aparece com o nome da Página)
+- [x] Conta do Instagram `_devbatista` vinculada à Página — 23/09
 - [ ] Priorização de eventos agregados no Events Manager com **Purchase em primeiro lugar** (necessário para iOS)
-- [ ] Os 6 arquivos revisados nas regras da seção 4
-- [ ] Campanha montada conforme 5.1 do cronograma e planilha de acompanhamento diário pronta (5.2)
+- [x] Artes dos três ângulos produzidas e carregadas nos anúncios — 23/09
+- [x] Versões 9:16 atribuídas por posicionamento (Stories/Reels/Status) — 23/09; sem isso a Meta cortaria o 4:5 e comeria a headline do topo
+- [ ] Campanha publicada (rascunho montado em 23/09, início 3/10) e planilha de acompanhamento diário pronta (5.2)
 
 **Ao montar:** criar do zero, sem duplicar a campanha de Leads de Set/2026 — ela arrasta objetivo, evento de
 otimização e público brasileiro. Deixá-la desativada. Os R$ 38,07 por lead dela não servem de referência aqui:
