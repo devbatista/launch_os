@@ -68,7 +68,7 @@ Checklist obrigatório. Nenhum item é opcional para ir ao ar.
 
 ## Critérios de aceite
 
-- [ ] Checklist acima 100% marcado e revisado por segunda pessoa antes da campanha.
+- [x] Checklist acima 100% marcado e revisado por segunda pessoa antes da campanha. *(23/09: os 39 itens anteriores marcados com evidência; revisão feita pelo Rafael, que não escreveu o código)*
 - [x] Teste manual: adulterar valor no `POST /checkout/paypal` via DevTools → PayPal ainda cobra US$ 14.90. *(23/09, dev: POST com `amount_cents=1`, `price=0.01`, `value=0.01`, `currency=XXX` e um `purchase_units` forjado → `Order` criado com 1490 USD e o pedido no PayPal Sandbox com **14.90 USD**. O endpoint sequer lê preço: monta o pedido com `product.price_cents`. Pedido de teste removido do dev)*
 - [x] Teste manual: `curl -X POST /webhooks/paypal` com corpo forjado → 400, nada processado. *(20/09 em produção: 400)*
 - [x] Teste manual: URL do bucket sem assinatura → 403. *(20/09 em produção: bucket e objeto → 403)*
