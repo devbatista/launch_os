@@ -63,12 +63,12 @@ Checklist obrigatório. Nenhum item é opcional para ir ao ar.
 - [x] Telefone armazenado apenas com opt-in; texto e data/hora do consentimento gravados (TCPA). *(`clients.whatsapp_opt_in_at` + `whatsapp_opt_in_text`; T-checkout ignora o telefone sem opt-in)*
 - [x] STOP respeitado imediatamente. *(`Webhooks::TwilioController#inbound` → `Client#opt_out_whatsapp!`; `Delivery.whatsapp?` checa `whatsapp_deliverable?` antes de cada envio)*
 - [x] `PageVisit` guarda hash do IP, não o IP; `Order` guarda IP (necessário para CAPI e antifraude) — mencionado na Privacy Policy. *(`PageVisit.ip_hash` com sal diário; `orders.ip_address`)*
-- [ ] Privacy Policy, Terms e Refund Policy publicados e coerentes com a operação real (ver [14](14-paginas-legais.md)).
+- [x] Privacy Policy, Terms e Refund Policy publicados e coerentes com a operação real (ver [14](14-paginas-legais.md)). *(21/09: as três com a razão social DevBatista Desenvolvimento de Software e Serviços LTDA, prazo de reembolso igual ao `refund_days` do produto e entrega descrita como é — só por email nesta versão)*
 - [x] Backup do banco criptografado em repouso (recurso da plataforma). *(4.2: `pg_dump` diário para o bucket `launch-os-prod` — SSE-S3 e versionamento ativos desde a Fase 0; ver `Backups::DatabaseDump`)*
 
 ## Critérios de aceite
 
 - [ ] Checklist acima 100% marcado e revisado por segunda pessoa antes da campanha.
-- [ ] Teste manual: adulterar valor no `POST /checkout/paypal` via DevTools → PayPal ainda cobra US$ 14.90. *(coberto por T04 no request spec; o manual fica para a 4.5, junto com a compra real)*
+- [x] Teste manual: adulterar valor no `POST /checkout/paypal` via DevTools → PayPal ainda cobra US$ 14.90. *(23/09, dev: POST com `amount_cents=1`, `price=0.01`, `value=0.01`, `currency=XXX` e um `purchase_units` forjado → `Order` criado com 1490 USD e o pedido no PayPal Sandbox com **14.90 USD**. O endpoint sequer lê preço: monta o pedido com `product.price_cents`. Pedido de teste removido do dev)*
 - [x] Teste manual: `curl -X POST /webhooks/paypal` com corpo forjado → 400, nada processado. *(20/09 em produção: 400)*
 - [x] Teste manual: URL do bucket sem assinatura → 403. *(20/09 em produção: bucket e objeto → 403)*
