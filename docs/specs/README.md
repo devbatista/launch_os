@@ -47,6 +47,7 @@ e o traduzem em decisões técnicas prontas para implementação.
 | 15 | [Plano de testes](15-plano-de-testes.md) | Casos de teste → arquivos de teste |
 | 16 | [Roadmap e fases](16-roadmap-e-fases.md) | Ordem de desenvolvimento, cronograma, fase 2 (Meta Marketing API) |
 | 17 | [Glossário](17-glossario.md) | Termos de marketing, pagamento e mensageria |
+| 18 | [Fiscal, recibos e câmbio](18-fiscal-e-recibos.md) | Recibo individual, PTAX, período fiscal, relatório e NF-e consolidada |
 
 ## Convenções destas specs
 
