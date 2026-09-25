@@ -61,7 +61,8 @@
 <h2 class="adm-card-title">Receita</h2>
 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
   <%= render "stat", label: "Faturamento bruto", value: money(d.gross_cents, currency) %>
-  <%= render "stat", label: "Receita líquida estimada", value: money(d.net_cents, currency), hint: "bruto − taxa PayPal estimada (#{percent(Admin::Dashboard.fee_percent)} + #{money(Admin::Dashboard.fee_fixed_cents, currency)} por venda = #{money(d.fee_cents, currency)})" %>
+  <%= render "stat", label: d.estimated_fee_orders.zero? ? "Receita líquida" : "Receita líquida estimada", value: money(d.net_cents, currency),
+             hint: "bruto − taxa PayPal #{money(d.fee_cents, currency)}#{d.estimated_fee_orders.zero? ? ' (valor real da captura)' : " (#{d.estimated_fee_orders} pedido(s) ainda estimados em #{percent(Admin::Dashboard.fee_percent)} + #{money(Admin::Dashboard.fee_fixed_cents, currency)})"}" %>
   <%= render "stat", label: "Reembolsos", value: "#{d.refunds} · #{money(d.refunded_cents, currency)}", tone: (:danger if d.refunds.positive?), hint: "pedidos do período reembolsados" %>
   <%= render "stat", label: "Pendentes / disputas", value: "#{d.pending} / #{d.disputed}", tone: (:warning if d.disputed.positive?), hint: "pendente = capture ainda não confirmado" %>
 </div>

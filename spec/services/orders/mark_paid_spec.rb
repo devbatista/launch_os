@@ -100,4 +100,44 @@ RSpec.describe Orders::MarkPaid do
     refunded = create(:order, :refunded)
     expect { described_class.call(refunded, capture:, payer:, source: :webhook) }.to raise_error(Orders::InvalidTransition)
   end
+
+  describe "valores da captura (spec 18)" do
+    let(:breakdown) do
+      { "seller_receivable_breakdown" => {
+          "paypal_fee" => { "value" => "0.88", "currency_code" => "USD" },
+          "net_amount" => { "value" => "14.02", "currency_code" => "USD" },
+          "exchange_rate" => { "value" => "4.89294565", "source_currency" => "USD", "target_currency" => "BRL" },
+          "receivable_amount" => { "value" => "68.60", "currency_code" => "BRL" } } }
+    end
+
+    it "grava tarifa, líquido, câmbio do PayPal e país do pagador" do
+      order = create(:order)
+
+      described_class.call(order, capture: capture.merge(breakdown), payer:, source: :capture)
+
+      expect(order.reload).to have_attributes(payment_fee_cents: 88, net_amount_cents: 1402,
+                                              paypal_receivable_cents: 6860, paypal_receivable_currency: "BRL",
+                                              payer_country: "US")
+      expect(order.paypal_exchange_rate).to eq(4.89294565.to_d)
+    end
+
+    it "não sobrescreve valores já gravados numa reentrega do webhook" do
+      order = create(:order, payment_fee_cents: 70, payer_country: "CA")
+
+      described_class.call(order, capture: capture.merge(breakdown), payer:, source: :webhook)
+
+      expect(order.reload.payment_fee_cents).to eq(70)
+      expect(order.payer_country).to eq("CA")
+      expect(order.net_amount_cents).to eq(1402) # o que ainda estava vazio é preenchido
+    end
+
+    it "segue normal quando o capture não traz o breakdown (PENDING)" do
+      order = create(:order)
+
+      described_class.call(order, capture:, payer:, source: :capture)
+
+      expect(order.reload).to be_paid
+      expect(order.payment_fee_cents).to be_nil
+    end
+  end
 end

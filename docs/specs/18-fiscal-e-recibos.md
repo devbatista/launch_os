@@ -209,16 +209,21 @@ período fiscal corrente.
 4. Venda reembolsada **dentro do mesmo período** entra no faturamento ou é excluída antes do fechamento?
 5. Reembolso **após** a nota emitida: qual o procedimento?
 
+## Export do mês (entregue na fase A)
+
+`bin/rails 'fiscal:export[2026,10]'` imprime o CSV; com um terceiro argumento, grava no caminho indicado.
+É o insumo que vai para a Contabilizei enquanto `FiscalPeriod` e a tela de fechamento não existem.
+
 ## Fases
 
-| Fase | Escopo | Esforço |
-|---|---|---|
-| A | Tarifa, líquido e câmbio do PayPal em colunas; `payer_country`; backfill dos webhooks; dashboard com tarifa real | ~4 h |
-| B | `counters`, `number`, `Receipt`, página por token e email | ~8 h |
-| C | `Providers::Bacen`, `exchange_rates`, `gross_amount_brl_cents` | ~8 h |
-| D | `FiscalPeriod`, composição e relatório CSV | ~10 h |
-| E | Admin fiscal, `ConsolidatedInvoice`, `FiscalConfiguration` | ~12 h |
-| F | Campos de refund/chargeback e trilha write-once | ~6 h |
+| Fase | Escopo | Esforço | Status |
+|---|---|---|---|
+| A | Tarifa, líquido e câmbio do PayPal em colunas; `payer_country`; backfill dos webhooks; dashboard com tarifa real | ~4 h | ✅ 25/09 |
+| B | `counters`, `number`, `Receipt`, página por token e email | ~8 h | ⬜ |
+| C | `Providers::Bacen`, `exchange_rates`, `gross_amount_brl_cents` | ~8 h | ⬜ |
+| D | `FiscalPeriod`, composição e relatório CSV | ~10 h | ⬜ |
+| E | Admin fiscal, `ConsolidatedInvoice`, `FiscalConfiguration` | ~12 h | ⬜ |
+| F | Campos de refund/chargeback e trilha write-once | ~6 h | ⬜ |
 
 Teste vai junto com cada fase, não numa fase final — regra do projeto. Prazo real: o primeiro
 fechamento é no início de novembro, referente a outubro; a campanha não depende de nada disto.
@@ -227,7 +232,7 @@ fechamento é no início de novembro, referente a outubro; a campanha não depen
 
 - [ ] Uma venda gera 1 pedido, 1 pagamento, 1 recibo, 1 autorização de download e 1 registro fiscal.
 - [ ] Webhook repetido não duplica pedido, pagamento, recibo, email nem acesso.
-- [ ] Tarifa e líquido vêm do capture; o faturamento usa apenas o bruto.
+- [x] Tarifa e líquido vêm do capture; o faturamento usa apenas o bruto. *(25/09, fase A)*
 - [ ] Pedido guarda moeda, valor original, taxa, data da taxa, provedor e valor convertido.
 - [ ] Recibo acessível só por token, em inglês, com os dados congelados na venda.
 - [ ] Relatório do período confere com a soma dos pedidos, com totais e refunds sinalizados.

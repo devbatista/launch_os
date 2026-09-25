@@ -13,8 +13,8 @@ module Admin
     ALERT_WINDOW = 24.hours
     MESSAGE_ALERT_WINDOW = 7.days
 
-    # Estimativa da taxa do PayPal (spec 07): percentual + fixo por transação. Só para a receita líquida
-    # exibida; o valor real vem do extrato do PayPal.
+    # Estimativa da taxa do PayPal (spec 07), usada só enquanto a captura não trouxe o valor real:
+    # desde a spec 18 o `seller_receivable_breakdown` grava a tarifa no próprio pedido.
     def self.fee_percent = ENV.fetch("PAYPAL_FEE_PERCENT", "4.4").to_d
     def self.fee_fixed_cents = ENV.fetch("PAYPAL_FEE_FIXED_CENTS", "30").to_i
 
@@ -36,8 +36,12 @@ module Admin
     def sales = @sales ||= paid_scope.count
     def gross_cents = @gross_cents ||= paid_scope.sum(:amount_cents)
 
-    def fee_cents = ((gross_cents * self.class.fee_percent / 100) + self.class.fee_fixed_cents * sales).round
+    # Tarifa real dos pedidos que já têm o breakdown da captura + estimativa para o restante (spec 18).
+    def fee_cents = real_fee_cents + estimated_fee_cents
     def net_cents = gross_cents - fee_cents
+
+    # Quantos pedidos pagos do período ainda dependem de estimativa (o card avisa quando > 0).
+    def estimated_fee_orders = @estimated_fee_orders ||= paid_scope.where(payment_fee_cents: nil).count
 
     def refunds = @refunds ||= orders_scope.refunded.count
     def refunded_cents = @refunded_cents ||= orders_scope.refunded.sum(:amount_cents)
@@ -107,6 +111,13 @@ module Admin
       end
 
       def paid_scope = orders_scope.paid
+
+      def real_fee_cents = @real_fee_cents ||= paid_scope.where.not(payment_fee_cents: nil).sum(:payment_fee_cents)
+
+      def estimated_fee_cents
+        pending = paid_scope.where(payment_fee_cents: nil)
+        ((pending.sum(:amount_cents) * self.class.fee_percent / 100) + self.class.fee_fixed_cents * pending.count).round
+      end
 
       def delivery_logs = MessageLog.template_order_delivery.where(order_id: orders_scope.select(:id))
 

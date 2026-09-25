@@ -15,6 +15,10 @@ gem "importmap-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails"
 
+# `csv` saiu das default gems no Ruby 3.4 (virou bundled gem): sob o Bundler precisa ser declarado.
+# É stdlib, não dependência de terceiros. Usado no relatório fiscal (docs/specs/18-fiscal-e-recibos.md).
+gem "csv"
+
 # Jobs em background e cache (docs/specs/01-arquitetura-e-stack.md)
 gem "sidekiq", "~> 8.0"
 gem "redis", "~> 6.0"

@@ -52,12 +52,22 @@ RSpec.describe "Admin dashboard" do
       expect(body).to include("LP → checkout 100%")        # 2 checkouts / 2 únicos
       expect(body).to include("checkout → venda 50%", "conversão total 50%")
       expect(body).to include("$14.90")                    # bruto
-      expect(body).to include("$13.94", "(4,4% + $0.30 por venda = $0.96)") # líquido = 14.90 − taxa estimada
+      expect(body).to include("$13.94", "1 pedido(s) ainda estimados em 4,4% + $0.30") # líquido = 14.90 − taxa estimada
       expect(body).to include("Email enviado", ">100%<", "1 de 1")
       expect(body).to include("nenhum envio (opt-in ou Twilio desligada)")
       expect(body).to include("launch-1", "video-a")       # vendas por campanha / conteúdo
       expect(body).to include("(direto / sem UTM)").or include("launch-1") # o pending não conta em vendas
       expect(body).not_to include("Atenção")
+    end
+
+    # Spec 18: com o breakdown da captura gravado, o painel para de estimar.
+    it "usa a tarifa real da captura quando o pedido já tem o breakdown" do
+      create(:order, :paid, product:, payment_fee_cents: 88, net_amount_cents: 1402)
+
+      get admin_dashboard_path
+
+      expect(response.body).to include("Receita líquida", "$14.02", "taxa PayPal $0.88 (valor real da captura)")
+      expect(response.body).not_to include("ainda estimados")
     end
 
     it "filtra por produto e período (custom com De/Até); pedidos fora do período não entram" do
