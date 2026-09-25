@@ -351,3 +351,20 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 ## Fase 6 — Pós-validação (sem datas)
 
 Ver ordem sugerida no cronograma (seção 4.8). Não iniciar antes de M5.
+
+### Trilha fiscal — spec [18](../specs/18-fiscal-e-recibos.md)
+
+Fora da Fase 6 por ter prazo próprio: o primeiro fechamento é no início de novembro, referente a outubro.
+Decisão 25/09: implementar só o mínimo agora — o volume esperado do teste é de 0 a 2 vendas, e o resto da
+spec 18 espera um gatilho de volume (~30 vendas/mês) ou a segunda NF-e.
+
+- [x] **Fase A** — tarifa, líquido e câmbio reais da captura em colunas do `Order`; `payer_country`;
+  backfill dos webhooks guardados; dashboard com tarifa real — *25/09: `Providers::Paypal::Breakdown` lê o
+  `seller_receivable_breakdown`; `Orders::MarkPaid` grava write-once (reentrega de webhook não sobrescreve);
+  `bin/rails fiscal:backfill_paypal` preenche o histórico; o card de receita líquida deixa de dizer "estimada"
+  quando todos os pedidos do período têm o valor real*
+- [x] **Export fiscal** — `bin/rails 'fiscal:export[2026,10]'` gera o CSV do mês para a contabilidade —
+  *`Fiscal::Export`: uma linha por venda (bruto, tarifa e líquido separados) mais linha TOTAL; competência por
+  `paid_at` em America/Sao_Paulo; reembolso e disputa listados mas fora do somatório*
+- [ ] Fases B–F da spec 18 (recibo, PTAX, período fiscal, admin fiscal, refund/chargeback detalhado) —
+  *aguardam as 5 perguntas em aberto com a Contabilizei e o gatilho de volume*

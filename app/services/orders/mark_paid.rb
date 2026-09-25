@@ -16,7 +16,8 @@ module Orders
         client = upsert_client(order, payer || {}) || order.client
         order.update!(status: :paid, paid_at: order.paid_at || Time.current, client:,
                       paypal_capture_id: capture&.dig("id").presence || order.paypal_capture_id,
-                      payer_email: client&.email || order.payer_email, payer_name: client&.name || order.payer_name)
+                      payer_email: client&.email || order.payer_email, payer_name: client&.name || order.payer_name,
+                      **financials(order, capture, client))
         ensure_download_token(order)
         Rails.logger.info { "[orders] #{order.id} paid via #{source}" }
         transitioned = true
@@ -26,6 +27,14 @@ module Orders
     end
 
     private
+      # Tarifa, líquido e conversão reais da captura (spec 18) + país do pagador na data da venda.
+      # Write-once: o que já foi gravado não é sobrescrito por uma reentrega do webhook — é dado fiscal.
+      def financials(order, capture, client)
+        attrs = Providers::Paypal::Breakdown.call(capture)
+        attrs[:payer_country] = client&.country
+        attrs.compact.reject { |field, _| order.public_send(field).present? }
+      end
+
       # Token criado no capture PENDING (para a Thank You) ou revogado por disputa volta a valer.
       def ensure_download_token(order)
         token = order.download_token

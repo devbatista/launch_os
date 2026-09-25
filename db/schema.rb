@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_125157) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -139,11 +139,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
     t.string "fbp"
     t.string "ip_address"
     t.string "landing_path"
+    t.integer "net_amount_cents"
     t.datetime "paid_at"
+    t.string "payer_country", limit: 2
     t.string "payer_email"
     t.string "payer_name"
+    t.integer "payment_fee_cents"
     t.string "paypal_capture_id"
+    t.decimal "paypal_exchange_rate", precision: 18, scale: 8
     t.string "paypal_order_id"
+    t.integer "paypal_receivable_cents"
+    t.string "paypal_receivable_currency", limit: 3
     t.string "pending_reason"
     t.string "phone"
     t.uuid "product_id", null: false
