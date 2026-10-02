@@ -6,7 +6,7 @@ Marque aqui os passos; ao fechar um bloco inteiro, atualize o status da tarefa n
 
 Regra de fechamento de bloco: código + teste verde + critério de aceite da spec conferido.
 
-**Próximo passo:** → **Fase 5 — campanha de validação**. A Fase 4 fechou em 23/09 (4.1–4.5): definição de pronto 13/13, spec 13 40/40, conteúdo C.1–C.6 publicado e a campanha montada como rascunho no Gerenciador (início 3/10). Fora do repositório, antes de publicar: liberar o limite de gastos da conta de anúncios e priorizar os eventos agregados com Purchase no topo. Durante os 7 dias, a planilha diária da 5.2. Decisões já registradas: compra em USD validada pela primeira venda real, WhatsApp adiado para a versão com Twilio, Marketing API só depois da 5.4.
+**Próximo passo:** → **Fase 5 — campanha de validação (03/10–09/10)**, antecipada de 26/10 por decisão de 02/10 (cronograma, seção 11). A campanha foi publicada em 02/10 a partir do rascunho montado em 23/09, para veicular a partir de 03/10: 1 campanha de vendas otimizada por Purchase, 1 conjunto (Advantage+, EUA, inglês), 3 anúncios (`pain-01`, `method-01`, `outcome-01`) a R$ 28/dia. Fora do repositório, antes de a veiculação começar: priorizar os eventos agregados com Purchase no topo (0.2) e confirmar que não há limite de gastos da conta abaixo de ~R$ 130. Durante os 7 dias, a planilha diária da 5.2; M4 em 03/10 e M5 em 11/10. Decisões já registradas: compra em USD validada em sandbox e captura live validada a R$ 5,00 em 21/09, WhatsApp adiado para a versão com Twilio, Marketing API só depois da 5.4.
 
 ---
 
@@ -336,15 +336,15 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 
 ---
 
-## Fase 5 — Campanha (S6 · 26/10–01/11)
+## Fase 5 — Campanha (S2–S3 · 03–09/10)
 
-- [ ] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 18/dia)
+- [ ] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 28/dia)
 - [ ] 5.1 Três anúncios aprovados pela Meta
 - [ ] 5.2 Planilha diária preenchida (seção 8 do cronograma) — dias 1 a 7
 - [ ] 5.3 Sentry, `MessageLog` e disputas verificados diariamente; suporte respondido em < 24 h
 - [ ] 5.4 Análise final e cenário escolhido (seção 9 do cronograma) — 03/11
 
-**M4 (26/10) e M5 (03/11).**
+**M4 (03/10) e M5 (11/10).**
 
 ---
 

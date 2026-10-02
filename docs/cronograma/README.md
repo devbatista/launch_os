@@ -6,11 +6,11 @@ e as specs em [docs/specs/](../specs/README.md).
 | | |
 |---|---|
 | **Início do desenvolvimento** | 21/09/2026 (S1) |
-| **Campanha no ar** | 26/10/2026 (M4) |
-| **Decisão** | 03/11/2026 (M5) |
+| **Campanha no ar** | 03/10/2026 (M4) — adiantado de 26/10 |
+| **Decisão** | 11/10/2026 (M5) — adiantado de 03/11 |
 | **Capacidade** | 1 dev (DevBatista), ~25 h/semana |
-| **Semana atual** | S0 — Contas e aprovações |
-| **Última atualização** | 2026-09-16 |
+| **Semana atual** | S2 — campanha publicada em 02/10, veiculação a partir de 03/10 |
+| **Última atualização** | 2026-10-02 |
 | **Status geral** | 🟦 no prazo |
 
 ## Como usar
@@ -33,8 +33,8 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/09 – 23/09 | S1 | 23 | | 5/5 — 4.1 em 19/09, 4.2–4.4 em 21/09, 4.5 em 23/09 | ✅ |
 | Trilha de conteúdo (paralela) | 21/09 – 23/09 | S1 | 45 (fora do dev) | | 6/6 | ✅ |
-| Fase 5 — Campanha de validação | 26/10 – 01/11 | S6 | 7 | | 0/3 | ⬜ |
-| Análise e decisão | 02/11 – 03/11 | S7 | 4 | | 0/1 | ⬜ |
+| Fase 5 — Campanha de validação | 03/10 – 09/10 | S2–S3 | 7 | | 0/3 | 🟦 |
+| Análise e decisão | 10/10 – 11/10 | S3 | 4 | | 0/1 | ⬜ |
 | Fase 6 — Pós-validação | a definir | — | — | | — | ⬜ |
 
 Total de desenvolvimento (Fases 0–4): **134 h** em 6 semanas. Folga de ~15% já embutida.
@@ -52,8 +52,8 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Debugger da Meta e email de suporte ok — Fase 1 concluída |
 | **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ✅ | 21/09: em produção — pago, webhook próprio com assinatura válida, email via SES, download ok, duplicado é no-op (T02). WhatsApp fora do escopo do M2 por decisão (Twilio adiada; lançamento só com email) |
 | **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ✅ | 23/09 — um mês antes da meta |
-| **M4** — Campanha no ar | 26/10 | Três anúncios aprovados pela Meta e ativos, R$ 18/dia | ⬜ | |
-| **M5** — Decisão | 03/11 | Relatório com métricas (17.3) e cenário (17.4) escolhido; próximo orçamento definido ou teste encerrado | ⬜ | |
+| **M4** — Campanha no ar | 03/10 | Três anúncios aprovados pela Meta e ativos, R$ 28/dia | ⬜ | |
+| **M5** — Decisão | 11/10 | Relatório com métricas (17.3) e cenário (17.4) escolhido; próximo orçamento definido ou teste encerrado | ⬜ | |
 
 ## 3. Linha do tempo
 
@@ -78,8 +78,8 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | Escrever e revisar PDF + tracker (C.1–C.3) | | ▓ | ▓ | ▓ | ▓ | | | |
 | Copy da LP, mockup, políticas (C.4–C.5) | | | ▓ | ▓ | | | | |
 | Três criativos (C.6) | | | | | ▓ | ▓ | | |
-| Campanha no ar (5.1–5.3) | | | | | | | ░ | |
-| Análise e decisão (5.4) | | | | | | | | ░ |
+| Campanha no ar (5.1–5.3) | | | ░ | ░ | | | | |
+| Análise e decisão (5.4) | | | | ░ | | | | |
 
 ## 4. Tarefas
 
@@ -163,14 +163,14 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 | C.5 | Políticas em inglês (privacidade, termos, reembolso) revisadas | [14](../specs/14-paginas-legais.md) | 2 | S2 (04/10) | ✅ | 21/09 | Razão social nas três páginas |
 | C.6 | Três criativos (imagem + texto principal + headline) — ângulos dor / mecanismo / transformação | [16](../specs/16-roadmap-e-fases.md) | 6 | S5 (25/10) | ✅ | 23/09 | Entregue um mês antes do prazo; artes na paleta navy do PDF e copy da seção 3 do briefing |
 
-### 4.7 Fase 5 — Campanha de validação (26/10 – 01/11)
+### 4.7 Fase 5 — Campanha de validação (03/10 – 09/10)
 
 | ID | Tarefa | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|
-| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 18/dia | 2 | 4.5, C.6 | 🟦 | | Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
+| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 28/dia | 2 | 4.5, C.6 | 🟦 | | Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
 | 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | ⬜ | | |
 | 5.3 | Suporte a compradores e monitoramento de erros (Sentry, MessageLog, disputas) | 2 | 5.1 | ⬜ | | |
-| 5.4 | Análise final (02–03/11): comparar com referências e escolher o cenário de decisão | 4 | 5.2 | ⬜ | | |
+| 5.4 | Análise final (10–11/10): comparar com referências e escolher o cenário de decisão | 4 | 5.2 | ⬜ | | |
 
 ### 4.8 Fase 6 — Pós-validação (sem datas)
 
@@ -238,7 +238,7 @@ Escalar se parado há mais de 5 dias.
 | Template `order_delivery` aprovado | horas a dias | 2.7 em produção | — | ⏸ | | Depende do Sender; testar no Sandbox com template próprio |
 | SES fora do sandbox + DKIM/SPF/DMARC verificados | até 24 h + propagação DNS | M1, 2.6 | 16/09 | ✅ | 16/09 | DKIM e MAIL FROM *verified*; acesso à produção aprovado no mesmo dia (cota 50.000/dia, 14/s); DMARC `p=quarantine` publicado após teste PASS no Gmail |
 | Propagação do CNAME `www` e do redirect do apex (HostGator) + certificado do Railway | horas | M1 | 16/09 | ✅ | 16/09 | `https://www.devbatista.online/up` → 200; apex 301 → www |
-| Revisão dos três anúncios pela Meta | horas a 1 dia | M4 | | ⬜ | | Subir criativos em 24/10 como rascunho |
+| Revisão dos três anúncios pela Meta | horas a 1 dia | M4 | | ⬜ | | Criativos subidos como rascunho em 23/09; revisão disparada ao publicar em 02/10 |
 
 ## 7. Riscos de prazo
 
@@ -258,16 +258,16 @@ Referências: CTR > 1% · CPC < US$ 1.50 · LP Views/cliques > 70% · InitiateCh
 
 | Dia | Data | Gasto (R$) | Impressões | Cliques | CTR | CPC (US$) | LP Views | Checkouts | Vendas | Obs. |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 26/10 | | | | | | | | | |
-| 2 | 27/10 | | | | | | | | | |
-| 3 | 28/10 | | | | | | | | | |
-| 4 | 29/10 | | | | | | | | | |
-| 5 | 30/10 | | | | | | | | | |
-| 6 | 31/10 | | | | | | | | | |
-| 7 | 01/11 | | | | | | | | | |
+| 1 | 03/10 | | | | | | | | | |
+| 2 | 04/10 | | | | | | | | | |
+| 3 | 05/10 | | | | | | | | | |
+| 4 | 06/10 | | | | | | | | | |
+| 5 | 07/10 | | | | | | | | | |
+| 6 | 08/10 | | | | | | | | | |
+| 7 | 09/10 | | | | | | | | | |
 | **Total** | | | | | | | | | | |
 
-## 9. Decisão ao final da campanha (preencher em 03/11)
+## 9. Decisão ao final da campanha (preencher em 11/10)
 
 | Cenário | Leitura | Próximo passo | Escolhido? |
 |---|---|---|---|
@@ -335,4 +335,6 @@ Template por semana: tarefas concluídas · horas reais vs. planejadas · horas 
 | 2026-09-16 | Chave primária **`id uuid`** em todas as tabelas | Ids não sequenciais em URLs e nos identificadores enviados ao PayPal | Initializer de generators antes da 1ª migration (tarefa 1.1); `implicit_order_column = created_at`; FKs uuid |
 | 2026-09-16 | **WhatsApp Sender adiado**: Twilio fica em trial/Sandbox (subconta `launch_os`); upgrade (US$ 20 pré-pagos) e pedido do Sender só se decidido até 04/10 | Evitar custo antes de validar; Sandbox cobre todo o desenvolvimento da 2.7 | Go-live pode sair com `TWILIO_ENABLED=false` (só email); dependência da seção 6 marcada ⏸ |
 | 2026-09-17 | **Railway configurado pelo dashboard, sem `railway.json`**: healthcheck `/up` do web e start command do `sidekiq` definidos em Settings → Deploy; arquivos de Config as Code removidos | O Railway descontinuou o Config as Code (válido só até 01/12/2026; serviços criados após 28/08/2026 não aderem — o `sidekiq` ignorava o `railway.sidekiq.json`). O substituto (`.railway/railway.ts` + `railway config apply`) exige CLI novo e TypeScript; não vale antes do MVP | Spec 02 e README atualizados; IaC do Railway registrado como item da Fase 5 |
+| 2026-10-02 | **Fase 5 antecipada**: campanha publicada em 02/10, veiculação a partir de 03/10; M4 passa de 26/10 para 03/10 e M5 de 03/11 para 11/10 | Fases 1–4 concluídas em 23/09 (M3 atingido um mês antes) e conteúdo publicado; sem motivo para esperar três semanas com o sistema pronto e verificado em produção | Datas da Fase 5, marcos M4/M5, planilha diária (seção 8) e seção 9 atualizadas; checklist alinhado |
+| 2026-10-02 | Orçamento da Fase 5 sobe de R$ 18/dia para **R$ 28/dia** (7 dias ≈ R$ 196, dentro do saldo pré-pago de R$ 215) | A R$ 18/dia o teste compraria US$ 25,75 na semana inteira ≈ 17–51 cliques — dá para ler CTR e CPC, não dá para ler conversão; com saldo em conta, o valor baixo custaria quase o mesmo sem permitir concluir nada | Spec 16, briefing de criativos, tarefa 5.1 e marco M4 atualizados. Checkpoint no dia 3 (05/10): CTR abaixo de 1% → cortar ou pausar e redirecionar o saldo para criativos novos |
 | | | | |

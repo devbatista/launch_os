@@ -40,3 +40,7 @@
 
 # Relatório do SimpleCov
 /coverage
+
+# Exports fiscais (Fiscal::Export traz nome, email e IP do comprador) — nunca versionar.
+# Gerar sempre em tmp/: bin/rails 'fiscal:export[2026,10,tmp/outubro-2026.csv]'
+/*.csv

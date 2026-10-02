@@ -2,7 +2,7 @@
 
 Três anúncios estáticos, um por ângulo (**dor / mecanismo / transformação**), conforme a Fase 5 da
 [spec 16](../specs/16-roadmap-e-fases.md): 1 campanha de vendas (otimização Purchase), 1 conjunto
-Advantage+, EUA, inglês, ~R$ 18/dia × 7 dias. O objetivo é medir CTR e comportamento na LP (H1/H2);
+Advantage+, EUA, inglês, ~R$ 28/dia × 7 dias (decisão 02/10; o plano original era R$ 18/dia). O objetivo é medir CTR e comportamento na LP (H1/H2);
 venda é bônus. Fonte de toda a copy: o PDF v1.1 e a LP — nada pode prometer mais do que o workbook entrega.
 
 ## 1. O que produzir

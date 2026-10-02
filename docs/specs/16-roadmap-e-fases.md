@@ -57,9 +57,10 @@ datas e marcos M1–M5 não mudaram.
 ## Fase 5 — Campanha de validação (1 semana + 2 dias de análise)
 
 - 1 campanha de vendas (otimizada para Purchase), 1 conjunto amplo (Advantage+), 3 criativos
-  (ângulos: dor / mecanismo / transformação), EUA, inglês, ~R$ 18/dia × 7 dias.
+  (ângulos: dor / mecanismo / transformação), EUA, inglês, ~R$ 28/dia × 7 dias (decisão 02/10; o plano
+  original era R$ 18/dia).
 - Campanhas criadas **manualmente** no Gerenciador de Anúncios no MVP.
-- Expectativa realista: US$ 20–25 ≈ 15–50 cliques ≈ 0–2 vendas. O teste mede CTR, CPC e comportamento na LP;
+- Expectativa realista: US$ 35–40 ≈ 25–80 cliques ≈ 0–2 vendas. O teste mede CTR, CPC e comportamento na LP;
   venda é bônus.
 
 Métricas e referências: CTR > 1% · CPC < US$ 1.50 · LP Views/cliques > 70% · InitiateCheckout/LP Views > 3% · Purchase ≥ 1.
