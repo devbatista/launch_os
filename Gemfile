@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.1.3"
+gem "rails", "~> 8.1.4"
 # json 3.x mudou JSON.parse para keyword args e o ActiveSupport 8.1.3 ainda passa um hash posicional
 # (quebra cookies assinados → sessão do admin). Remover o pin quando o Rails suportar json 3.
 gem "json", "< 3"
