@@ -338,7 +338,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 
 ## Fase 5 — Campanha (S2–S3 · 03–09/10)
 
-- [x] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 28/dia) — *veiculando desde 02/10, um dia antes do previsto*
+- [x] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 28/dia) — *veiculando desde 02/10, um dia antes do previsto*![alt text](image.png)
 - [x] 5.1 Três anúncios aprovados pela Meta — *05/10: os três ativos e com impressões*
 - [ ] 5.2 Planilha diária preenchida (seção 8 do cronograma) — dias 1 a 7
 - [ ] 5.3 Sentry, `MessageLog` e disputas verificados diariamente; suporte respondido em < 24 h
