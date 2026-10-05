@@ -11,4 +11,14 @@ RSpec.describe "Sidekiq Web" do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Sidekiq")
   end
+
+  it "aba Cron (sidekiq-cron) também só com sessão" do
+    get "/admin/sidekiq/cron"
+    expect(response).to have_http_status(:not_found)
+
+    sign_in_admin
+    get "/admin/sidekiq/cron"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Cron")
+  end
 end

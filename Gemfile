@@ -22,6 +22,8 @@ gem "csv"
 # Jobs em background e cache (docs/specs/01-arquitetura-e-stack.md)
 gem "sidekiq", "~> 8.0"
 gem "redis", "~> 6.0"
+# Jobs recorrentes (config/schedule.yml): sync do Insights da Meta (decisão 05/10, spec 16)
+gem "sidekiq-cron", "~> 2.3"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]

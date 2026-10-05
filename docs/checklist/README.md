@@ -338,8 +338,8 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 
 ## Fase 5 — Campanha (S2–S3 · 03–09/10)
 
-- [ ] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 28/dia)
-- [ ] 5.1 Três anúncios aprovados pela Meta
+- [x] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 28/dia) — *veiculando desde 02/10, um dia antes do previsto*
+- [x] 5.1 Três anúncios aprovados pela Meta — *05/10: os três ativos e com impressões*
 - [ ] 5.2 Planilha diária preenchida (seção 8 do cronograma) — dias 1 a 7
 - [ ] 5.3 Sentry, `MessageLog` e disputas verificados diariamente; suporte respondido em < 24 h
 - [ ] 5.4 Análise final e cenário escolhido (seção 9 do cronograma) — 03/11
@@ -350,7 +350,15 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 
 ## Fase 6 — Pós-validação (sem datas)
 
-Ver ordem sugerida no cronograma (seção 4.8). Não iniciar antes de M5.
+Ver ordem sugerida no cronograma (seção 4.8). Não iniciar antes de M5 — exceção: Insights da Meta (abaixo), antecipado em 05/10.
+
+### Marketing API — Insights (item 5, antecipado em 05/10) — spec [16](../specs/16-roadmap-e-fases.md#meta-marketing-api-fase-2-da-plataforma)
+
+- [x] `Providers::Meta::Client#ad_insights` (Faraday, v26.0, paginação, erros transitórios/permanentes), `AdInsight`, `MetaAds::SyncInsights` (últimos 7 dias, upsert) e `SyncAdInsightsJob` a cada 6 h via sidekiq-cron — *05/10: specs do client, do sync, do job (no-op sem credenciais, backfill, 190 descarta, 17 reagenda, cron válido), do model e aba Cron só com sessão; suíte completa verde*
+- [x] Dashboard: seção Meta Ads com gasto, CTR de link, vendas da Meta, CAC, ROAS líquido (BRL) e tabela por anúncio — *05/10: request spec com dois anúncios, venda paga e checkout pendente*
+- [x] Setup na Meta: app Business ligado ao portfólio `DevBatista`, System User com acesso à conta `2425512304918484`, token com `ads_read` — *05/10: app `Launch OS` (caso de uso Marketing API, nível Limited, `ads_read` pronto para teste) criado no portfólio, que já é verificado. System User `launch_os_insights` (Funcionário) com a conta DevBatista em "Gerenciar campanhas" — escolha consciente para a criação futura; o limite efetivo é o escopo do token, que leva só `ads_read`. System User com função de teste no app; token gerado (expiração "Nunca", só `ads_read`) e guardado no `.env` local*
+- [ ] `META_ACCESS_TOKEN` e `META_AD_ACCOUNT_ID` no Railway (`launch_os` e `sidekiq`), deploy e backfill `SyncAdInsightsJob.perform_later("2026-10-02")`
+- [ ] Primeiro sync em produção conferido contra o Gerenciador (gasto, impressões e cliques por anúncio batem com o CSV de 05/10) — *05/10: validado em dev contra a API real (02–04/10: `method-01` 748/10/R$ 62,10, `pain-01` 230/5/R$ 9,33, `outcome-01` 111/1/R$ 4,96 — idêntico ao CSV); falta repetir em produção após o deploy*
 
 ### Trilha fiscal — spec [18](../specs/18-fiscal-e-recibos.md)
 

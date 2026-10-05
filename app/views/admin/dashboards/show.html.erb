@@ -73,11 +73,9 @@
   <%= render "stat", label: "Email enviado", value: percent(e[:rate]), hint: "#{e[:ok]} de #{e[:total]}#{" · #{e[:failed]} com falha" if e[:failed].positive?}", tone: (:danger if e[:failed].positive?) %>
   <% w = d.whatsapp_delivery %>
   <%= render "stat", label: "WhatsApp entregue", value: percent(w[:rate]), hint: (w[:total].zero? ? "nenhum envio (opt-in ou Twilio desligada)" : "#{w[:ok]} de #{w[:total]}#{" · #{w[:failed]} com falha" if w[:failed].positive?}"), tone: (:danger if w[:failed].positive?) %>
-  <div class="adm-card sm:col-span-2">
-    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">CAC e ROAS</p>
-    <p class="mt-2 text-sm text-ink-600">Fora do MVP: o gasto de mídia não entra no sistema — leia no Gerenciador de Anúncios e compare com o faturamento acima. Espaço reservado para a Insights API (Fase 6).</p>
-  </div>
 </div>
+
+<%= render "meta_ads", d: d %>
 
 <div class="mt-7 grid gap-6 lg:grid-cols-2">
   <%= render "sales_by", title: "Vendas por campanha", field_label: "utm_campaign", rows: d.sales_by_campaign, currency: currency %>

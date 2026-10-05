@@ -33,7 +33,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/09 – 23/09 | S1 | 23 | | 5/5 — 4.1 em 19/09, 4.2–4.4 em 21/09, 4.5 em 23/09 | ✅ |
 | Trilha de conteúdo (paralela) | 21/09 – 23/09 | S1 | 45 (fora do dev) | | 6/6 | ✅ |
-| Fase 5 — Campanha de validação | 03/10 – 09/10 | S2–S3 | 7 | | 0/3 | 🟦 |
+| Fase 5 — Campanha de validação | 03/10 – 09/10 | S2–S3 | 7 | | 1/3 (5.1 ✅ 02/10) | 🟦 |
 | Análise e decisão | 10/10 – 11/10 | S3 | 4 | | 0/1 | ⬜ |
 | Fase 6 — Pós-validação | a definir | — | — | | — | ⬜ |
 
@@ -52,7 +52,7 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Debugger da Meta e email de suporte ok — Fase 1 concluída |
 | **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ✅ | 21/09: em produção — pago, webhook próprio com assinatura válida, email via SES, download ok, duplicado é no-op (T02). WhatsApp fora do escopo do M2 por decisão (Twilio adiada; lançamento só com email) |
 | **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ✅ | 23/09 — um mês antes da meta |
-| **M4** — Campanha no ar | 03/10 | Três anúncios aprovados pela Meta e ativos, R$ 28/dia | ⬜ | |
+| **M4** — Campanha no ar | 03/10 | Três anúncios aprovados pela Meta e ativos, R$ 28/dia | ✅ | 02/10 — veiculação começou um dia antes do previsto; confirmado no checkpoint de 05/10 |
 | **M5** — Decisão | 11/10 | Relatório com métricas (17.3) e cenário (17.4) escolhido; próximo orçamento definido ou teste encerrado | ⬜ | |
 
 ## 3. Linha do tempo
@@ -167,8 +167,8 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 
 | ID | Tarefa | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|
-| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 28/dia | 2 | 4.5, C.6 | 🟦 | | Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
-| 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | ⬜ | | |
+| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 28/dia | 2 | 4.5, C.6 | ✅ | 02/10 | 05/10: os três anúncios ativos e com impressões. A veiculação começou em **02/10**, não em 03/10 (`PageVisit` com `utm_source=facebook` já em 02/10). Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
+| 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | 🟦 | | Números diários vêm do Insights (`AdInsight`, seção Meta Ads do dashboard) desde 05/10; até o deploy, exportar do Gerenciador com detalhamento **por dia** |
 | 5.3 | Suporte a compradores e monitoramento de erros (Sentry, MessageLog, disputas) | 2 | 5.1 | ⬜ | | |
 | 5.4 | Análise final (10–11/10): comparar com referências e escolher o cenário de decisão | 4 | 5.2 | ⬜ | | |
 
@@ -182,13 +182,14 @@ Só se a análise (5.4) apontar continuidade. Ordem por impacto no próximo test
 | 2 | Conversions API com deduplicação por `event_id` (dados já gravados no `Order`) | [10](../specs/10-tracking-e-analytics.md) | 1 semana | ⬜ |
 | 3 | Segundo produto na mesma aplicação (valida H5) | — | 2–3 dias + conteúdo | ⬜ |
 | 4 | Cupons e Stripe como gateway alternativo | — | 1–2 semanas | ⬜ |
-| 5 | Marketing API — V1 (campanha, ad set, ads em PAUSED, ativar/pausar, IDs no banco) | [16](../specs/16-roadmap-e-fases.md#meta-marketing-api-fase-2-da-plataforma) | 3 semanas + App Review | ⬜ |
-| 6 | Marketing API — V2 (Insights, CAC/ROAS no dashboard, pausa automática) | idem | 1–2 semanas | ⬜ |
-| 7 | Order bump, upsell, follow-up por WhatsApp com consentimento de marketing | — | 2 semanas | ⬜ |
+| 5 | Marketing API — Insights (gasto/CTR por anúncio, CAC/ROAS no dashboard), só leitura — **antecipado em 05/10** | [16](../specs/16-roadmap-e-fases.md#meta-marketing-api-fase-2-da-plataforma) | 1 semana | 🟦 código pronto; falta setup na Meta e ENV no Railway |
+| 6 | Marketing API — criação (campanha, conjunto, ads em PAUSED, ativar/pausar, IDs no banco, teto de orçamento) | idem | 1,5–2 semanas (sem App Review para conta própria) | ⬜ |
+| 7 | Marketing API — pausa automática por orçamento/data, vídeo, múltiplos conjuntos | idem | 1 semana | ⬜ |
+| 8 | Order bump, upsell, follow-up por WhatsApp com consentimento de marketing | — | 2 semanas | ⬜ |
 | — | Itens cortados das fases 1–4 (dashboard 4.3) | | | ⬜ |
 | — | Railway *Infrastructure as Code* (`.railway/railway.ts` + `railway config apply`) para versionar healthcheck/start command hoje definidos no dashboard | [02](../specs/02-docker-e-ambiente.md) | 1 dia | ⬜ |
 
-O App Review da Marketing API pode ser aberto ao final da Fase 5, em paralelo aos itens 1–4.
+~~O App Review da Marketing API pode ser aberto ao final da Fase 5~~ — *05/10: desnecessário; para a própria conta de anúncios o standard access a `ads_read`/`ads_management` basta (spec 16).*
 
 ## 5. Critérios de saída por fase
 
@@ -258,9 +259,10 @@ Referências: CTR > 1% · CPC < US$ 1.50 · LP Views/cliques > 70% · InitiateCh
 
 | Dia | Data | Gasto (R$) | Impressões | Cliques | CTR | CPC (US$) | LP Views | Checkouts | Vendas | Obs. |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 03/10 | | | | | | | | | |
-| 2 | 04/10 | | | | | | | | | |
-| 3 | 05/10 | | | | | | | | | |
+| 0 | 02/10 | 11,47 | 303 | 6 | 1,98% | 0,39 | 2 | 0 | 0 | Veiculação começou um dia antes do previsto. Dias 0–2 puxados do Insights em 05/10 (batem com o CSV do Gerenciador). CPC a R$ 4,89/US$; checkouts e vendas pelos `Orders` |
+| 1 | 03/10 | 24,82 | 463 | 4 | 0,86% | 1,27 | 3 | 0 | 0 | |
+| 2 | 04/10 | 40,10 | 323 | 6 | 1,86% | 1,37 | 5 | 0 | 0 | Gasto 43% acima do orçamento diário (a Meta pode passar até 75% num dia; a média semanal respeita o orçamento) e CPM de ~R$ 124 |
+| 3 | 05/10 | | | | | | | 1 | 1 | **Checkpoint:** CTR de link da campanha 1,47% (> 1%), nenhum anúncio com ≥ 1.000 impressões para ser julgado sozinho → nada pausado. **1ª venda real** às 06:07 (`method-01`, US$ 14,90, líquido US$ 13,65, pagador nos EUA, webhook com assinatura válida, email enviado, `Purchase` disparado) |
 | 4 | 06/10 | | | | | | | | | |
 | 5 | 07/10 | | | | | | | | | |
 | 6 | 08/10 | | | | | | | | | |
@@ -337,4 +339,7 @@ Template por semana: tarefas concluídas · horas reais vs. planejadas · horas 
 | 2026-09-17 | **Railway configurado pelo dashboard, sem `railway.json`**: healthcheck `/up` do web e start command do `sidekiq` definidos em Settings → Deploy; arquivos de Config as Code removidos | O Railway descontinuou o Config as Code (válido só até 01/12/2026; serviços criados após 28/08/2026 não aderem — o `sidekiq` ignorava o `railway.sidekiq.json`). O substituto (`.railway/railway.ts` + `railway config apply`) exige CLI novo e TypeScript; não vale antes do MVP | Spec 02 e README atualizados; IaC do Railway registrado como item da Fase 5 |
 | 2026-10-02 | **Fase 5 antecipada**: campanha publicada em 02/10, veiculação a partir de 03/10; M4 passa de 26/10 para 03/10 e M5 de 03/11 para 11/10 | Fases 1–4 concluídas em 23/09 (M3 atingido um mês antes) e conteúdo publicado; sem motivo para esperar três semanas com o sistema pronto e verificado em produção | Datas da Fase 5, marcos M4/M5, planilha diária (seção 8) e seção 9 atualizadas; checklist alinhado |
 | 2026-10-02 | Orçamento da Fase 5 sobe de R$ 18/dia para **R$ 28/dia** (7 dias ≈ R$ 196, dentro do saldo pré-pago de R$ 215) | A R$ 18/dia o teste compraria US$ 25,75 na semana inteira ≈ 17–51 cliques — dá para ler CTR e CPC, não dá para ler conversão; com saldo em conta, o valor baixo custaria quase o mesmo sem permitir concluir nada | Spec 16, briefing de criativos, tarefa 5.1 e marco M4 atualizados. Checkpoint no dia 3 (05/10): CTR abaixo de 1% → cortar ou pausar e redirecionar o saldo para criativos novos |
+| 2026-10-05 | **Insights da Meta antecipado para a Fase 5** (item 5 da Fase 6), por pedido do usuário — exceção ao critério da spec 16 de não iniciar pós-validação antes do fim da Fase 5. Ordem da Marketing API invertida: Insights (leitura) antes da criação | Insights não escreve na conta de anúncios (sem risco para a campanha no ar) e substitui a planilha manual da 5.2 com CAC/ROAS reais por criativo. Custo aceito: horas desviadas da 5.2/5.3 e possível retrabalho se a 5.4 mudar o rumo | Spec 16 (seção Marketing API), spec 11 (seção Meta Ads), spec 01; Fase 6 renumerada. Criação de campanhas segue condicionada a ≥ 2 produtos ou campanhas semanais, e nada que escreva na conta vai para produção antes de M5 |
+| 2026-10-05 | **sidekiq-cron** para jobs recorrentes (`config/schedule.yml`) | Agendamento versionado no repositório e visível na aba Cron do `/admin/sidekiq`; preferido ao cron service do Railway (configurado só no dashboard) | Gem nova no Gemfile; spec 01 atualizada. Primeiro job: `sync_ad_insights` a cada 6 h |
+| 2026-10-05 | Marketing API **sem App Review** e **sem `koala`** (Faraday, Graph API v26.0 fixada) | Doc da Meta: conta própria só precisa de standard access a `ads_read`/`ads_management`; gem de SDK contraria a regra dos provedores | Estimativa da criação cai de "3 semanas + App Review" para 1,5–2 semanas |
 | | | | |
