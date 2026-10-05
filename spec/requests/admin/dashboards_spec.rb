@@ -123,5 +123,48 @@ RSpec.describe "Admin dashboard" do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("LP → checkout —", "checkout → venda —", "conversão total —", "$0.00", "Nenhuma venda no período.", "Nenhum pedido ainda.")
     end
+
+    # Spec 16 (Insights): gasto da Meta × pedidos → CAC e ROAS na moeda da conta.
+    describe "Meta Ads" do
+      let(:today) { Time.current.in_time_zone("America/Sao_Paulo").to_date }
+
+      it "sem integração nem dados, explica o que configurar" do
+        stub_const("ENV", ENV.to_h.except("META_ACCESS_TOKEN", "META_AD_ACCOUNT_ID"))
+
+        get admin_dashboard_path
+
+        expect(response.body).to include("sem dados do Insights", "META_ACCESS_TOKEN")
+      end
+
+      it "mostra gasto, vendas da Meta, CAC, ROAS líquido e a tabela por anúncio; pedidos são a verdade" do
+        create(:ad_insight, date: today - 1, meta_ad_id: "A1", ad_name: "method-01", spend_cents: 6210, impressions: 748, link_clicks: 10,
+                            landing_page_views: 8, purchases: 0)
+        create(:ad_insight, date: today - 1, meta_ad_id: "A2", ad_name: "pain-01", spend_cents: 933, impressions: 230, link_clicks: 5)
+        create(:ad_insight, date: today - 20, meta_ad_id: "A1", ad_name: "method-01", spend_cents: 99_999) # fora do período
+        create(:order, :paid, product:, utm_source: "facebook", utm_content: "method-01", paypal_receivable_cents: 6860, paypal_receivable_currency: "BRL")
+        create(:order, :pending, product:, utm_source: "facebook", utm_content: "pain-01")
+        create(:order, :paid, product:, utm_source: nil, paypal_receivable_cents: 6860, paypal_receivable_currency: "BRL") # orgânico: fora do CAC
+
+        get admin_dashboard_path
+
+        body = response.body
+        expect(body).to include("Insights atualizado em")
+        expect(body).to include("BRL 71.43", "CTR de link 1,53%")              # gasto 62,10 + 9,33; 15 cliques / 978 impressões
+        expect(body).to include("a Meta reporta 0")
+        expect(body).to include("0,96×")                                      # 68,60 recebido / 71,43 gasto
+        expect(body).to include("method-01", "pain-01", "1,34%", "2,17%", "(Meta: 0)")
+        expect(body).not_to include("BRL 1,071.42")
+      end
+
+      it "não calcula ROAS enquanto um pedido pago não tem o valor recebido na moeda da conta" do
+        create(:ad_insight, date: today, spend_cents: 2000)
+        create(:order, :paid, product:, utm_source: "facebook", utm_content: "method-01")
+
+        get admin_dashboard_path
+
+        expect(response.body).to include("ROAS líquido", "BRL 20.00")
+        expect(response.body).to match(/ROAS líquido.*?—/m)
+      end
+    end
   end
 end

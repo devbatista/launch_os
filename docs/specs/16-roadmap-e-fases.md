@@ -81,22 +81,71 @@ Progressão de investimento: R$ 130 → 250 → 500 → 1.000, sempre corrigindo
 | Horizonte | Itens |
 |---|---|
 | Curto prazo | Conversions API (reutiliza `event_id`, `fbp`, `fbc`, IP, UA já gravados), novos templates de LP, cupons, segundo produto, Stripe |
-| Médio prazo | Order bump, upsell na Thank You, bundles, A/B de headline/preço, watermark no PDF, follow-up por WhatsApp com consentimento de marketing, **Meta Marketing API** (abaixo) |
+| Médio prazo | Order bump, upsell na Thank You, bundles, A/B de headline/preço, watermark no PDF, follow-up por WhatsApp com consentimento de marketing, **Meta Marketing API** (abaixo; Insights antecipado em 05/10) |
 | Longo prazo | Múltiplas marcas/domínios, área do comprador, lista de email e automações, novos mercados/idiomas |
 
 ### Meta Marketing API (fase 2 da plataforma)
 
-Só implementar quando houver ≥ 2 produtos ativos ou campanhas semanais recorrentes.
+**Decisão 05/10:** a ordem foi invertida e o **Insights (só leitura) foi antecipado**, durante a Fase 5,
+por pedido do usuário — exceção registrada ao critério "nenhum item de pós-validação antes da Fase 5
+terminar". A criação de campanhas continua condicionada a ≥ 2 produtos ativos ou campanhas semanais
+recorrentes, e nada que **escreva** na conta de anúncios vai para produção antes de M5.
 
 Regra inegociável: **todo objeto criado via API nasce `PAUSED`**; ativação é ação explícita do `User` no admin.
 
-- Pré-requisitos: app Business na Meta for Developers, permissões `ads_management`, `ads_read`,
-  `business_management` (App Review com vídeo), token de System User de longa duração, gem `koala` ou
-  Faraday com versão da Graph API fixada, Pixel com `Purchase` validado.
-- V1: criar Campaign (`OUTCOME_SALES`) → AdSet (`daily_budget`, `US`, `OFFSITE_CONVERSIONS` + `promoted_object` com `pixel_id`/`PURCHASE`) → upload de imagens → AdCreatives (LP com UTMs) → Ads (3), tudo PAUSED; botões ativar/pausar; IDs da Meta gravados imediatamente após cada resposta (criação parcial fica visível para corrigir/arquivar).
-- V2: Insights API (gasto, cliques, CTR, CPC, compras) → CAC/ROAS no dashboard com `Orders` como verdade; pausa automática por orçamento/data; vídeo; múltiplos conjuntos; status de revisão.
-- Modelo adicional: `AdAccount`, `Campaign`, `AdSet`, `AdCreative`, `Ad`, `CampaignInsight`.
-- Riscos: App Review lento/recusado, rate limits e versionamento da API, erros gastam dinheiro real (daí PAUSED), atribuição da Meta ≠ pedidos reais.
+Premissas conferidas na documentação da Meta em 05/10:
+
+- **Sem App Review para conta própria**: *"If your app is only managing your ad account, standard access
+  to the `ads_read` and `ads_management` permissions are sufficient."* O nível Limited da Marketing API
+  tem rate limit agressivo por conta — suficiente para dezenas de chamadas por semana.
+- **Graph API v26.0** (29/07/2026), fixada em `META_GRAPH_VERSION`; subir junto com o changelog.
+- **Faraday, sem SDK** (`koala` descartada — regra dos provedores, spec 01).
+- **Advantage+ unificado** (v25+): as APIs legadas de ASC foram descontinuadas; uma campanha de vendas
+  vira `ADVANTAGE_PLUS_SALES` com orçamento de campanha + público Advantage+ + posicionamentos
+  automáticos — a mesma estrutura da campanha manual da Fase 5. Conferir o `advantage_state` ao criar.
+
+Pré-requisitos (fora do código): app Business na Meta for Developers ligado ao portfólio `DevBatista`;
+System User com acesso à conta de anúncios, ao Pixel e à Página; token de longa duração com `ads_read`
+(Insights) e, depois, `ads_management` (criação). *05/10: o app `Launch OS` foi criado com o caso de uso
+"Criar e gerenciar anúncios com a API de Marketing", vinculado ao portfólio `DevBatista` (id
+106724254821671), que **já é verificado** — por isso nenhum requisito pendente. Nível de acesso: Limited
+(subir exige app publicado + App Review; não necessário). "Atualização automática de versão" ligada: rede de
+segurança se a v26.0 for descontinuada; reavaliar antes da criação de campanhas (escrita). Não reaproveitar
+o app CatalystOps: rate limit é por app.*
+
+#### Insights — implementado (05/10)
+
+- `Providers::Meta::Client#ad_insights(since:, until_date:)`: `GET /act_{id}/insights` com `level=ad`,
+  `time_increment=1`, `use_account_attribution_setting=true`, campos `ad_id, ad_name, campaign_id,
+  campaign_name, date_start, spend, account_currency, impressions, inline_link_clicks, actions`; segue
+  `paging.next`. Erros: 4, 17, 613, 80000, 80004, `is_transient`, 429 e 5xx → `TransientError`;
+  190/10/200/100 → `ApiError` (permanente).
+- `AdInsight` (`ad_insights`): uma linha por (`meta_ad_id`, `date`), upsert a cada sync. Ações do Pixel:
+  `landing_page_view`, `offsite_conversion.fb_pixel_initiate_checkout`, `offsite_conversion.fb_pixel_purchase`
+  (não as `omni_*`, que somam outros canais). Gasto em centavos da moeda da conta (BRL).
+- `MetaAds::SyncInsights` regrava os **últimos 7 dias** a cada execução: a Meta ainda atribui conversões
+  a dias passados (7 dias após o clique) e só congela os números após 28 dias.
+- `SyncAdInsightsJob` a cada 6 h via **sidekiq-cron** (`config/schedule.yml`; aba Cron em `/admin/sidekiq`).
+  No-op sem `META_ACCESS_TOKEN`/`META_AD_ACCOUNT_ID`. Backfill: `SyncAdInsightsJob.perform_later("2026-10-02")`.
+- Dashboard (spec 11): gasto, CTR de link, vendas da Meta (`Order` pago com `utm_source=facebook`), CAC,
+  ROAS líquido (`paypal_receivable_cents` ÷ gasto, ambos em BRL — sem câmbio próprio) e tabela por anúncio
+  (`ad_name` = `utm_content`). **Pedidos são a verdade**; compras reportadas pela Meta aparecem só como referência.
+
+#### Criação — próxima etapa (após M5)
+
+- Criar Campaign (`OUTCOME_SALES`, orçamento de campanha) → AdSet (`US`, público Advantage+,
+  `OFFSITE_CONVERSIONS` + `promoted_object` com `pixel_id`/`PURCHASE`) → upload de imagens → AdCreatives
+  (LP com `url_tags` das UTMs) → Ads, tudo `PAUSED`; ids da Meta gravados logo após cada resposta e passo
+  com id já gravado é pulado no retry (publicação retomável, sem duplicar); botões ativar/pausar com
+  confirmação do orçamento. *Nomes exatos de campos a conferir na doc da v26 antes de codar; 9:16 por
+  posicionamento (`asset_feed_spec`) pode ficar fora da primeira versão.*
+- Proteções obrigatórias: teto `META_MAX_DAILY_BUDGET_CENTS` validado no model **e** no service antes da
+  chamada (orçamento vai em centavos — erro de unidade gasta 100×), data de término obrigatória, interruptor
+  `META_ADS_ENABLED`.
+- Modelo enxuto: `ad_campaigns` (campanha + conjunto, 1:1 na estrutura atual) e `ads`; conta e Pixel por ENV.
+- Depois: pausa automática por orçamento/data, vídeo, múltiplos conjuntos, status de revisão.
+- Riscos: rate limits e versionamento da API, erros gastam dinheiro real (daí PAUSED + teto), atribuição da
+  Meta ≠ pedidos reais.
 
 ## Critérios de aceite do roadmap
 

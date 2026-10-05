@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_25_125157) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_125157) do
     t.uuid "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "ad_insights", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "ad_name", null: false
+    t.string "campaign_name"
+    t.datetime "created_at", null: false
+    t.string "currency", limit: 3, null: false
+    t.date "date", null: false
+    t.integer "impressions", default: 0, null: false
+    t.integer "initiate_checkouts", default: 0, null: false
+    t.integer "landing_page_views", default: 0, null: false
+    t.integer "link_clicks", default: 0, null: false
+    t.string "meta_ad_id", null: false
+    t.string "meta_campaign_id"
+    t.integer "purchases", default: 0, null: false
+    t.integer "spend_cents", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_name"], name: "index_ad_insights_on_ad_name"
+    t.index ["date"], name: "index_ad_insights_on_date"
+    t.index ["meta_ad_id", "date"], name: "index_ad_insights_on_meta_ad_id_and_date", unique: true
   end
 
   create_table "benefits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

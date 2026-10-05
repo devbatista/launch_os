@@ -106,6 +106,14 @@ Blocos adicionais:
 CAC e ROAS **não** são calculados no MVP (gasto de mídia não está no sistema; ler no Gerenciador de Anúncios).
 Deixar o layout com espaço para esses cards (fase 2, Insights API).
 
+*(05/10: Insights da Meta antecipado — spec [16](16-roadmap-e-fases.md#meta-marketing-api-fase-2-da-plataforma).
+O card reservado virou a seção **Meta Ads**: gasto e CTR de link dos dias do período (`AdInsight`), vendas da
+Meta (`Order` pago com `utm_source=facebook`), CAC = gasto ÷ vendas e ROAS líquido = `paypal_receivable_cents`
+÷ gasto, ambos na moeda da conta (BRL). ROAS fica "—" se algum pedido pago ainda não tem o valor recebido
+nessa moeda. Tabela por anúncio (`ad_name` = `utm_content`): gasto, impressões, cliques, CTR, LP views (Meta),
+checkouts e vendas (pedidos) e CAC; quando a Meta reporta outro número de compras, ele aparece entre
+parênteses. O gasto é da conta inteira — o filtro de produto não o afeta, e a seção avisa.)*
+
 Sem gráficos no MVP; cards numéricos e tabelas bastam. Queries com `group(:utm_campaign)` e índices
 existentes; período padrão 7 dias.
 

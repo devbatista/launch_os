@@ -1,0 +1,8 @@
+# Jobs recorrentes do sidekiq-cron, carregados quando o processo `sidekiq` sobe (painel em /admin/sidekiq/cron).
+# Remover uma entrada daqui também a remove do Redis no próximo boot.
+
+# Insights da Meta (spec 16): a cada 6 h, regravando os últimos 7 dias. Leitura apenas.
+sync_ad_insights:
+  cron: "0 */6 * * * America/Sao_Paulo"
+  class: "SyncAdInsightsJob"
+  description: "Puxa gasto, impressões, cliques e eventos por anúncio do Insights da Meta"

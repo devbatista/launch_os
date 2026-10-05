@@ -46,6 +46,7 @@ gem "propshaft"
 gem "importmap-rails"           # apenas para servir módulos ES próprios; sem turbo-rails / stimulus-rails
 gem "tailwindcss-rails"
 gem "sidekiq", "~> 8.0"
+gem "sidekiq-cron", "~> 2.3"    # jobs recorrentes (config/schedule.yml) — decisão 05/10
 gem "redis", "~> 5.0"
 gem "thruster"
 gem "bcrypt"
@@ -109,6 +110,8 @@ app/
       paypal/             # Client (Faraday, REST v2), CreateOrder, CaptureOrder, VerifyWebhookSignature
       ses/                # Client (aws-sdk-sesv2): send_raw_email
       twilio/             # Client (Faraday, REST API oficial): send_template_message, valid_signature?
+      meta/               # Client (Faraday, Graph API v26.0): ad_insights (spec 16)
+    meta_ads/             # SyncInsights (Insights por anúncio/dia → AdInsight)
     orders/               # MarkPaid, MarkRefunded, MarkDisputed, MarkFailed
     delivery/             # DeliverOrder, ResendAccess
     whatsapp/             # SendTemplateMessage (monta variáveis, usa Providers::Twilio::Client)
@@ -119,6 +122,7 @@ app/
     send_access_email_job.rb
     send_whatsapp_message_job.rb
     record_page_visit_job.rb
+    sync_ad_insights_job.rb   # recorrente: config/schedule.yml (sidekiq-cron)
   mailers/
     order_mailer.rb
     support_mailer.rb
@@ -301,6 +305,9 @@ Sidekiq:
 - Adapter do Active Job (`perform_later`); os jobs continuam herdando de `ApplicationJob`
   (`retry_on` / `discard_on` do Active Job funcionam sobre o Sidekiq).
 - `config/initializers/sidekiq.rb`: `Sidekiq.configure_server/client` com `REDIS_URL`; `Sidekiq.strict_args!`.
+- Jobs recorrentes com **sidekiq-cron** (decisão 05/10): `config/schedule.yml` é carregado quando o
+  processo `sidekiq` sobe (entrada removida do arquivo some do Redis no boot seguinte); aba Cron no painel
+  via `require "sidekiq/cron/web"` em `config/routes.rb`. Hoje: `sync_ad_insights` a cada 6 h (spec 16).
 - Web UI em `/admin/sidekiq` montada dentro do namespace admin, protegida pela mesma autenticação
   (`authenticate` via constraint que verifica a `Session` do `User`) — ver [12-rotas.md](12-rotas.md).
 - Dead set retido por 30 dias (padrão); jobs mortos geram alerta no Sentry (`sidekiq` integration do `sentry-ruby`).

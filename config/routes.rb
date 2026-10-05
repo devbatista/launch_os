@@ -1,4 +1,5 @@
 require "sidekiq/web"
+require "sidekiq/cron/web" # aba "Cron" no painel (config/schedule.yml)
 
 Rails.application.routes.draw do
   # Tabela completa em docs/specs/12-rotas.md. Rotas fixas primeiro; `GET /:slug` sempre por último.
