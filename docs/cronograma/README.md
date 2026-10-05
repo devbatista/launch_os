@@ -33,7 +33,7 @@ Legenda de status: ⬜ não iniciado · 🟦 em andamento · ✅ concluído · �
 | Fase 3 — Polimento do admin | 19/09 (adiantado) | S1 | 6 | | 1/1 | ✅ |
 | Fase 4 — Tracking, testes e go-live | 19/09 – 23/09 | S1 | 23 | | 5/5 — 4.1 em 19/09, 4.2–4.4 em 21/09, 4.5 em 23/09 | ✅ |
 | Trilha de conteúdo (paralela) | 21/09 – 23/09 | S1 | 45 (fora do dev) | | 6/6 | ✅ |
-| Fase 5 — Campanha de validação | 03/10 – 09/10 | S2–S3 | 7 | | 0/3 | 🟦 |
+| Fase 5 — Campanha de validação | 03/10 – 09/10 | S2–S3 | 7 | | 1/3 (5.1 ✅ 02/10) | 🟦 |
 | Análise e decisão | 10/10 – 11/10 | S3 | 4 | | 0/1 | ⬜ |
 | Fase 6 — Pós-validação | a definir | — | — | | — | ⬜ |
 
@@ -52,7 +52,7 @@ Feriados considerados: 12/10 (S4) e 02/11 (S7).
 | **M1** — LP em produção | 04/10 | Admin com login; produto cadastrado e visível em `www.devbatista.online/21-day-procrastination-reset`; páginas legais publicadas | ✅ | 17/09 — 17 dias antes da meta. Lighthouse mobile 100/100/100/100. Debugger da Meta e email de suporte ok — Fase 1 concluída |
 | **M2** — Compra Sandbox ponta a ponta | 18/10 | Pagamento Sandbox confirmado por webhook; Order `paid`; email e WhatsApp entregues; download funciona; webhook duplicado não duplica pedido | ✅ | 21/09: em produção — pago, webhook próprio com assinatura válida, email via SES, download ok, duplicado é no-op (T02). WhatsApp fora do escopo do M2 por decisão (Twilio adiada; lançamento só com email) |
 | **M3** — Definição de pronto | 25/10 | Todos os itens de [00-visao-geral](../specs/00-visao-geral.md#definição-de-pronto-mvp) verdadeiros; compra real controlada confirmada; eventos validados no Events Manager | ✅ | 23/09 — um mês antes da meta |
-| **M4** — Campanha no ar | 03/10 | Três anúncios aprovados pela Meta e ativos, R$ 28/dia | ⬜ | |
+| **M4** — Campanha no ar | 03/10 | Três anúncios aprovados pela Meta e ativos, R$ 28/dia | ✅ | 02/10 — veiculação começou um dia antes do previsto; confirmado no checkpoint de 05/10 |
 | **M5** — Decisão | 11/10 | Relatório com métricas (17.3) e cenário (17.4) escolhido; próximo orçamento definido ou teste encerrado | ⬜ | |
 
 ## 3. Linha do tempo
@@ -167,8 +167,8 @@ reais (produtos, pedidos, clientes, webhook events). Sem spec própria; referên
 
 | ID | Tarefa | Horas | Depende de | Status | Concluído em | Notas |
 |---|---|---|---|---|---|---|
-| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 28/dia | 2 | 4.5, C.6 | 🟦 | | Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
-| 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | ⬜ | | |
+| 5.1 | Criar campanha manualmente no Gerenciador: 1 campanha (vendas, otimização Purchase), 1 conjunto (Advantage+, EUA, inglês), 3 anúncios, R$ 28/dia | 2 | 4.5, C.6 | ✅ | 02/10 | 05/10: os três anúncios ativos e com impressões. A veiculação começou em **02/10**, não em 03/10 (`PageVisit` com `utm_source=facebook` já em 02/10). Antes: priorizar eventos agregados com Purchase no topo (0.2). Criar do zero — **não duplicar** a campanha de Leads de Set/2026 (arrastaria objetivo, evento de otimização e público BR); mantê-la desativada. Nome no padrão da conta: `Reset \| Vendas \| DevBatista \| <Mês>/2026`; conjunto e anúncios com os mesmos nomes dos `utm_content` (`pain-01`, `method-01`, `outcome-01`) |
+| 5.2 | Acompanhamento diário: gasto, CTR, CPC, LP views, checkouts, vendas → planilha (seção 8 abaixo) | 3 | 5.1 | 🟦 | | Números diários vêm do Insights (`AdInsight`, seção Meta Ads do dashboard) desde 05/10; até o deploy, exportar do Gerenciador com detalhamento **por dia** |
 | 5.3 | Suporte a compradores e monitoramento de erros (Sentry, MessageLog, disputas) | 2 | 5.1 | ⬜ | | |
 | 5.4 | Análise final (10–11/10): comparar com referências e escolher o cenário de decisão | 4 | 5.2 | ⬜ | | |
 
@@ -258,9 +258,10 @@ Referências: CTR > 1% · CPC < US$ 1.50 · LP Views/cliques > 70% · InitiateCh
 
 | Dia | Data | Gasto (R$) | Impressões | Cliques | CTR | CPC (US$) | LP Views | Checkouts | Vendas | Obs. |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 03/10 | | | | | | | | | |
-| 2 | 04/10 | | | | | | | | | |
-| 3 | 05/10 | | | | | | | | | |
+| 0 | 02/10 | 11,47 | 303 | 6 | 1,98% | 0,39 | 2 | 0 | 0 | Veiculação começou um dia antes do previsto. Dias 0–2 puxados do Insights em 05/10 (batem com o CSV do Gerenciador). CPC a R$ 4,89/US$; checkouts e vendas pelos `Orders` |
+| 1 | 03/10 | 24,82 | 463 | 4 | 0,86% | 1,27 | 3 | 0 | 0 | |
+| 2 | 04/10 | 40,10 | 323 | 6 | 1,86% | 1,37 | 5 | 0 | 0 | Gasto 43% acima do orçamento diário (a Meta pode passar até 75% num dia; a média semanal respeita o orçamento) e CPM de ~R$ 124 |
+| 3 | 05/10 | | | | | | | 1 | 1 | **Checkpoint:** CTR de link da campanha 1,47% (> 1%), nenhum anúncio com ≥ 1.000 impressões para ser julgado sozinho → nada pausado. **1ª venda real** às 06:07 (`method-01`, US$ 14,90, líquido US$ 13,65, pagador nos EUA, webhook com assinatura válida, email enviado, `Purchase` disparado) |
 | 4 | 06/10 | | | | | | | | | |
 | 5 | 07/10 | | | | | | | | | |
 | 6 | 08/10 | | | | | | | | | |
