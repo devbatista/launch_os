@@ -1,7 +1,7 @@
-<% content_for :title, "Campanhas Meta — Launch OS" %>
+<% content_for :title, "Meta Ads — Launch OS" %>
 
-<%= render "admin/shared/page_header", title: "Campanhas Meta",
-           subtitle: "Campanhas que o sync do Insights encontrou. Vincule cada uma ao produto que ela vende: é o que separa gasto, CAC e ROAS por produto no dashboard." %>
+<%= render "admin/shared/page_header", title: "Meta Ads",
+           subtitle: "Campanhas que o sync do Insights encontrou. Vincule cada uma ao produto que ela vende — os números da campanha aparecem na página do produto." %>
 
 <% if @campaigns.empty? %>
   <div class="adm-empty">
@@ -12,7 +12,7 @@
   <% if unassigned.positive? %>
     <div class="adm-alert adm-alert-warning mb-6">
       <%= icon(:alert, class: "mt-0.5 shrink-0") %>
-      <p><%= pluralize(unassigned, "campanha sem produto", "campanhas sem produto") %>: o gasto delas não entra em nenhum produto do dashboard.</p>
+      <p><%= pluralize(unassigned, "campanha sem produto", "campanhas sem produto") %>: os números delas não aparecem em nenhum produto.</p>
     </div>
   <% end %>
 

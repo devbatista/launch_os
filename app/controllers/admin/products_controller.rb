@@ -11,6 +11,7 @@ module Admin
     end
 
     def show
+      @ads_report = ProductAdsReport.new(@product)
     end
 
     def new

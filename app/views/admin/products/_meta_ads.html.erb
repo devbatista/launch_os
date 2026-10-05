@@ -1,0 +1,104 @@
+<%# Campanhas da Meta vinculadas ao produto (spec 16): vínculo, números na vida toda e nos últimos 7 dias, e
+    tabela por anúncio. Locals: product, report (Admin::ProductAdsReport). %>
+<section class="adm-card mt-6">
+  <h2 class="adm-card-title">Meta Ads
+    <span class="ml-2 font-normal normal-case tracking-normal text-ink-300">
+      <%= report.synced_at ? "Insights atualizado em #{datetime_br(report.synced_at)}" : "sem dados do Insights" %>
+    </span>
+  </h2>
+
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="min-w-0">
+      <% if report.campaigns.empty? %>
+        <p class="text-sm text-ink-600">Nenhuma campanha vinculada a este produto.</p>
+      <% else %>
+        <ul class="space-y-1.5">
+          <% report.campaigns.each do |campaign| %>
+            <li class="flex flex-wrap items-center gap-2 text-sm">
+              <span class="text-ink-900"><%= campaign.name %></span>
+              <span class="adm-mono text-xs text-ink-400"><%= campaign.meta_campaign_id %></span>
+              <%= button_to "Desvincular", admin_product_ad_campaign_path(product, campaign), method: :delete, class: button_classes(:small),
+                    form: { data: { confirm: "Desvincular “#{campaign.name}”? Os números dela deixam de aparecer neste produto." } } %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+
+    <% if report.available_campaigns.any? %>
+      <%= form_with url: admin_product_ad_campaigns_path(product), method: :post, class: "flex items-end gap-2" do |f| %>
+        <div>
+          <%= f.label :ad_campaign_id, "Vincular campanha", class: label_classes %>
+          <%= f.select :ad_campaign_id, options_for_select(report.available_campaigns.map { |c| [ c.name, c.id ] }), {}, class: input_classes %>
+        </div>
+        <%= f.button "Vincular", type: :submit, class: button_classes(:secondary) %>
+      <% end %>
+    <% elsif report.campaigns.empty? %>
+      <p class="adm-hint">Nenhuma campanha sem produto. Elas aparecem em <%= link_to "Meta Ads", admin_ad_campaigns_path, class: "adm-link" %> depois do sync do Insights.</p>
+    <% end %>
+  </div>
+
+  <% if report.campaigns.any? %>
+    <% if !report.data? %>
+      <p class="mt-4 text-sm text-ink-600">As campanhas vinculadas ainda não têm dados do Insights.</p>
+    <% else %>
+      <% currency = report.currency %>
+      <% roas = ->(value) { value ? "#{number_with_precision(value, precision: 2, separator: ',')}×" : "—" } %>
+      <% periods = [ [ "Vida toda (desde #{report.first_date.strftime('%d/%m')})", report.lifetime ], [ "Últimos #{Admin::ProductAdsReport::RECENT_DAYS} dias", report.recent ] ] %>
+      <div class="mt-5 overflow-x-auto">
+        <table class="adm-table-inline">
+          <thead>
+            <tr><th></th><% periods.each do |label, _| %><th class="text-right"><%= label %></th><% end %></tr>
+          </thead>
+          <tbody>
+            <% [
+                 [ "Gasto", ->(s) { money(s[:spend_cents], currency) } ],
+                 [ "Impressões", ->(s) { number_with_delimiter(s[:impressions], delimiter: ".") } ],
+                 [ "Cliques no link", ->(s) { s[:link_clicks] } ],
+                 [ "CTR de link", ->(s) { percent(s[:ctr], precision: 2) } ],
+                 [ "LP views (Meta)", ->(s) { s[:landing_page_views] } ],
+                 [ "Checkouts", ->(s) { s[:checkouts] } ],
+                 [ "Vendas", ->(s) { s[:meta_purchases] == s[:sales] ? s[:sales] : safe_join([ s[:sales], tag.span(" (Meta: #{s[:meta_purchases]})", class: "text-ink-400") ]) } ],
+                 [ "CAC", ->(s) { money(s[:cac_cents], currency) } ],
+                 [ "ROAS líquido", ->(s) { roas.call(s[:roas]) } ]
+               ].each do |label, value| %>
+              <tr>
+                <td class="text-ink-600"><%= label %></td>
+                <% periods.each do |_, stats| %><td class="adm-num text-right"><%= value.call(stats) %></td><% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="mt-6 text-xs font-semibold uppercase tracking-wider text-ink-400">Por anúncio · vida toda<span class="ml-2 font-normal normal-case tracking-normal text-ink-300">nome do anúncio = utm_content</span></h3>
+      <div class="mt-2 overflow-x-auto">
+        <table class="adm-table-inline">
+          <thead>
+            <tr>
+              <th>Anúncio</th><th class="text-right">Gasto</th><th class="text-right">Impressões</th><th class="text-right">Cliques</th>
+              <th class="text-right">CTR</th><th class="text-right">LP views</th><th class="text-right">Checkouts</th>
+              <th class="text-right">Vendas</th><th class="text-right">CAC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% report.ads.each do |ad| %>
+              <tr>
+                <td class="text-ink-900"><%= ad[:name] %></td>
+                <td class="adm-num text-right"><%= money(ad[:spend_cents], currency) %></td>
+                <td class="adm-num text-right"><%= number_with_delimiter(ad[:impressions], delimiter: ".") %></td>
+                <td class="adm-num text-right"><%= ad[:link_clicks] %></td>
+                <td class="adm-num text-right"><%= percent(ad[:ctr], precision: 2) %></td>
+                <td class="adm-num text-right"><%= ad[:landing_page_views] %></td>
+                <td class="adm-num text-right"><%= ad[:checkouts] %></td>
+                <td class="adm-num text-right"><%= ad[:sales] %><% if ad[:meta_purchases] != ad[:sales] %> <span class="text-ink-400">(Meta: <%= ad[:meta_purchases] %>)</span><% end %></td>
+                <td class="adm-num text-right"><%= money(ad[:cac_cents], currency) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <p class="adm-hint mt-3">Gasto, impressões, cliques e LP views vêm da Meta; checkouts e vendas, dos pedidos com utm_source=<%= Admin::ProductAdsReport::META_UTM_SOURCE %> (verdade). ROAS líquido = recebido no PayPal (<%= currency %>) ÷ gasto. A Meta atribui por 7 dias após o clique: os últimos dias ainda mudam.</p>
+    <% end %>
+  <% end %>
+</section>

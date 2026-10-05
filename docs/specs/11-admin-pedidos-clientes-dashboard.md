@@ -120,6 +120,10 @@ vinculadas a ele. Em "Todos", os cards mostram o total da conta e uma tabela **P
 Meta, CAC e ROAS líquido; a linha "Sem produto" leva ao vínculo). Gasto do período em campanha sem produto
 aparece como aviso nos dois modos.)*
 
+*(05/10, revisão: **a seção Meta Ads saiu do dashboard**, junto com o card reservado de CAC/ROAS — por pedido
+do usuário, os números da Meta ficam no **show do produto** (spec 05). O dashboard volta a ser funil, receita,
+entregas e vendas por UTM.)*
+
 Sem gráficos no MVP; cards numéricos e tabelas bastam. Queries com `group(:utm_campaign)` e índices
 existentes; período padrão 7 dias.
 

@@ -75,8 +75,6 @@
   <%= render "stat", label: "WhatsApp entregue", value: percent(w[:rate]), hint: (w[:total].zero? ? "nenhum envio (opt-in ou Twilio desligada)" : "#{w[:ok]} de #{w[:total]}#{" · #{w[:failed]} com falha" if w[:failed].positive?}"), tone: (:danger if w[:failed].positive?) %>
 </div>
 
-<%= render "meta_ads", d: d %>
-
 <div class="mt-7 grid gap-6 lg:grid-cols-2">
   <%= render "sales_by", title: "Vendas por campanha", field_label: "utm_campaign", rows: d.sales_by_campaign, currency: currency %>
   <%= render "sales_by", title: "Vendas por conteúdo (criativo)", field_label: "utm_content", rows: d.sales_by_content, currency: currency %>

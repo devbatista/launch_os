@@ -139,6 +139,10 @@ o app CatalystOps: rate limit é por app.*
   Descartados: automático pela URL do criativo (frágil com Advantage+/`asset_feed_spec`, erro silencioso) e
   manual por anúncio (classificação a cada anúncio novo).
 - A migration preenche as campanhas já vistas em `ad_insights`, sem produto — vincular no admin após o deploy.
+- *Revisão 05/10:* os números saíram do dashboard e foram para o **show do produto** (`Admin::ProductAdsReport`:
+  vida toda + últimos 7 dias + tabela por anúncio). O vínculo tem duas portas: a tela **Meta Ads**
+  (`/admin/ad_campaigns`, antes "Campanhas Meta") e o show do produto (`POST/DELETE
+  /admin/products/:slug/ad_campaigns`, só campanhas sem produto podem ser vinculadas por ali).
 
 #### Criação — próxima etapa (após M5)
 

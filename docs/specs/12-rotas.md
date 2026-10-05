@@ -52,7 +52,8 @@ Ordem em `config/routes.rb`: rotas fixas primeiro; `GET /:slug` **por último**.
 | resources | `/admin/clients` | `admin/clients` (index, show) |
 | POST | `/admin/clients/:id/revoke_whatsapp_opt_in` | `admin/clients#revoke_whatsapp_opt_in` |
 | GET | `/admin/webhook_events` | `admin/webhook_events` (index, show) — auditoria |
-| GET, PATCH | `/admin/ad_campaigns` | `admin/ad_campaigns` (index, update) — campanhas da Meta e vínculo com o produto (spec 16) |
+| GET, PATCH | `/admin/ad_campaigns` | `admin/ad_campaigns` (index, update) — tela Meta Ads: campanhas da Meta e vínculo com o produto (spec 16) |
+| POST, DELETE | `/admin/products/:slug/ad_campaigns` | `admin/ad_campaigns` (create, destroy) — vincular/desvincular campanha pelo show do produto |
 | mount | `/admin/sidekiq` | `Sidekiq::Web` — filas, retries, dead set; protegido por constraint de sessão |
 
 ## `routes.rb` (esboço)
@@ -92,7 +93,7 @@ Rails.application.routes.draw do
       member { post :revoke_whatsapp_opt_in }
     end
     resources :webhook_events, only: %i[index show]
-    resources :ad_campaigns, only: %i[index update]
+    resources :ad_campaigns, only: %i[index update]   # + aninhado em products: only: %i[create destroy]
   end
 
   namespace :checkout do

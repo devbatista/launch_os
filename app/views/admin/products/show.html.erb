@@ -60,3 +60,5 @@
     <p class="mt-4"><%= link_to "Ver pedidos deste produto →", admin_orders_path(product_id: @product.id), class: "adm-link text-sm" %></p>
   </section>
 </div>
+
+<%= render "meta_ads", product: @product, report: @ads_report %>

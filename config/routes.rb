@@ -41,6 +41,9 @@ Rails.application.routes.draw do
       resources :benefits, :testimonials, :faqs, only: %i[create update destroy] do
         member { patch :move }
       end
+
+      # Campanhas da Meta (spec 16): vincular uma campanha sem produto (create, ad_campaign_id) e desvincular.
+      resources :ad_campaigns, only: %i[create destroy]
     end
 
     # Pedidos, clientes e auditoria de webhooks (spec 11). Nenhuma ação altera valor ou marca como pago.
@@ -57,7 +60,7 @@ Rails.application.routes.draw do
     end
     resources :webhook_events, only: %i[index show]
 
-    # Campanhas da Meta (spec 16): só o vínculo com o produto é editável.
+    # Meta Ads (spec 16): campanhas do sync do Insights e o vínculo com o produto (também no show do produto).
     resources :ad_campaigns, only: %i[index update]
   end
 

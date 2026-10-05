@@ -68,6 +68,11 @@ tamanho via `blob.byte_size`), rejeitando o attach antes de persistir.
 - URL pública (`https://www.devbatista.online/:slug`) com botão copiar.
 - Resumo: pedidos pagos, faturamento, último pedido.
 - Links para o formulário e para a lista de pedidos filtrada pelo produto.
+- **Meta Ads** (05/10, spec [16](16-roadmap-e-fases.md#meta-marketing-api-fase-2-da-plataforma)): campanhas
+  vinculadas (desvincular) e seletor para vincular uma campanha ainda sem produto; números das campanhas na
+  **vida toda** (desde o primeiro dia com dado) e nos **últimos 7 dias** — gasto, impressões, cliques, CTR de
+  link, LP views, checkouts, vendas (pedidos, com o número da Meta entre parênteses quando diverge), CAC e ROAS
+  líquido — e tabela por anúncio na vida toda. Objeto de consulta: `Admin::ProductAdsReport`.
 
 ## Preview
 

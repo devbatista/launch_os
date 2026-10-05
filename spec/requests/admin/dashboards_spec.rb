@@ -124,71 +124,14 @@ RSpec.describe "Admin dashboard" do
       expect(response.body).to include("LP → checkout —", "checkout → venda —", "conversão total —", "$0.00", "Nenhuma venda no período.", "Nenhum pedido ainda.")
     end
 
-    # Spec 16 (Insights): gasto da Meta × pedidos → CAC e ROAS na moeda da conta.
-    describe "Meta Ads" do
-      let(:today) { Time.current.in_time_zone("America/Sao_Paulo").to_date }
+    # Spec 16: os números da Meta ficam no show do produto, não no dashboard.
+    it "não mostra seção de Meta Ads nem CAC/ROAS" do
+      create(:ad_campaign, meta_campaign_id: "C1", product:)
+      create(:ad_insight, meta_campaign_id: "C1", spend_cents: 6210)
 
-      it "sem integração nem dados, explica o que configurar" do
-        stub_const("ENV", ENV.to_h.except("META_ACCESS_TOKEN", "META_AD_ACCOUNT_ID"))
+      get admin_dashboard_path
 
-        get admin_dashboard_path
-
-        expect(response.body).to include("sem dados do Insights", "META_ACCESS_TOKEN")
-      end
-
-      it "mostra gasto, vendas da Meta, CAC, ROAS líquido e a tabela por anúncio; pedidos são a verdade" do
-        create(:ad_insight, date: today - 1, meta_ad_id: "A1", ad_name: "method-01", spend_cents: 6210, impressions: 748, link_clicks: 10,
-                            landing_page_views: 8, purchases: 0)
-        create(:ad_insight, date: today - 1, meta_ad_id: "A2", ad_name: "pain-01", spend_cents: 933, impressions: 230, link_clicks: 5)
-        create(:ad_insight, date: today - 20, meta_ad_id: "A1", ad_name: "method-01", spend_cents: 99_999) # fora do período
-        create(:order, :paid, product:, utm_source: "facebook", utm_content: "method-01", paypal_receivable_cents: 6860, paypal_receivable_currency: "BRL")
-        create(:order, :pending, product:, utm_source: "facebook", utm_content: "pain-01")
-        create(:order, :paid, product:, utm_source: nil, paypal_receivable_cents: 6860, paypal_receivable_currency: "BRL") # orgânico: fora do CAC
-
-        get admin_dashboard_path
-
-        body = response.body
-        expect(body).to include("Insights atualizado em")
-        expect(body).to include("BRL 71.43", "CTR de link 1,53%")              # gasto 62,10 + 9,33; 15 cliques / 978 impressões
-        expect(body).to include("a Meta reporta 0")
-        expect(body).to include("0,96×")                                      # 68,60 recebido / 71,43 gasto
-        expect(body).to include("method-01", "pain-01", "1,34%", "2,17%", "(Meta: 0)")
-        expect(body).not_to include("BRL 1,071.42")
-      end
-
-      it "separa por produto pela campanha: Todos mostra a tabela por produto; com filtro, só as campanhas do produto" do
-        other = create(:product, :published, slug: "other", name: "Outro produto", price_cents: 990)
-        create(:ad_campaign, meta_campaign_id: "C-RESET", product:)
-        create(:ad_campaign, meta_campaign_id: "C-OTHER", product: other)
-        create(:ad_insight, date: today, meta_ad_id: "A1", meta_campaign_id: "C-RESET", ad_name: "method-01", spend_cents: 5000)
-        create(:ad_insight, date: today, meta_ad_id: "A2", meta_campaign_id: "C-OTHER", ad_name: "other-01", spend_cents: 3000)
-        create(:ad_insight, date: today, meta_ad_id: "A3", meta_campaign_id: "C-NOVA", ad_name: "test-01", spend_cents: 1000) # sem vínculo
-        create(:order, :paid, product:, utm_source: "facebook", utm_content: "method-01", paypal_receivable_cents: 6860, paypal_receivable_currency: "BRL")
-
-        get admin_dashboard_path
-
-        body = response.body
-        expect(body).to include("BRL 90.00")                                          # gasto total da conta
-        expect(body).to include("Por produto", product.name, "Outro produto", "BRL 50.00", "BRL 30.00", "1,37×") # 68,60 ÷ 50,00
-        expect(body).to include("Sem produto", "BRL 10.00 do período em campanhas sem produto", admin_ad_campaigns_path)
-
-        get admin_dashboard_path(product_id: product.id)
-
-        body = response.body
-        expect(body).to include("campanhas vinculadas a #{product.name}", "BRL 50.00", "method-01")
-        expect(body).not_to include("other-01", "test-01", "Por produto", "BRL 90.00")
-        expect(body).to include("BRL 10.00 do período em campanhas sem produto")      # a pendência continua visível
-      end
-
-      it "não calcula ROAS enquanto um pedido pago não tem o valor recebido na moeda da conta" do
-        create(:ad_insight, date: today, spend_cents: 2000)
-        create(:order, :paid, product:, utm_source: "facebook", utm_content: "method-01")
-
-        get admin_dashboard_path
-
-        expect(response.body).to include("ROAS líquido", "BRL 20.00")
-        expect(response.body).to match(/ROAS líquido.*?—/m)
-      end
+      expect(response.body).not_to include("Insights atualizado", "CAC", "ROAS", "BRL 62.10") # "Meta Ads" só como item da sidebar
     end
   end
 end
