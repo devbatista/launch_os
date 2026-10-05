@@ -168,6 +168,8 @@
   .adm-link { @apply font-medium text-primary-600 hover:underline; }
   .adm-row-danger { @apply bg-danger-50; }
   .adm-row-danger:hover { @apply bg-danger-50; }
+  .adm-row-warning { @apply bg-warning-50; }
+  .adm-row-warning:hover { @apply bg-warning-50; }
 
   /* Botões */
   .adm-btn { @apply inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50; }

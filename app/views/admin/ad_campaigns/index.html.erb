@@ -1,0 +1,50 @@
+<% content_for :title, "Campanhas Meta — Launch OS" %>
+
+<%= render "admin/shared/page_header", title: "Campanhas Meta",
+           subtitle: "Campanhas que o sync do Insights encontrou. Vincule cada uma ao produto que ela vende: é o que separa gasto, CAC e ROAS por produto no dashboard." %>
+
+<% if @campaigns.empty? %>
+  <div class="adm-empty">
+    Nenhuma campanha ainda<%= MetaAds.insights_enabled? ? ": o sync roda a cada 6 h." : " — defina META_ACCESS_TOKEN e META_AD_ACCOUNT_ID para ligar o sync do Insights." %>
+  </div>
+<% else %>
+  <% unassigned = @campaigns.count { |c| c.product_id.nil? } %>
+  <% if unassigned.positive? %>
+    <div class="adm-alert adm-alert-warning mb-6">
+      <%= icon(:alert, class: "mt-0.5 shrink-0") %>
+      <p><%= pluralize(unassigned, "campanha sem produto", "campanhas sem produto") %>: o gasto delas não entra em nenhum produto do dashboard.</p>
+    </div>
+  <% end %>
+
+  <div class="adm-table-wrap">
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <th>Campanha</th>
+          <th>ID na Meta</th>
+          <th class="text-right">Gasto total</th>
+          <th>Último dia com gasto</th>
+          <th>Produto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @campaigns.each do |campaign| %>
+          <tr class="<%= 'adm-row-warning' if campaign.product_id.nil? %>">
+            <td class="text-ink-900"><%= campaign.name %></td>
+            <td class="adm-mono text-ink-400"><%= campaign.meta_campaign_id %></td>
+            <td class="adm-num text-right"><%= money(@spend[campaign.meta_campaign_id].to_i, @currency) %></td>
+            <td class="adm-num text-ink-400"><%= @last_day[campaign.meta_campaign_id]&.strftime("%d/%m/%Y") || "—" %></td>
+            <td>
+              <%= form_with model: campaign, url: admin_ad_campaign_path(campaign), method: :patch, scope: :ad_campaign, class: "flex items-center gap-2" do |f| %>
+                <%= f.label :product_id, "Produto de #{campaign.name}", class: "sr-only", for: "product_#{campaign.id}" %>
+                <%= f.select :product_id, options_for_select([ [ "— sem produto —", "" ] ] + @products.map { |p| [ p.name, p.id ] }, campaign.product_id),
+                             {}, id: "product_#{campaign.id}", class: input_classes %>
+                <%= f.button "Salvar", type: :submit, class: button_classes(:secondary) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -40,6 +40,22 @@ RSpec.describe MetaAds::SyncInsights, :meta do
     end
   end
 
+  it "registra a campanha sem produto e, nos syncs seguintes, só renomeia — nunca desfaz o vínculo do admin" do
+    stub_meta_insights([ meta_insight_row ])
+    described_class.call
+
+    campaign = AdCampaign.sole
+    expect(campaign).to have_attributes(meta_campaign_id: "120000000000000000", name: "Reset | Vendas | DevBatista | Outubro/2026", product_id: nil)
+
+    product = create(:product, :published)
+    campaign.update!(product:)
+    stub_meta_insights([ meta_insight_row.merge("campaign_name" => "Reset | Vendas | Renomeada") ])
+    described_class.call
+
+    expect(campaign.reload).to have_attributes(name: "Reset | Vendas | Renomeada", product_id: product.id)
+    expect(AdCampaign.count).to eq(1)
+  end
+
   it "recusa janela invertida" do
     expect { described_class.call(since: Date.new(2026, 10, 5), until_date: Date.new(2026, 10, 1)) }.to raise_error(ArgumentError)
   end

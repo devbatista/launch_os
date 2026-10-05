@@ -56,6 +56,9 @@ Rails.application.routes.draw do
       member { post :revoke_whatsapp_opt_in }
     end
     resources :webhook_events, only: %i[index show]
+
+    # Campanhas da Meta (spec 16): só o vínculo com o produto é editável.
+    resources :ad_campaigns, only: %i[index update]
   end
 
   # Checkout (spec 07): chamado por modules/checkout.js; null_session, rate limit por IP.

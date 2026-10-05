@@ -156,6 +156,30 @@ RSpec.describe "Admin dashboard" do
         expect(body).not_to include("BRL 1,071.42")
       end
 
+      it "separa por produto pela campanha: Todos mostra a tabela por produto; com filtro, só as campanhas do produto" do
+        other = create(:product, :published, slug: "other", name: "Outro produto", price_cents: 990)
+        create(:ad_campaign, meta_campaign_id: "C-RESET", product:)
+        create(:ad_campaign, meta_campaign_id: "C-OTHER", product: other)
+        create(:ad_insight, date: today, meta_ad_id: "A1", meta_campaign_id: "C-RESET", ad_name: "method-01", spend_cents: 5000)
+        create(:ad_insight, date: today, meta_ad_id: "A2", meta_campaign_id: "C-OTHER", ad_name: "other-01", spend_cents: 3000)
+        create(:ad_insight, date: today, meta_ad_id: "A3", meta_campaign_id: "C-NOVA", ad_name: "test-01", spend_cents: 1000) # sem vínculo
+        create(:order, :paid, product:, utm_source: "facebook", utm_content: "method-01", paypal_receivable_cents: 6860, paypal_receivable_currency: "BRL")
+
+        get admin_dashboard_path
+
+        body = response.body
+        expect(body).to include("BRL 90.00")                                          # gasto total da conta
+        expect(body).to include("Por produto", product.name, "Outro produto", "BRL 50.00", "BRL 30.00", "1,37×") # 68,60 ÷ 50,00
+        expect(body).to include("Sem produto", "BRL 10.00 do período em campanhas sem produto", admin_ad_campaigns_path)
+
+        get admin_dashboard_path(product_id: product.id)
+
+        body = response.body
+        expect(body).to include("campanhas vinculadas a #{product.name}", "BRL 50.00", "method-01")
+        expect(body).not_to include("other-01", "test-01", "Por produto", "BRL 90.00")
+        expect(body).to include("BRL 10.00 do período em campanhas sem produto")      # a pendência continua visível
+      end
+
       it "não calcula ROAS enquanto um pedido pago não tem o valor recebido na moeda da conta" do
         create(:ad_insight, date: today, spend_cents: 2000)
         create(:order, :paid, product:, utm_source: "facebook", utm_content: "method-01")

@@ -72,8 +72,9 @@ module Admin
 
     # --- Meta Ads (Insights) -------------------------------------------------------------------
     # Gasto dos dias do período (fuso da conta = fuso do painel). Pedidos "da Meta" = utm_source do
-    # briefing de criativos; por anúncio, `ad_name` = `utm_content`. O gasto é da conta inteira: não
-    # filtra por produto.
+    # briefing de criativos; por anúncio, `ad_name` = `utm_content`. O produto do gasto vem da campanha
+    # (`AdCampaign#product`, vínculo manual no admin): com filtro de produto, só entram as campanhas
+    # dele; campanha sem produto não entra em nenhum e aparece como pendência.
 
     def meta_insights? = @meta_insights ||= AdInsight.exists?
     def meta_synced_at = @meta_synced_at ||= AdInsight.maximum(:updated_at)
@@ -82,7 +83,7 @@ module Admin
     def meta_sales = @meta_sales ||= meta_orders_scope.paid.count
 
     # Moeda da conta de anúncios (BRL); nil sem dados no período.
-    def meta_currency = @meta_currency ||= insights_scope.pick(:currency)
+    def meta_currency = @meta_currency ||= insights_scope.pick(:currency) || AdInsight.pick(:currency)
 
     def meta_cac_cents = meta_sales.zero? ? nil : (meta_spend_cents.to_d / meta_sales).round.to_i
 
@@ -121,6 +122,33 @@ module Admin
     end
 
     def meta_ctr = ctr(insights_scope.sum(:link_clicks), insights_scope.sum(:impressions))
+
+    # Gasto do período em campanhas sem produto (ou ainda sem `AdCampaign`) — fica fora de todo produto.
+    def meta_unassigned_spend_cents
+      @meta_unassigned_spend_cents ||= period_insights.where(meta_campaign_id: nil)
+                                                      .or(period_insights.where.not(meta_campaign_id: AdCampaign.assigned.select(:meta_campaign_id)))
+                                                      .sum(:spend_cents)
+    end
+
+    # [{ product:, spend_cents:, sales:, cac_cents:, roas: }, …] — produtos com gasto ou venda da Meta no
+    # período, do maior gasto para o menor; a linha `product: nil` é o gasto sem produto, sempre por último.
+    # ROAS segue a regra de meta_roas (nil se algum pedido pago não tem o valor recebido na moeda da conta).
+    def meta_by_product
+      @meta_by_product ||= begin
+        spend = period_insights.left_joins(:ad_campaign).group("ad_campaigns.product_id").sum(:spend_cents)
+        paid = meta_orders_scope.paid
+        sales = paid.group(:product_id).count
+        received = paid.where(paypal_receivable_currency: meta_currency).group(:product_id).sum(:paypal_receivable_cents)
+        incomplete = paid.where(paypal_receivable_cents: nil).or(paid.where.not(paypal_receivable_currency: meta_currency)).group(:product_id).count
+        products = Product.where(id: spend.keys.compact | sales.keys).index_by(&:id)
+
+        (spend.keys | sales.keys).map do |id|
+          spent, sold = spend[id].to_i, sales[id].to_i
+          { product: products[id], spend_cents: spent, sales: sold, cac_cents: sold.zero? ? nil : (spent.to_d / sold).round.to_i,
+            roas: spent.zero? || incomplete[id].to_i.positive? ? nil : (received[id].to_i.to_d / spent).round(2) }
+        end.sort_by { |row| [ row[:product] ? 0 : 1, -row[:spend_cents] ] }
+      end
+    end
 
     # --- Fora do período -----------------------------------------------------------------------
 
@@ -166,7 +194,11 @@ module Admin
 
       def paid_scope = orders_scope.paid
 
-      def insights_scope = AdInsight.between(range.begin.to_date..range.end.to_date)
+      def period_insights = AdInsight.between(range.begin.to_date..range.end.to_date)
+
+      def insights_scope
+        product_id ? period_insights.where(meta_campaign_id: AdCampaign.where(product_id:).select(:meta_campaign_id)) : period_insights
+      end
       def meta_orders_scope = orders_scope.where(utm_source: META_UTM_SOURCE)
 
       def real_fee_cents = @real_fee_cents ||= paid_scope.where.not(payment_fee_cents: nil).sum(:payment_fee_cents)

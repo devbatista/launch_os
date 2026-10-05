@@ -131,6 +131,15 @@ o app CatalystOps: rate limit é por app.*
   ROAS líquido (`paypal_receivable_cents` ÷ gasto, ambos em BRL — sem câmbio próprio) e tabela por anúncio
   (`ad_name` = `utm_content`). **Pedidos são a verdade**; compras reportadas pela Meta aparecem só como referência.
 
+#### Gasto por produto — implementado (05/10)
+
+- `AdCampaign` (`ad_campaigns`: `meta_campaign_id`, `name`, `product_id` opcional): o sync cria a campanha
+  sem produto e depois só atualiza o nome (`upsert_all … update_only: name`) — nunca desfaz o vínculo.
+- Vínculo **manual por campanha** em `/admin/ad_campaigns` (estrutura atual: 1 campanha = 1 produto).
+  Descartados: automático pela URL do criativo (frágil com Advantage+/`asset_feed_spec`, erro silencioso) e
+  manual por anúncio (classificação a cada anúncio novo).
+- A migration preenche as campanhas já vistas em `ad_insights`, sem produto — vincular no admin após o deploy.
+
 #### Criação — próxima etapa (após M5)
 
 - Criar Campaign (`OUTCOME_SALES`, orçamento de campanha) → AdSet (`US`, público Advantage+,
@@ -142,7 +151,8 @@ o app CatalystOps: rate limit é por app.*
 - Proteções obrigatórias: teto `META_MAX_DAILY_BUDGET_CENTS` validado no model **e** no service antes da
   chamada (orçamento vai em centavos — erro de unidade gasta 100×), data de término obrigatória, interruptor
   `META_ADS_ENABLED`.
-- Modelo enxuto: `ad_campaigns` (campanha + conjunto, 1:1 na estrutura atual) e `ads`; conta e Pixel por ENV.
+- Modelo enxuto: `ad_campaigns` (já existe com o vínculo ao produto; ganha conjunto e orçamento, 1:1 na
+  estrutura atual) e `ads`; conta e Pixel por ENV. Campanha criada pelo sistema já nasce com o produto.
 - Depois: pausa automática por orçamento/data, vídeo, múltiplos conjuntos, status de revisão.
 - Riscos: rate limits e versionamento da API, erros gastam dinheiro real (daí PAUSED + teto), atribuição da
   Meta ≠ pedidos reais.

@@ -17,6 +17,7 @@ class Product < ApplicationRecord
   has_many :testimonials, -> { ordered }, dependent: :destroy, inverse_of: :product
   has_many :faqs, -> { ordered }, dependent: :destroy, inverse_of: :product
   has_many :orders, dependent: :restrict_with_exception
+  has_many :ad_campaigns, dependent: :nullify # gasto da Meta por produto (spec 16)
 
   has_rich_text :description
 

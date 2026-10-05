@@ -1,7 +1,8 @@
-<%# Gasto e resultado por anúncio do Insights da Meta (spec 16) cruzados com os pedidos. Locals: d (Admin::Dashboard). %>
+<%# Gasto e resultado do Insights da Meta (spec 16) cruzados com os pedidos, por produto (via campanha) e por
+    anúncio. Locals: d (Admin::Dashboard). %>
 <h2 class="adm-card-title">Meta Ads
   <span class="ml-2 font-normal normal-case tracking-normal text-ink-300">
-    <%= d.meta_synced_at ? "Insights atualizado em #{datetime_br(d.meta_synced_at)}" : "sem dados do Insights" %><%= " · gasto da conta inteira (não filtra por produto)" if d.product %>
+    <%= d.meta_synced_at ? "Insights atualizado em #{datetime_br(d.meta_synced_at)}" : "sem dados do Insights" %><%= " · campanhas vinculadas a #{d.product.name}" if d.product %>
   </span>
 </h2>
 <% if !d.meta_insights? %>
@@ -16,6 +17,13 @@
   </div>
 <% else %>
   <% meta_currency = d.meta_currency || "BRL" %>
+  <% if d.meta_unassigned_spend_cents.positive? %>
+    <div class="adm-alert adm-alert-warning mb-4">
+      <%= icon(:alert, class: "mt-0.5 shrink-0") %>
+      <p><%= money(d.meta_unassigned_spend_cents, meta_currency) %> do período em campanhas sem produto — não entram em nenhum produto.
+        <%= link_to "Vincular em Campanhas Meta", admin_ad_campaigns_path, class: "adm-link" %></p>
+    </div>
+  <% end %>
   <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     <%= render "stat", label: "Gasto", value: money(d.meta_spend_cents, meta_currency), hint: "CTR de link #{percent(d.meta_ctr, precision: 2)}" %>
     <%= render "stat", label: "Vendas da Meta", value: d.meta_sales, hint: "pedidos pagos com utm_source=#{Admin::Dashboard::META_UTM_SOURCE} · a Meta reporta #{d.meta_purchases}",
@@ -24,6 +32,36 @@
     <%= render "stat", label: "ROAS líquido", value: d.meta_roas ? "#{number_with_precision(d.meta_roas, precision: 2, separator: ',')}×" : "—",
                hint: "recebido no PayPal (#{meta_currency}) ÷ gasto", tone: (d.meta_roas >= 1 ? :success : :danger if d.meta_roas) %>
   </div>
+
+  <% if d.product.nil? && d.meta_by_product.any? %>
+    <section class="adm-card mt-4">
+      <h2 class="adm-card-title">Por produto<span class="ml-2 font-normal normal-case tracking-normal text-ink-300">produto da campanha</span></h2>
+      <div class="overflow-x-auto">
+        <table class="adm-table-inline">
+          <thead>
+            <tr><th>Produto</th><th class="text-right">Gasto</th><th class="text-right">Vendas</th><th class="text-right">CAC</th><th class="text-right">ROAS líquido</th></tr>
+          </thead>
+          <tbody>
+            <% d.meta_by_product.each do |row| %>
+              <tr>
+                <td>
+                  <% if row[:product] %>
+                    <%= link_to row[:product].name, admin_dashboard_path(product_id: row[:product].id, period: d.period, from: params[:from], to: params[:to]), class: "adm-link" %>
+                  <% else %>
+                    <span class="text-ink-400">Sem produto</span> · <%= link_to "vincular", admin_ad_campaigns_path, class: "adm-link" %>
+                  <% end %>
+                </td>
+                <td class="adm-num text-right"><%= money(row[:spend_cents], meta_currency) %></td>
+                <td class="adm-num text-right"><%= row[:sales] %></td>
+                <td class="adm-num text-right"><%= money(row[:cac_cents], meta_currency) %></td>
+                <td class="adm-num text-right"><%= row[:roas] ? "#{number_with_precision(row[:roas], precision: 2, separator: ',')}×" : "—" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
 
   <section class="adm-card mt-4">
     <h2 class="adm-card-title">Por anúncio<span class="ml-2 font-normal normal-case tracking-normal text-ink-300">nome do anúncio = utm_content</span></h2>

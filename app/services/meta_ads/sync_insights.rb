@@ -25,12 +25,25 @@ module MetaAds
       raise ArgumentError, "since (#{@since}) depois de until (#{@until_date})" if @since > @until_date
 
       rows = @client.ad_insights(since: @since, until_date: @until_date).map { |row| attributes(row) }
-      AdInsight.upsert_all(rows, unique_by: %i[meta_ad_id date]) if rows.any?
+      if rows.any?
+        AdInsight.transaction do
+          upsert_campaigns(rows)
+          AdInsight.upsert_all(rows, unique_by: %i[meta_ad_id date])
+        end
+      end
       Rails.logger.info { "[ads] insights #{@since}..#{@until_date}: #{rows.size} linha(s)" }
       rows.size
     end
 
     private
+      # Campanha nova entra sem produto; existente só tem o nome atualizado — o vínculo com o produto é
+      # do admin e o sync nunca o sobrescreve.
+      def upsert_campaigns(rows)
+        campaigns = rows.filter_map { |r| r[:meta_campaign_id] && { meta_campaign_id: r[:meta_campaign_id], name: r[:campaign_name] || r[:meta_campaign_id] } }
+                        .uniq { |c| c[:meta_campaign_id] }
+        AdCampaign.upsert_all(campaigns, unique_by: :meta_campaign_id, update_only: %i[name]) if campaigns.any?
+      end
+
       def attributes(row)
         actions = Array(row["actions"]).to_h { |a| [ a["action_type"], a["value"] ] }
         {

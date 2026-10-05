@@ -114,6 +114,12 @@ nessa moeda. Tabela por anúncio (`ad_name` = `utm_content`): gasto, impressões
 checkouts e vendas (pedidos) e CAC; quando a Meta reporta outro número de compras, ele aparece entre
 parênteses. O gasto é da conta inteira — o filtro de produto não o afeta, e a seção avisa.)*
 
+*(05/10, por produto: o gasto passa a ter produto pela **campanha** — `AdCampaign#product`, vínculo manual em
+`/admin/ad_campaigns`. Com filtro de produto, gasto, CTR, CAC, ROAS e a tabela por anúncio usam só as campanhas
+vinculadas a ele. Em "Todos", os cards mostram o total da conta e uma tabela **Por produto** (gasto, vendas da
+Meta, CAC e ROAS líquido; a linha "Sem produto" leva ao vínculo). Gasto do período em campanha sem produto
+aparece como aviso nos dois modos.)*
+
 Sem gráficos no MVP; cards numéricos e tabelas bastam. Queries com `group(:utm_campaign)` e índices
 existentes; período padrão 7 dias.
 
