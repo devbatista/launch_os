@@ -1,4 +1,11 @@
 namespace :ads do
+  desc "Produtos com o número de campanhas da Meta vinculadas (para escolher o slug do ads:snapshot)"
+  task products: :environment do
+    Product.order(:created_at).each do |product|
+      puts "#{product.slug} | #{product.status} | #{product.name} | #{product.ad_campaigns.count} campanha(s) vinculada(s)"
+    end
+  end
+
   desc "JSON da campanha de um produto para a skill analisar-campanha: ads:snapshot[slug] (opcional: since,until em ISO8601)"
   task :snapshot, %i[slug since until] => :environment do |_t, args|
     abort "uso: bin/rails 'ads:snapshot[21-day-procrastination-reset]' ou 'ads:snapshot[slug,2026-10-02,2026-10-09]'" if args[:slug].blank?

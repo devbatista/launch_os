@@ -38,8 +38,13 @@ Fale em português com acentuação correta. Nomes de anúncio e métricas da Me
 
 ## Passo 1 — Escopo
 
-- Produto: o slug do pedido; se o usuário não disser, use o único produto com campanha vinculada (hoje
-  `21-day-procrastination-reset`). Com mais de um, pergunte.
+- **Produto: sempre pergunte qual produto analisar**, mesmo que só exista um ou que a conversa sugira um.
+  Liste os produtos de produção com
+  `railway ssh --service launch_os bin/rails ads:products` (slug, status, nome, campanhas vinculadas) e
+  pergunte com `AskUserQuestion`, uma opção por produto com o slug no rótulo e status e campanhas na
+  descrição. Produto sem campanha vinculada pode ser escolhido, mas avise que o snapshot virá vazio até o
+  vínculo em `/admin/ad_campaigns`. Só pule a pergunta se o usuário já tiver dito o produto **nesta
+  invocação** da skill.
 - Período: padrão = vida toda da campanha (o snapshot começa no primeiro dia com Insights). Para "ontem",
   "últimos 3 dias", etc., passe `since,until` em ISO8601, no fuso `America/Sao_Paulo`.
 - Ambiente: **produção** (é onde estão os dados reais). Dev só para testar a skill.
@@ -127,9 +132,34 @@ Estrutura da resposta (decisão com risco e trade-off → formato do AGENTS.md):
 
 Valores em reais no formato brasileiro (R$ 1.234,56); dólares como US$ 14.90; porcentagens com duas casas.
 
-## Opcional — registrar no cronograma
+## Passo 6 — Registrar a análise na documentação (obrigatório)
 
-Só se o usuário pedir: preencha as linhas da seção 8 de [docs/cronograma/README.md](../../../docs/cronograma/README.md)
-com o `daily` (Gasto R$, Impressões, Cliques, CTR, CPC em US$ = `cpc_cents` ÷ 100 ÷ câmbio, LP Views,
-Checkouts, Vendas), mantendo o que já está escrito em "Obs.". A decisão da seção 9 só é preenchida com o
-cenário confirmado pelo usuário. Não faça commit (regras de Git do AGENTS.md).
+Toda análise termina com os docs atualizados, na mesma entrega. Registre só **fatos** do snapshot e decisões
+**confirmadas pelo usuário**; recomendação da skill não é decisão. Antes de editar, leia o trecho atual e
+preserve o que já está escrito.
+
+1. **Cronograma, seção 8** ([docs/cronograma/README.md](../../../docs/cronograma/README.md), "Campanha —
+   acompanhamento diário"): preencha as linhas dos **dias completos** com o `daily` (Gasto R$, Impressões,
+   Cliques, CTR, CPC em US$ = `cpc_cents` ÷ 100 ÷ câmbio, LP Views, Checkouts, Vendas). O dia corrente é
+   parcial e fica vazio. Em "Obs.", mantenha o texto existente e acrescente o achado do dia em uma frase,
+   com o câmbio usado no CPC quando ele mudar. A linha **Total** só é preenchida na análise final.
+2. **Cronograma, seção 4.7, tarefa 5.2** (coluna Notas): acrescente `dd/mm (skill analisar-campanha): …`
+   com os achados principais, o que foi ou não pausado e a próxima reavaliação. Mantenha as notas
+   anteriores. Status 🟦 até os 7 dias estarem preenchidos.
+3. **Checklist** ([docs/checklist/README.md](../../../docs/checklist/README.md)):
+   - `5.2`: nota com os dias já preenchidos; marque `[x]` só quando os dias 1 a 7 estiverem completos.
+   - Achado que afeta um item existente (ex.: compra não atribuída pela Meta → item de eventos priorizados;
+     UTM quebrada → item de tracking): nota datada no próprio item, sem marcar nada.
+   - Achado sem item correspondente: proponha o item ao usuário antes de criá-lo.
+4. **Análise final** (campanha encerrada; na Fase 5, 10–11/10):
+   - preencha a linha Total da seção 8;
+   - pergunte ao usuário qual cenário da seção 9 escolher (mostre o recomendado) e só então marque
+     "Escolhido?" e escreva a "Decisão registrada";
+   - registre a decisão (cenário, próximo orçamento ou encerramento) no **Registro de decisões** (seção 11)
+     com a data;
+   - marque `5.4` no checklist, atualize status, data e horas reais das tarefas 5.2/5.4 e o marco M5 no
+     cronograma; se o bloco 4.7 fechar, mova a linha **"Próximo passo"** do checklist (regra do AGENTS.md).
+5. **Produto fora da Fase 5** (sem tabela de acompanhamento): pergunte onde registrar antes de criar
+   seção ou arquivo novo.
+6. Ao final da resposta, liste os arquivos alterados e os IDs do checklist tocados. **Não faça commit**
+   (regras de Git do AGENTS.md).

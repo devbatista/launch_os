@@ -40,7 +40,7 @@ Regra de fechamento de bloco: código + teste verde + critério de aceite da spe
 - [x] Conjunto de dados (Pixel) `LaunchOS` criado → `META_PIXEL_ID=2908081392894300` no `.env` e no Railway (16/09)
 - [x] Domínio `devbatista.online` verificado no portfólio DevBatista via TXT `facebook-domain-verification=…` no apex (16/09). *A 1ª tentativa deu "já verificado por outra empresa"; a 2ª passou — mensagem antiga fica na tela, ignorar*
 - [x] Página do Facebook vinculada ao portfólio — *22/09: confirmada pela campanha anterior `E-book | Leads | DevBatista | Set/2026` (3.139 de alcance, 3 leads a R$ 38,07), que só veicula com Página. Conta já aquecida: pagamento aprovado, anúncios já aprovados em revisão, sem limite de gasto de conta nova*
-- [ ] Eventos priorizados (Aggregated Event Measurement) com Purchase no topo — **pendência da Fase 5, antes de veicular**: sem isso o público iOS perde conversão
+- [ ] Eventos priorizados (Aggregated Event Measurement) com Purchase no topo — **pendência da Fase 5, antes de veicular**: sem isso o público iOS perde conversão — *06/10: a Meta ainda não atribuiu a venda paga de 05/10 (0 `purchases` no Insights mais de 24 h depois); a campanha otimiza para Purchase sem receber esse sinal. Conferir no Events Manager se o evento chegou e resolver esta pendência*
 
 ### 0.3 Twilio — spec [09](../specs/09-notificacoes-email-whatsapp.md)
 - [x] Twilio: **subconta `launch_os`** (SID `AC661274f8…`) criada dentro da conta existente para isolar credenciais, números e Sender do outro app; `TWILIO_ACCOUNT_SID`/`TWILIO_AUTH_TOKEN` no `.env` (16/09)
@@ -340,7 +340,7 @@ spec [11](../specs/11-admin-pedidos-clientes-dashboard.md) (painel simples, serv
 
 - [x] 5.1 Campanha criada manualmente (vendas, Purchase, Advantage+, EUA, inglês, 3 anúncios, R$ 28/dia) — *veiculando desde 02/10, um dia antes do previsto*![alt text](image.png)
 - [x] 5.1 Três anúncios aprovados pela Meta — *05/10: os três ativos e com impressões*
-- [ ] 5.2 Planilha diária preenchida (seção 8 do cronograma) — dias 1 a 7
+- [ ] 5.2 Planilha diária preenchida (seção 8 do cronograma) — dias 1 a 7 — *06/10: dias 0–3 preenchidos pela skill `analisar-campanha`; faltam 4 a 7*
 - [ ] 5.3 Sentry, `MessageLog` e disputas verificados diariamente; suporte respondido em < 24 h
 - [ ] 5.4 Análise final e cenário escolhido (seção 9 do cronograma) — 03/11
 
@@ -359,7 +359,7 @@ Ver ordem sugerida no cronograma (seção 4.8). Não iniciar antes de M5 — exc
 - [x] Setup na Meta: app Business ligado ao portfólio `DevBatista`, System User com acesso à conta `2425512304918484`, token com `ads_read` — *05/10: app `Launch OS` (caso de uso Marketing API, nível Limited, `ads_read` pronto para teste) criado no portfólio, que já é verificado. System User `launch_os_insights` (Funcionário) com a conta DevBatista em "Gerenciar campanhas" — escolha consciente para a criação futura; o limite efetivo é o escopo do token, que leva só `ads_read`. System User com função de teste no app; token gerado (expiração "Nunca", só `ads_read`) e guardado no `.env` local*
 - [x] `META_ACCESS_TOKEN` e `META_AD_ACCOUNT_ID` no Railway (`launch_os` e `sidekiq`), deploy e backfill `SyncAdInsightsJob.perform_later("2026-10-02")` — *05/10: PR #62 mergeado; variáveis gravadas com `--skip-deploys` depois do deploy do merge, então foi preciso `railway redeploy` nos dois serviços; cron `sync_ad_insights` carregado; backfill de 02–05/10 = 12 linhas*
 - [x] Primeiro sync em produção conferido contra o Gerenciador (gasto, impressões e cliques por anúncio batem com o CSV de 05/10) — *05/10: produção idêntica ao CSV e a dev em 02–04/10 (`method-01` 748/10/R$ 62,10, `pain-01` 230/5/R$ 9,33, `outcome-01` 111/1/R$ 4,96; por dia R$ 11,47 / 24,82 / 40,10). Achado: a Meta ainda reporta 0 compras, embora exista 1 venda paga de `method-01` em 05/10 — reconferir em 24 h (atraso de atribuição ou perda do Pixel sem CAPI)*
-- [ ] Retrato da campanha para análise: client lê campanhas/conjuntos/anúncios e alcance/frequência/rankings, `MetaAds::CampaignSnapshot`, `ads:snapshot`/`ads:sync` e skill `analisar-campanha` — *06/10: código e specs prontos; snapshot conferido em dev com leitura real da conta (3 anúncios ACTIVE, alcance 1.105, frequência 1,14, rankings UNKNOWN). Falta deploy e rodar a skill uma vez contra produção*
+- [x] Retrato da campanha para análise: client lê campanhas/conjuntos/anúncios e alcance/frequência/rankings, `MetaAds::CampaignSnapshot`, `ads:snapshot`/`ads:sync` e skill `analisar-campanha` — *06/10: código e specs prontos; snapshot conferido em dev com leitura real da conta (3 anúncios ACTIVE, alcance 1.105, frequência 1,14, rankings UNKNOWN). Deploy `afac342` e primeira execução em produção via `railway ssh` (campanha vinculada, `live` sem erro, 1 venda paga batendo com `meta_paid_received`)*
 - [ ] Números da Meta por produto: `AdCampaign` com vínculo manual (tela Meta Ads e show do produto) e a seção Meta Ads no show do produto (vida toda + últimos 7 dias + por anúncio); dashboard sem Meta — *05/10: código e specs prontos (suíte verde); falta deploy e vincular a campanha `Reset | Vendas | DevBatista | Out/2026` ao produto em produção*
 
 ### Trilha fiscal — spec [18](../specs/18-fiscal-e-recibos.md)

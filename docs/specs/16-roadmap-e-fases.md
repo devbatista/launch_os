@@ -156,7 +156,9 @@ o app CatalystOps: rate limit é por app.*
   estado ao vivo. Só agregados, nunca dado pessoal; falha da Meta vira `live.error` sem derrubar o resto. Nada é
   gravado.
 - `bin/rails 'ads:snapshot[slug,since,until]'` imprime o retrato em JSON (uma linha); `bin/rails ads:sync` puxa o
-  Insights fora do ciclo do cron. Consumido pela skill do Claude Code `analisar-campanha`
+  Insights fora do ciclo do cron; `bin/rails ads:products` lista os produtos e quantas campanhas cada um tem
+  vinculadas (a skill sempre pergunta qual produto analisar e, ao fim, registra a análise no cronograma e no
+  checklist). Consumido pela skill do Claude Code `analisar-campanha`
   (`.claude/skills/analisar-campanha/`), que roda o snapshot em produção via `railway ssh` e só **recomenda**:
   pausar, escalar ou trocar criativo segue manual no Gerenciador.
 - Observado em produção em 06/10: rankings `UNKNOWN` com poucas impressões; o conjunto Advantage+ não retornou
