@@ -30,6 +30,35 @@ RSpec.describe Providers::Meta::Client, :meta do
     expect(fetch.map { |row| row["ad_name"] }).to eq(%w[pain-01 outcome-01])
   end
 
+  it "alcance do período: agregado sem time_increment, campos conforme o nível" do
+    stub = stub_request(:get, MetaStubs::INSIGHTS_URL).with(query: {
+      "level" => "ad", "limit" => "500", "use_account_attribution_setting" => "true",
+      "fields" => "ad_id,campaign_id,reach,frequency,quality_ranking,engagement_rate_ranking,conversion_rate_ranking",
+      "time_range" => { since: "2026-10-02", until: "2026-10-05" }.to_json, "access_token" => MetaStubs::ACCESS_TOKEN
+    }).to_return(status: 200, body: { data: [ { "ad_id" => "1", "reach" => "900", "frequency" => "1.31" } ] }.to_json,
+                 headers: { "Content-Type" => "application/json" })
+
+    expect(client.reach_insights(level: "ad", since:, until_date:)).to eq([ { "ad_id" => "1", "reach" => "900", "frequency" => "1.31" } ])
+    expect(stub).to have_been_requested
+    expect { client.reach_insights(level: "account", since:, until_date:) }.to raise_error(KeyError)
+  end
+
+  it "estado atual de campanhas, conjuntos e anúncios, com os campos fixados" do
+    {
+      "campaigns" => [ :campaigns, described_class::CAMPAIGN_FIELDS ],
+      "adsets" => [ :ad_sets, described_class::AD_SET_FIELDS ],
+      "ads" => [ :ads, described_class::AD_FIELDS ]
+    }.each do |edge, (method, fields)|
+      stub = stub_request(:get, "#{MetaStubs::ACCOUNT_URL}/#{edge}")
+        .with(query: { "fields" => fields.join(","), "limit" => "500", "access_token" => MetaStubs::ACCESS_TOKEN })
+        .to_return(status: 200, body: { data: [ { "id" => "#{edge}-1", "effective_status" => "ACTIVE" } ] }.to_json,
+                   headers: { "Content-Type" => "application/json" })
+
+      expect(client.public_send(method)).to eq([ { "id" => "#{edge}-1", "effective_status" => "ACTIVE" } ])
+      expect(stub).to have_been_requested
+    end
+  end
+
   it "token inválido (190) e parâmetro (100) → ApiError permanente com o código, sem vazar o token" do
     stub_meta_error(code: 190, message: "Error validating access token: Session has expired")
     expect { fetch }.to raise_error(described_class::ApiError) { |e|

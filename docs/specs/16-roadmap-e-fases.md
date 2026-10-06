@@ -144,6 +144,24 @@ o app CatalystOps: rate limit é por app.*
   (`/admin/ad_campaigns`, antes "Campanhas Meta") e o show do produto (`POST/DELETE
   /admin/products/:slug/ad_campaigns`, só campanhas sem produto podem ser vinculadas por ali).
 
+#### Retrato para análise — implementado (06/10)
+
+- Leitura ao vivo, ainda só com `ads_read`: `Providers::Meta::Client#campaigns`, `#ad_sets`, `#ads` (estado atual:
+  `effective_status`, orçamento em centavos da moeda da conta, `learning_stage_info`, `issues_info`) e
+  `#reach_insights(level:)` (alcance e frequência deduplicados no período, sem `time_increment`; rankings de
+  relevância por anúncio, repassados como string crua). Campos conferidos nas referências de campanha, conjunto,
+  anúncio e Insights em 06/10.
+- `MetaAds::CampaignSnapshot` cruza o `AdInsight` das campanhas do produto com `PageVisit` (humanas,
+  `utm_source=facebook`) e `Order` por dia e por anúncio, com as taxas já calculadas, ROAS, recebido líquido e o
+  estado ao vivo. Só agregados, nunca dado pessoal; falha da Meta vira `live.error` sem derrubar o resto. Nada é
+  gravado.
+- `bin/rails 'ads:snapshot[slug,since,until]'` imprime o retrato em JSON (uma linha); `bin/rails ads:sync` puxa o
+  Insights fora do ciclo do cron. Consumido pela skill do Claude Code `analisar-campanha`
+  (`.claude/skills/analisar-campanha/`), que roda o snapshot em produção via `railway ssh` e só **recomenda**:
+  pausar, escalar ou trocar criativo segue manual no Gerenciador.
+- Observado em produção em 06/10: rankings `UNKNOWN` com poucas impressões; o conjunto Advantage+ não retornou
+  `learning_stage_info`.
+
 #### Criação — próxima etapa (após M5)
 
 - Criar Campaign (`OUTCOME_SALES`, orçamento de campanha) → AdSet (`US`, público Advantage+,

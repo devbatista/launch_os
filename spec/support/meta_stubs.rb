@@ -3,7 +3,8 @@
 module MetaStubs
   ACCESS_TOKEN = "test-meta-token".freeze
   AD_ACCOUNT_ID = "1234567890".freeze
-  INSIGHTS_URL = "#{Providers::Meta::Client::BASE}/#{Providers::Meta::Client::DEFAULT_VERSION}/act_#{AD_ACCOUNT_ID}/insights".freeze
+  ACCOUNT_URL = "#{Providers::Meta::Client::BASE}/#{Providers::Meta::Client::DEFAULT_VERSION}/act_#{AD_ACCOUNT_ID}".freeze
+  INSIGHTS_URL = "#{ACCOUNT_URL}/insights".freeze
 
   # Linha do Insights no formato da API (números como string, ações em lista de action_type/value).
   def meta_insight_row(ad_id: "120000000000000001", ad_name: "method-01", date: "2026-10-03", spend: "25.40",
