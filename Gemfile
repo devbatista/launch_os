@@ -36,7 +36,7 @@ gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # image_processing 2.x não puxa mais o ruby-vips: declarar explicitamente (Active Storage usa :vips)
-gem "image_processing", "~> 2.1"
+gem "image_processing", "~> 2.2"
 gem "ruby-vips", require: false
 # Active Storage em bucket S3-compatível (MinIO em dev, R2/S3 em produção)
 gem "aws-sdk-s3", require: false
